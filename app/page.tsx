@@ -6,7 +6,6 @@ import "./../app/app.css";
 import { Amplify } from "aws-amplify";
 import outputs from "@/amplify_outputs.json";
 import "@aws-amplify/ui-react/styles.css";
-import Calendar from "react-calendar";
 import 'react-calendar/dist/Calendar.css';
 
 Amplify.configure(outputs);
@@ -61,11 +60,17 @@ export default function App() {
   // Click on dates to see each
   // If logged in, then use red for days not avaialble and green for days that person is serving
 
+  // TODO JLS
+  // Add Material to project
+  // https://mui.com/material-ui/
+
+  // For calandar
+  // https://mui.com/x/react-date-pickers/date-calendar/
+
 
   return (
         <main>
           <h1>{getWelcomeString()}</h1>
-          <Calendar />
         </main>
   );
 }
