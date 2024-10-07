@@ -6,7 +6,6 @@ import "./../app/app.css";
 import { Amplify } from "aws-amplify";
 import outputs from "@/amplify_outputs.json";
 import "@aws-amplify/ui-react/styles.css";
-import 'react-calendar/dist/Calendar.css';
 
 Amplify.configure(outputs);
 
