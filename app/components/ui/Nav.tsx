@@ -11,7 +11,7 @@ import Typography from '@mui/material/Typography';
 import { useState, useEffect } from "react";
 import { fetchUserAttributes, signOut } from "aws-amplify/auth";
 import { useRouter, usePathname } from 'next/navigation';
-import { createDefaultUserInfo, createUserInfo } from '../model/UserInfo';
+import { Hub } from "aws-amplify/utils";
 
 const getWelcomeName = (fname:string | undefined = undefined, lname:string | undefined = undefined):string => {
   var result:string = "Member Not Logged In";
@@ -52,39 +52,66 @@ export const Nav = () => {
   const router = useRouter();
   const pathname = usePathname();
 
-  useEffect(() => {
-    const getUInfo = async() => {
+  const setAuthInfo = (aInfo:object | undefined) => {
+    if (aInfo != undefined) {
+      setIsAuthenticated(true);
+      // @ts-ignore
+      setWelcomeName(getWelcomeName(aInfo.given_name, aInfo.family_name));
+      setBtnString(getBtnString(true));
+    }
+    else {
+      setIsAuthenticated(false);
+      setWelcomeName(getWelcomeName(undefined, undefined));
+      setBtnString(getBtnString(false));
+    }
+  }
+
+  const getUserInfo = async() => {
       try {
         let aInfo = await fetchUserAttributes();
-        setIsAuthenticated(true);
-        setWelcomeName(getWelcomeName(aInfo.given_name, aInfo.family_name));
-        setBtnString(getBtnString(true));
+        setAuthInfo(aInfo);
       }
       catch(e) {
-        setIsAuthenticated(false);
-        setWelcomeName(getWelcomeName(undefined, undefined));
-        setBtnString(getBtnString(false));
+        setAuthInfo(undefined);
       }
+  }
+
+  useEffect(() => {
+    const getUInfo = async() => {
+      await getUserInfo();
     }
 
     getUInfo();
   }, []);
 
+  Hub.listen('auth', ({payload}) => {
+      switch(payload.event) {
+          case 'signedIn':
+            // We just signed in but we are at login. So go home
+            if (pathname === '/login') {
+              router.replace('/');
+            }
+            if (!isAuthenticated) {
+              getUserInfo();
+            }
+            break;
+          case 'signedOut':
+            break;
+          default:
+              // Don't do anything
+      }
+  });
+
   const btnClick = async () => {
     if (isAuthenticated) {
       await signOut();
-      setIsAuthenticated(false);
-      setWelcomeName(getWelcomeName());
-      setBtnString(getBtnString(false));
-
+      setAuthInfo(undefined); // Reset
+      router.replace('/login');
     }
     else {
       router.replace('/login');
     }
   }
-
-  // TODO JLS, need to update auth after sign in
-  // So use Hub (like in loging page)
 
   // Skip for /login
   if (pathname === '/login') {
