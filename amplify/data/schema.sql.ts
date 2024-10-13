@@ -33,7 +33,6 @@ export const schema = configure({
         last: a.string().required(),
         prefix: a.string().required(),
         suffix: a.string().required(),
-        company: a.string().required(),
         email: a.string().required(),
         email2: a.string().required(),
         phone: a.string().required(),
@@ -43,11 +42,6 @@ export const schema = configure({
         active: a.string().required(),
         schedualable: a.string().required(),
         sub: a.string().required(),
-        city: a.string().required(),
-        state: a.string().required(),
-        postal_code: a.string(),
-        address1: a.string().required(),
-        address2: a.string().required()
     }).identifier([
         "member_id"
     ])
