@@ -23,11 +23,22 @@ export default function App() {
     });
   }
 
+  async function listMembers() {
+    const data = await client.models.member.list();
+    console.log(data);
+  }
+
   function deleteTodo(id: string) {
     client.models.Todo.delete({ id })
   }  
 
   useEffect(() => {
+
+    const fetchData = async () => {
+      await listMembers();
+    };
+
+    fetchData();
     listTodos();
   }, []);
 
