@@ -16,6 +16,7 @@ const schema = a.schema({
       content: a.string(),
     })
     .authorization((allow) => [allow.publicApiKey()]),
+
 });
 
 const combinedSchema = a.combine([schema, sqlSchema]);

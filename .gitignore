@@ -3,3 +3,4 @@ node_modules
 .next/
 .npm/
 .amplify/
+amplify_outputs.json

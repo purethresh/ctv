@@ -24,8 +24,8 @@ export default function App() {
   }
 
   async function listMembers() {
-    const data = await client.models.member.list();
-    console.log(data);
+    // const data = await client.models.member.list();
+    // console.log(data);
   }
 
   function deleteTodo(id: string) {
