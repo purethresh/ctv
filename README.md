@@ -1,9 +1,6 @@
 TODO JLS
 
 * Create home
-
-   * Figure out how to add env params
-   * Connect to DB
    * Create some tables to get started
    * Use cookie on home page. Redirect to start if member and church cookie not set
 
