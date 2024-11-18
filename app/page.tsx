@@ -24,6 +24,9 @@ export default function App() {
   }
 
   async function listMembers() {
+    const tdata = await fetch("/api/member");
+    const response = await tdata.json();
+    console.log(response);
     // const data = await client.models.member.list();
     // console.log(data);
   }
