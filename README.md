@@ -1,6 +1,7 @@
 TODO JLS
 
 * Create home
+
    * Create some tables to get started
    * Use cookie on home page. Redirect to start if member and church cookie not set
 
