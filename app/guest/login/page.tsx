@@ -1,17 +1,25 @@
-// TODO JLS HERE !!!
-//
-// For DB, need church table
-// For DB, need member table
-//
-// Show Login
-// OR
-// signin as guest
-//
-// After login or guest, set cookies and redirect back
-
+"use client"
+import { Authenticator } from "@aws-amplify/ui-react";
+import { Hub } from "aws-amplify/utils";
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
+  const router = useRouter();
+
+  Hub.listen('auth', ({payload}) => {
+    switch (payload.event) {
+      case 'signedIn':
+        router.replace('/');
+        break;
+      default:
+        // Don't do anything
+    }
+  });
+  
+
   return (
-    <div>Login page</div>
+      <Authenticator/>
   );
+
+
 }
