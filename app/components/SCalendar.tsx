@@ -1,15 +1,29 @@
-"use client"
-
-// TODO JLS
-// Show calendar for month
-// If a member is included, highlight based on that user
-// Green background for days available
-// Red background for days not available
-// Show dot for days that are scheduled
-// NEED to call function when changing day -> (passing up to parent, and then pass on to label day)
+import * as React from 'react';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
+import {AdapterMoment} from '@mui/x-date-pickers/AdapterMoment';
+import moment from 'moment';
+import { useState } from 'react';
+import SCalendarDayComponent from './SCalendarDayComponent';
+import { getDefaultSunday } from '../lib/dateUtils';
 
 export default function SCalendar() {
+  let [selectedDay, setSelectedDay] = useState<string>(getDefaultSunday());
+  let [restrictedDays, setRestrictedDays] = useState<number[]>([]);
+  let [scheduledDays, setScheduledDays] = useState<number[]>([]);
+
+  // Set the selected day from a moment
+  const setCalValue = (value:any) => {
+    const strDate = value.format('YYYY-MM-DD');
+    setSelectedDay(strDate);
+  }
+
   return (
-    <div>Calendar goes here</div>
+    <LocalizationProvider dateAdapter={AdapterMoment}>
+      <DateCalendar value={moment(selectedDay)} onChange={setCalValue}
+      slots={{ day: SCalendarDayComponent }}
+      slotProps={{ day: { restrictedDays, scheduledDays } as any }}
+       />
+    </LocalizationProvider>
   );
 }
