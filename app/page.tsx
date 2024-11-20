@@ -10,7 +10,12 @@ import SLabelDay from "./components/SLabelDay";
 
 Amplify.configure(outputs);
 
-// TODO JLS, Do Calendar next
+// TODO JLS HERE
+// * If isAuth, get the user's restrictedDays and scheduledDays.
+// * Then pass them into the SCalendar component.
+// * Get called when selected date is changed
+// * Pass that into SLabelDay
+// * Implement SLabelDay
 
 export default function App() {
   return (
