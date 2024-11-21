@@ -10,11 +10,13 @@ import { useRouter } from 'next/navigation';
 import { signOut } from "aws-amplify/auth";
 import Avatar from "@mui/material/Avatar";
 import UserInfo from "../lib/UserInfo";
+import { SNavBarProps } from "../props/SNavBarProps";
 
-export default function SNavbar() {
+export default function SNavbar(props: SNavBarProps) {
   let [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   let [churchName, setChurchName] = useState<string>('');
   let [userInitials, setUserInitials] = useState<string>('');
+  let [userInfo, setUserInfo] = useState<UserInfo>(new UserInfo());
 
   const router = useRouter();
 
@@ -27,26 +29,20 @@ export default function SNavbar() {
     setChurchName('');
     setUserInitials('');
     await signOut();
+    if (props.onSignout) {
+      props.onSignout();
+    }
   }
-
+  
   useEffect(() => {
-    const getUserInfo = async() => {
-      const uInfo = new UserInfo();
+    const updatedInfo = props.userInfo || new UserInfo();
+    setUserInfo(updatedInfo);
 
-      await uInfo.loadMemberInfo();
-
-      if (uInfo.sub && uInfo.sub.length > 0) {
-        setUserInitials(uInfo.getInitials());
-        setChurchName(uInfo.churchName);
-        setIsAuthenticated(true);
-      }
-      else {
-        setIsAuthenticated(false);
-      }
-    }    
-
-    getUserInfo();
-  }, []);
+    const isAuth:boolean = updatedInfo.sub.length > 0;
+    setIsAuthenticated(isAuth);
+    setUserInitials(updatedInfo.getInitials());
+    setChurchName(updatedInfo.churchName);
+  }, [props.userInfo]);
   
   
   return (

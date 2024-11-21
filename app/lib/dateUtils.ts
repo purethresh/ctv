@@ -13,7 +13,7 @@ export const alignTimeToDay = (mill:number) : number => {
   return result;
 }
 
-export const getDefaultSundayObject = () : string => {
+export const getDefaultSunday = () : string => {
   // Get right now in milliseconds
   const nowDate = new Date();
   var nowMill = nowDate.getTime();
