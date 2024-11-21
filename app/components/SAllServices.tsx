@@ -29,8 +29,6 @@ export default function SAllServices(props:SAllServicesProp) {
     const result = await fetch(`/api/services?church_id=${props.churchId}&year=${yr}&month=${mo}&day=${dy}`, { cache: 'force-cache' });
     var rs = await result.json();
 
-    console.log(rs);
-
     const serviceList = [];
     for(var i=0; i<rs.length; i++) {
       serviceList.push(rs[i]);

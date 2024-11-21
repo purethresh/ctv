@@ -1,6 +1,7 @@
 import { SServiceScheduleProps } from '../props/SServiceScheduleProps';
 import { useEffect, useState } from 'react';
 import { Box, Typography } from '@mui/material';
+import ChurchLabels from '../lib/ChurchLabels';
 
 // TODO JLS HERE
 //
@@ -13,11 +14,25 @@ import { Box, Typography } from '@mui/material';
 export default function SServiceSchedule(props:SServiceScheduleProps) {
     let [shouldShowName, setShouldShowName] = useState<boolean>(false);
     let [shouldShowInfo, setShouldShowInfo] = useState<boolean>(false);
+    let [churchLabelInfo, setChurchLabelInfo] = useState<ChurchLabels>(new ChurchLabels());
 
   useEffect(() => {
-    const updateShowElements = () => {
+    const updateShowElements = async () => {
         setShouldShowName(props.serviceName != undefined && props.serviceName.length > 0);
         setShouldShowInfo(props.serviceInfo != undefined && props.serviceInfo.length > 0);
+
+        // Create new church label info
+        const lblInfo = new ChurchLabels();
+
+        // Load the labels
+        await lblInfo.fetchAllLabels(props.churchId || '');
+
+        // Load the scheduled labels
+        await lblInfo.fetchScheduledLabels(props.serviceId || '');
+        setChurchLabelInfo(lblInfo);
+
+        // TODO JLS, need to create the groups.
+        // Then render a ScheduledLabel component for each group
     }
     
     updateShowElements();

@@ -14,9 +14,6 @@ import UserInfo from "./lib/UserInfo";
 
 Amplify.configure(outputs);
 
-// TODO JLS HERE
-// SServies should show a list of services for the selected day
-
 export default function App() {
   let [selectedDay, setSelectedDay] = useState<string>(getDefaultSunday());
   let [userInfo, setUserInfo] = useState<UserInfo>(new UserInfo());
