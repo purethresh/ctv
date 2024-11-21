@@ -7,8 +7,9 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useRouter } from 'next/navigation';
-import { fetchUserAttributes, signOut } from "aws-amplify/auth";
+import { signOut } from "aws-amplify/auth";
 import Avatar from "@mui/material/Avatar";
+import UserInfo from "../lib/UserInfo";
 
 export default function SNavbar() {
   let [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -21,43 +22,6 @@ export default function SNavbar() {
     router.push('/guest/login');
   };
 
-  const getMemberInfo = async(subId:string) => {  
-    if (subId && subId.length > 0) {
-      const res = await fetch('/api/member?sub=' + subId);
-      const data = await res.json();
-      if (data) {
-        setUserInitials(data.first[0] + data.last[0]);
-        await getChurchInfo(data.member_id);
-      }
-    }
-  }
-
-  const getChurchInfo = async(memberId:string) => {
-    if (memberId && memberId.length > 0) {
-      const res = await fetch('/api/church?member_id=' + memberId);
-      const data = await res.json();
-      if (data) {
-        setChurchName(data.churchName);
-      }
-    }
-  }
-
-  const getUserAttributes = async() => {
-      try {
-        let aInfo = await fetchUserAttributes();
-        if (aInfo && aInfo.sub) {
-          // Get Member info (but don't wait for it)
-          getMemberInfo(aInfo.sub);
-        }
-
-        // Set it as authenticated to change the UI
-        setIsAuthenticated(true);
-      }
-      catch(e) {
-        setIsAuthenticated(false);
-      }
-  }
-
   const signOutFromApp = async() => {
     setIsAuthenticated(false);
     setChurchName('');
@@ -66,11 +30,22 @@ export default function SNavbar() {
   }
 
   useEffect(() => {
-    const getUInfo = async() => {
-      await getUserAttributes();
-    }
+    const getUserInfo = async() => {
+      const uInfo = new UserInfo();
 
-    getUInfo();
+      await uInfo.loadMemberInfo();
+
+      if (uInfo.sub && uInfo.sub.length > 0) {
+        setUserInitials(uInfo.getInitials());
+        setChurchName(uInfo.churchName);
+        setIsAuthenticated(true);
+      }
+      else {
+        setIsAuthenticated(false);
+      }
+    }    
+
+    getUserInfo();
   }, []);
   
   

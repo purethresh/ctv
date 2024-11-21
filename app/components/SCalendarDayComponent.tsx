@@ -4,6 +4,9 @@ import Badge from '@mui/material/Badge';
 
 const RESTRICTED_COLOR = '#FCE3E3';
 
+// TODO JLS
+// Restriced isn't being used, but I'm keeping it for reference. Remove at some point
+
 // Custom day Render
 export default function SCalendarDayComponent(props: PickersDayProps<Moment> & { restrictedDays?: number[], scheduledDays?: number[] }) {
     const { restrictedDays = [], scheduledDays = [], day, outsideCurrentMonth, ...other } = props;

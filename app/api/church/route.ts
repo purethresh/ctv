@@ -20,7 +20,6 @@ export async function GET(req:NextRequest) {
             }
         }
         catch (e:any) {
-            console.error(e);
             result = { error: e.message  };
         }
     }
