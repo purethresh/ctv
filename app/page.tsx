@@ -9,7 +9,7 @@ import SChurchCalendar from "./components/SChurchCalendar";
 import { getDefaultSunday } from "./lib/dateUtils";
 import { useState } from "react";
 import { useEffect } from "react";
-import SServices from "./components/SServices";
+import SAllServices from "./components/SAllServices";
 import UserInfo from "./lib/UserInfo";
 
 Amplify.configure(outputs);
@@ -45,7 +45,7 @@ export default function App() {
     <main>
       <SNavbar userInfo={userInfo} onSignout={onSignout} />
       <SChurchCalendar defaultDate={selectedDay} onDateChanged={onDateChange} churchId={userInfo.church_id} />
-      <SServices serviceDate={selectedDay} churchId={userInfo.church_id} />
+      <SAllServices serviceDate={selectedDay} churchId={userInfo.church_id} />
     </main>
   )
 }

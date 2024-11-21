@@ -1,4 +1,4 @@
-interface SServicesProp {
+interface SAllServicesProp {
     serviceDate?: string;
     churchId?: string;
 }
