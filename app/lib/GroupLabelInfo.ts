@@ -7,13 +7,30 @@ export default class GroupLabelInfo extends LabelInfo {
     // Array of child labels
     childLabels:Array<LabelInfo>;
 
-    constructor(label_id:string | undefined = undefined, labelName:string | undefined = undefined, labelDescription:string | undefined = undefined, forSchedule:string | undefined = undefined ) {
-        super(label_id, labelName, labelDescription, forSchedule);
+    constructor(info:object = {}) {
+        super(info);
         this.isGroup = true;
         this.childLabels = [];
     }
 
     addChildLabel(label:LabelInfo) {
         this.childLabels.push(label);
+    }
+
+    sortChildLabels() {
+        
+        // Sort the child labels
+        this.childLabels.sort((a:LabelInfo, b:LabelInfo) => {
+            if (a.labelName < b.labelName) {
+                return -1;
+            }
+            if (a.labelName > b.labelName) {
+                return 1;
+            }
+            return 0;
+        });
+        
+        // Also sort scheduled
+        this.sortScheduled();
     }
 }

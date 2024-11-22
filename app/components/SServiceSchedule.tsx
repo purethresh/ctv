@@ -1,20 +1,15 @@
 import { SServiceScheduleProps } from '../props/SServiceScheduleProps';
 import { useEffect, useState } from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box } from '@mui/material';
 import ChurchLabels from '../lib/ChurchLabels';
-
-// TODO JLS HERE
-//
-// 1. Get ALL labels for the church. Make a map, so we know the parent (Group by parent)
-// 2. Get the scheduled labels
-// 3. Create a label for each group (and pass in the label info)
-
+import GroupLabelInfo from '../lib/GroupLabelInfo';
+import SLabelGroup from './SLabelGroup';
 
 // Custom day Render
 export default function SServiceSchedule(props:SServiceScheduleProps) {
     let [shouldShowName, setShouldShowName] = useState<boolean>(false);
     let [shouldShowInfo, setShouldShowInfo] = useState<boolean>(false);
-    let [churchLabelInfo, setChurchLabelInfo] = useState<ChurchLabels>(new ChurchLabels());
+    let [groupList, setGroupList] = useState<GroupLabelInfo[]>([]);
 
   useEffect(() => {
     const updateShowElements = async () => {
@@ -29,10 +24,11 @@ export default function SServiceSchedule(props:SServiceScheduleProps) {
 
         // Load the scheduled labels
         await lblInfo.fetchScheduledLabels(props.serviceId || '');
-        setChurchLabelInfo(lblInfo);
-
-        // TODO JLS, need to create the groups.
-        // Then render a ScheduledLabel component for each group
+        // setChurchLabelInfo(lblInfo);
+        
+        // Create label groups
+        const groups = lblInfo.getLabelGroups();
+        setGroupList(groups);
     }
     
     updateShowElements();
@@ -42,7 +38,10 @@ export default function SServiceSchedule(props:SServiceScheduleProps) {
         <Box>
             <Box style={{display:shouldShowName ? 'block' : 'none'}}>{props.serviceName}</Box>
             <Box style={{display:shouldShowInfo ? 'block' : 'none'}}>{props.serviceInfo}</Box>
-            <Box>List of Labels</Box>
+            {groupList.map((item, index) => (
+              <SLabelGroup key={index} groupInfo={item} />
+            ))}
+
         </Box>            
     );
 }
