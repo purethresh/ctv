@@ -2,11 +2,14 @@ import GroupLabelInfo from "./GroupLabelInfo";
 import LabelInfo from "./LabelInfo";
 
 export default class ChurchLabels {
+    currentChurchId:string = '';
     labelMap:Map<string, LabelInfo> = new Map<string, LabelInfo>();
     scheduledMap:Map<string, any> = new Map<string, any>();
 
 
     async fetchAllLabels(churchId:string) {
+        this.currentChurchId = churchId;
+        
         // Clear the list before loading
         this.labelMap.clear();
 

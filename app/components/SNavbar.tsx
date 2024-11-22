@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
-import { AppBar } from "@mui/material";
+import { AppBar, Menu, MenuItem, Link } from "@mui/material";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -17,6 +17,7 @@ export default function SNavbar(props: SNavBarProps) {
   let [churchName, setChurchName] = useState<string>('');
   let [userInitials, setUserInitials] = useState<string>('');
   let [userInfo, setUserInfo] = useState<UserInfo>(new UserInfo());
+  const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
 
   const router = useRouter();
 
@@ -44,7 +45,14 @@ export default function SNavbar(props: SNavBarProps) {
     setChurchName(updatedInfo.churchName);
   }, [props.userInfo]);
   
-  
+  const onMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setMenuAnchor(event.currentTarget);
+  }
+
+  const onMenuClose = () => {
+    setMenuAnchor(null);
+  }
+
   return (
     <div>
     <Box sx={{ flexGrow: 1 }}>
@@ -55,9 +63,23 @@ export default function SNavbar(props: SNavBarProps) {
             aria-label="menu"
             sx={{ mr: 2 }}
             style={{display:isAuthenticated ? 'block' : 'none'}}
+            onClick={onMenuOpen}
           >
             <MenuIcon />
           </IconButton>
+          <Menu
+            id="app-menu"
+            open={Boolean(menuAnchor)}
+            anchorEl={menuAnchor}
+            anchorOrigin={{vertical: 'top', horizontal: 'left'}}
+            transformOrigin={{vertical: 'top', horizontal: 'left'}}
+            onClose={onMenuClose}
+            keepMounted
+            >
+            <MenuItem>
+              <Link href="/schedule/labels" underline="none">Labels</Link>
+            </MenuItem>
+          </Menu>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             {churchName}
           </Typography>

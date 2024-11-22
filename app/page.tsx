@@ -14,19 +14,6 @@ import UserInfo from "./lib/UserInfo";
 
 Amplify.configure(outputs);
 
-// TODO JLS - HERE
-//
-// For Labels,
-// Show labels for everything attached to the user.
-// - DO THIS FIRST
-// TODO JLS, need to figure out label permissions
-// DO I add a record for each child, or is it enough that a parent is tied. (Thinking about admin)
-//
-// If logged in, and a member of the admin label.
-// Allow the user to edit / add / delete members
-// If not admin, then they can edit their own info.
-
-
 export default function App() {
   let [selectedDay, setSelectedDay] = useState<string>(getDefaultSunday());
   let [userInfo, setUserInfo] = useState<UserInfo>(new UserInfo());
