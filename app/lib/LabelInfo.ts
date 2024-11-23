@@ -11,12 +11,18 @@ interface LabelInfoProps {
 }
 
 export default class LabelInfo {
+    // Array of child labels
+    childLabels:Array<LabelInfo>;
+
     label_id:string;
     labelName:string;
     labelDescription:string;
     forSchedule:boolean;
     isGroup:boolean;
     owner_id:string;
+
+    isMemberOfLabel:boolean;
+    isOwnerOfLabel:boolean;
 
     scheduled:any[];
 
@@ -37,12 +43,29 @@ export default class LabelInfo {
 
         this.isGroup = false;
         this.scheduled = [];
+        this.childLabels = [];
+
+        this.isMemberOfLabel = false;
+        this.isOwnerOfLabel = false;
     }
 
-    sortScheduled() {
-        // TODO JLS
-        // For now ignoring
-        // I expect only 1 scheduled person per label
+    addChildLabel(label:LabelInfo) {
+        this.childLabels.push(label);
+        this.isGroup = true;
     }
+
+    sortChildLabels() {        
+        // Sort the child labels
+        this.childLabels.sort((a:LabelInfo, b:LabelInfo) => {
+            if (a.labelName < b.labelName) {
+                return -1;
+            }
+            if (a.labelName > b.labelName) {
+                return 1;
+            }
+            return 0;
+        });        
+    }
+
 
 }
