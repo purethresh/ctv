@@ -25,7 +25,7 @@ export default function SChurchCalendar(props: SCalendarProps) {
     if (props.churchId.length === 0) return [];
 
     var result = [];
-    const res = await fetch(`/api/services?church_id=${props.churchId}&year=${dt.getFullYear()}&month=${dt.getMonth()+1}`, { cache: 'force-cache' });
+    const res = await fetch(`/api/services?church_id=${props.churchId}&year=${dt.getFullYear()}&month=${dt.getMonth()+1}`, { cache: 'force-cache' });    
     result = await res.json();
 
     return result;
@@ -58,7 +58,7 @@ export default function SChurchCalendar(props: SCalendarProps) {
   }
 
   useEffect(() => {    
-    getServiceInfo(new Date(defaultDay));
+    getServiceInfo(moment(defaultDay).toDate());
   }, [props.churchId]);  
 
   return (
