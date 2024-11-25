@@ -2,14 +2,14 @@ import { SServiceScheduleProps } from '../props/SServiceScheduleProps';
 import { useEffect, useState } from 'react';
 import { Box } from '@mui/material';
 import ChurchLabels from '../lib/ChurchLabels';
-import GroupLabelInfo from '../lib/GroupLabelInfo';
 import SLabelGroup from './SLabelGroup';
+import LabelInfo from '../lib/LabelInfo';
 
 // Custom day Render
 export default function SServiceSchedule(props:SServiceScheduleProps) {
     let [shouldShowName, setShouldShowName] = useState<boolean>(false);
     let [shouldShowInfo, setShouldShowInfo] = useState<boolean>(false);
-    let [groupList, setGroupList] = useState<GroupLabelInfo[]>([]);
+    let [groupList, setGroupList] = useState<LabelInfo[]>([]);
 
   useEffect(() => {
     const updateShowElements = async () => {

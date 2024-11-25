@@ -15,19 +15,20 @@ export const alignTimeToDay = (mill:number) : number => {
 
 export const getDefaultSunday = () : string => {
   // Get right now in milliseconds
-  const nowDate = new Date();
+  var nowDate = new Date();
   var nowMill = nowDate.getTime();
   nowMill = alignTimeToDay(nowMill);
 
   // Now figure out how much we need to move forward
   const dayOfWeek = nowDate.getDay();
-  var daysToMove = 6 - dayOfWeek;
-  if (daysToMove === 6) {
+  var daysToMove = 7 - dayOfWeek;
+  if (daysToMove === 7) {
     daysToMove = 0;
   }
   nowMill = nowMill + (daysToMove * 1000 * 60 * 60 * 24);
 
   // Convert to a string
   const targetDay = new Date(nowMill);
-  return `${targetDay.getFullYear()}-${targetDay.getMonth() + 1}-${targetDay.getDate() + 1}`;  
+  
+  return `${targetDay.getFullYear()}-${targetDay.getMonth() + 1}-${targetDay.getDate()}`;  
 }

@@ -4,6 +4,7 @@ import { NextRequest } from 'next/server';
 
 const USER_SUB_ID = 'sub';
 const CHURCH_ID = 'church_id';
+const LABEL_ID = 'label_id';
 
 export async function GET(req: NextRequest) {
     var result = {error: 'nothing happened'};
@@ -17,6 +18,11 @@ export async function GET(req: NextRequest) {
     if (params.has(USER_SUB_ID)) {
         query = 'SELECT * FROM members WHERE sub = ?';
         queryParams = [params.get(USER_SUB_ID)];
+    }
+    else if (params.has(LABEL_ID)) {
+        // Get all tne members for a label
+        query = 'SELECT members.member_id, members.first, members.last FROM dbname.members JOIN dbname.label_member ON dbname.members.member_id = dbname.label_member.member_id where dbname.label_member.label_id=?';
+        queryParams = [params.get(LABEL_ID), params.get(CHURCH_ID)];
     }
     else if (params.has(CHURCH_ID)) {
         // Get all tne members for a church

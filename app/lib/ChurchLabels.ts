@@ -126,6 +126,7 @@ export default class ChurchLabels {
     }
 
     getMemberLabels() : LabelInfo[] {
+        this.resetMembership();
 
         // Loop through the member labels and set flags for all labels
         for (var i=0; i<this.memberLabels.length; i++) {

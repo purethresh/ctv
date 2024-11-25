@@ -8,12 +8,14 @@ interface LabelInfoProps {
     labelDescription?:string;
     forSchedule?:string;
     owner_id?:string;
+    church_id?:string;
 }
 
 export default class LabelInfo {
     // Array of child labels
     childLabels:Array<LabelInfo>;
 
+    church_id:string;
     label_id:string;
     labelName:string;
     labelDescription:string;
@@ -33,6 +35,7 @@ export default class LabelInfo {
         this.labelName = lInfo.labelName || '';
         this.labelDescription = lInfo.labelDescription || '';
         this.owner_id = lInfo.owner_id || '';
+        this.church_id = lInfo.church_id || '';
 
         if (lInfo.forSchedule == undefined) {
             this.forSchedule = false;

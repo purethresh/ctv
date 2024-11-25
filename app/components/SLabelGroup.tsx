@@ -27,7 +27,7 @@ export default function SLabelGroup(props:SLabelGroupProps) {
         <>
             <Box style={{display:shouldShowTitle ? 'block' : 'none'}}>{props.groupInfo?.labelName}</Box>
             {childLabels.map((item, index) => (
-              <SLabel key={index} labelInfo={item} />
+              <SLabel key={index} labelInfo={item} admin={true} compact={true} />
             ))}
         </>
     );
