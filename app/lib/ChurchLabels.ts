@@ -78,13 +78,30 @@ export default class ChurchLabels {
         }
     }
 
-    // async fetchMemberLabels(memberId:string) {
-        // this.memberLabels = [];
+    async fetchMemberLabels(memberId:string) {
+        // Get the scheduled labels for a specific service
+        const res = await fetch('/api/labels/member?member_id=' + memberId, { cache: 'force-cache' });
+        const data = await res.json();
 
-        // // Get the scheduled labels for a specific service
-        // const res = await fetch('/api/labels/member?member_id=' + memberId, { cache: 'force-cache' });
-        // this.memberLabels = (await res.json()) as IMemberLabel[];
-    // }
+        // Loop through the data and add member to each label
+        for (var i=0; i<data.length; i++) {
+            const d = data[i];
+            const lblId = d.label_id;
+            const member = new MinMemberInfo(d);
+            const isOwner = d.isOwnerOfLabel !== 'false';
+
+            // Get the label by id
+            const lbl = this.labelMap.get(lblId);
+            if (lbl) {
+                lbl.addMember(member);
+
+                // If owner, add it as an owner
+                if (isOwner) {
+                    lbl.addOwner(member);
+                }
+            }
+        }
+    }
 
     getLabelGroups() : LabelInfo[] {
         var resultMap:Map<string, LabelInfo> = new Map<string, LabelInfo>();
@@ -118,76 +135,6 @@ export default class ChurchLabels {
         return result;
     }
 
-    // getMemberLabels() : LabelInfo[] {
-    //     this.resetMembership();
 
-    //     // TODO JLS - HERE !! this logic is wrong
-    //     // Only members of linked labels
-    //     // But owner of all child labels
-
-    //     // Loop through the member labels and set flags for all labels
-    //     for (var i=0; i<this.memberLabels.length; i++) {
-    //         const memberInfo = this.memberLabels[i];
-    //         this.setMemberOfLabelAndChildren(memberInfo.label_id || '', memberInfo.isOwnerOfLabel !== 'false');
-    //     }
-
-    //     // Now get the labels that are members
-    //     var result:LabelInfo[] = [];
-    //     this.labelMap.forEach((value:any, key:string) => {
-    //         if (value.isMemberOfLabel) {
-    //             value.sortChildLabels();
-    //             result.push(value);
-    //         }
-    //     });
-
-    //     result.sort((a, b) => {
-    //         if (a.labelName < b.labelName) {
-    //             return -1;
-    //         }
-    //         if (a.labelName > b.labelName) {
-    //             return 1;
-    //         }
-    //         return 0;
-    //     });        
-        
-    //     return result;
-    // }
-
-    // isAdministrator() : boolean {
-    //     var result = false;
-
-    //     // Get the root label
-    //     if (this.labelRoot) {
-    //         if (this.labelRoot.isOwnerOfLabel) {
-    //             result = true;
-    //         }
-    //     }
-
-    //     return result;
-    // }
-
-    // private setMemberOfLabelAndChildren(labelId:string, isOwner:boolean) {
-    //     if (labelId.length <= 0) {
-    //         return;
-    //     }
-
-    //     const lbl = this.labelMap.get(labelId);
-    //     if (lbl) {
-    //         lbl.isMemberOfLabel = true;
-    //         lbl.isOwnerOfLabel = lbl.isOwnerOfLabel || isOwner;
-
-    //         // Now mark the same for all the children
-    //         for (var i=0; i<lbl.childLabels.length; i++) {
-    //             this.setMemberOfLabelAndChildren(lbl.childLabels[i].label_id, isOwner);
-    //         }
-    //     }
-    // }
-
-    // private resetMembership() {
-    //     this.labelMap.forEach((value:any, key:string) => {
-    //         value.isMemberOfLabel = false;
-    //         value.isOwnerOfLabel = false;
-    //     });
-    // }
 
 }
