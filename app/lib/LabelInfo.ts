@@ -1,8 +1,10 @@
 
+import { MinMemberInfo } from "./MinMemberInfo";
+
 // This is a label.
 // It could have multiple people assigned to it
 
-interface LabelInfoProps {
+interface ILabelInfo {
     label_id?:string;
     labelName?:string;
     labelDescription?:string;
@@ -12,53 +14,55 @@ interface LabelInfoProps {
 }
 
 export default class LabelInfo {
-    // Array of child labels
-    childLabels:Array<LabelInfo>;
-
+    // Label Properties
     church_id:string;
     label_id:string;
     labelName:string;
     labelDescription:string;
     forSchedule:boolean;
-    isGroup:boolean;
     owner_id:string;
 
-    isMemberOfLabel:boolean;
-    isOwnerOfLabel:boolean;
+    // Labels can have both a parent and children
+    parentLabel:LabelInfo | null;
+    childLabels:LabelInfo[];
 
-    scheduled:any[];
+    // Labels can have members
+    members:MinMemberInfo[];
 
-    constructor(info:object = {}) {
-        const lInfo = info as LabelInfoProps;
+    // Labels can have owners
+    owners:MinMemberInfo[];
 
-        this.label_id = lInfo.label_id || '';
-        this.labelName = lInfo.labelName || '';
-        this.labelDescription = lInfo.labelDescription || '';
-        this.owner_id = lInfo.owner_id || '';
-        this.church_id = lInfo.church_id || '';
+    // List of people scheduled for this label
+    scheduled:MinMemberInfo[];
 
-        if (lInfo.forSchedule == undefined) {
+    constructor(info:ILabelInfo = {}) {
+        // const lInfo = info as LabelInfoProps;
+
+        this.label_id = info.label_id || '';
+        this.labelName = info.labelName || '';
+        this.labelDescription = info.labelDescription || '';
+        this.owner_id = info.owner_id || '';
+        this.church_id = info.church_id || '';
+
+        if (info.forSchedule == undefined) {
             this.forSchedule = false;
         }
         else {
-            this.forSchedule = lInfo.forSchedule !== 'false';
+            this.forSchedule = info.forSchedule !== 'false';
         }
 
-        this.isGroup = false;
-        this.scheduled = [];
+        this.parentLabel = null;
         this.childLabels = [];
-
-        this.isMemberOfLabel = false;
-        this.isOwnerOfLabel = false;
+        this.members = [];
+        this.owners = [];
+        this.scheduled = [];
     }
 
     addChildLabel(label:LabelInfo) {
+        // First add it to the child list
         this.childLabels.push(label);
-        this.isGroup = true;
-    }
 
-    sortChildLabels() {        
-        // Sort the child labels
+        // Sort
         this.childLabels.sort((a:LabelInfo, b:LabelInfo) => {
             if (a.labelName < b.labelName) {
                 return -1;
@@ -67,8 +71,33 @@ export default class LabelInfo {
                 return 1;
             }
             return 0;
-        });        
+        });
+
+        // Link parent
+        label.parentLabel = this;
     }
 
+    addMember(member:MinMemberInfo) {        
+        this.members.push(member);
+    }
 
+    addOwner(owner:MinMemberInfo) {
+        this.owners.push(owner);
+
+        // Loop through and add this as an owner to all the children too
+        this.childLabels.forEach((child) => {
+            child.addOwner(owner);
+        });
+    }
+
+    clearScheduled() {
+        this.scheduled = [];
+        for(var i=0; i<this.childLabels.length; i++) {
+            this.childLabels[i].clearScheduled();
+        }
+    }
+
+    addScheduled(scheduled:MinMemberInfo) {
+        this.scheduled.push(scheduled);
+    }
 }

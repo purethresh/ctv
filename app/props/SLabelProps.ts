@@ -4,4 +4,5 @@ export interface SLabelProps {
     labelInfo?:LabelInfo;
     compact?:boolean;
     admin?:boolean;
+    onClick?:(labelInfo:LabelInfo) => void;
 }

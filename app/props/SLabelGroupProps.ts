@@ -1,5 +1,5 @@
-import GroupLabelInfo from '../lib/GroupLabelInfo';
+import LabelInfo from '../lib/LabelInfo';
 
 export interface SLabelGroupProps {
-    groupInfo?:GroupLabelInfo;
+    groupInfo?:LabelInfo;
 }

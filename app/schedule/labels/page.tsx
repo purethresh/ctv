@@ -19,15 +19,6 @@ export default function LabelPage() {
   // Show My Labels (as Owner)
   // Show selected label, where we can edit the label
 
-  const getChurchMembers = async(churchId:string) => {
-      const res = await fetch('/api/member?church_id=' + churchId, { cache: 'force-cache' });
-      const data = await res.json();
-
-      if (data) {
-        setMemberList(data);
-      }
-  }
-
   const loadLablesForMember = async(cId:string, memberId:string) => {
     if (cId.length > 0) {
       const allLabels = new ChurchLabels();
@@ -35,22 +26,9 @@ export default function LabelPage() {
 
       await allLabels.fetchMemberLabels(memberId);
       const memberLabels = allLabels.getMemberLabels();
-      const isAdmin = allLabels.isAdministrator();
-
-      if (isAdmin) {
-        getChurchMembers(cId);
-      }
 
       setMemberLabels(memberLabels);
-      setShowMemberList(isAdmin);      
     }
-  }
-
-  const handleMemberChange = async (event: SelectChangeEvent) => {
-    const memberId = event.target.value as string
-    setSelectedMember(memberId);
-
-    await loadLablesForMember(churchId, memberId);
   }
 
   useEffect(() => {
@@ -68,17 +46,12 @@ export default function LabelPage() {
 
   return (
     <>
-      <FormControl style={{display:showMemberList ? 'block' : 'none'}}>
-        <InputLabel id="member-select">Church Members</InputLabel>
-        <Select labelId="member-select" value={selectedMember} onChange={handleMemberChange}>
-          {memberList.map((item, index) => (
-            <MenuItem value={item.member_id} key={index}>{item.first + ' ' + item.last}</MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+    <div>My Labels</div>
       {memberLabels.map((item, index) => (
-        <SLabel key={index} labelInfo={item} />
+        <SLabel key={index} labelInfo={item} compact={true} />
       ))}
+    <div>My Owned Labes</div>
+    
     </>
   );
 

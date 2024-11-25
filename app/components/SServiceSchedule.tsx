@@ -24,7 +24,6 @@ export default function SServiceSchedule(props:SServiceScheduleProps) {
 
         // Load the scheduled labels
         await lblInfo.fetchScheduledLabels(props.serviceId || '');
-        // setChurchLabelInfo(lblInfo);
         
         // Create label groups
         const groups = lblInfo.getLabelGroups();
@@ -39,7 +38,7 @@ export default function SServiceSchedule(props:SServiceScheduleProps) {
             <Box style={{display:shouldShowName ? 'block' : 'none'}}>{props.serviceName}</Box>
             <Box style={{display:shouldShowInfo ? 'block' : 'none'}}>{props.serviceInfo}</Box>
             {groupList.map((item, index) => (
-              <SLabelGroup key={index} groupInfo={item} />
+              <SLabelGroup key={item.label_id} groupInfo={item} />
             ))}
 
         </Box>            

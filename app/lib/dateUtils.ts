@@ -27,8 +27,10 @@ export const getDefaultSunday = () : string => {
   }
   nowMill = nowMill + (daysToMove * 1000 * 60 * 60 * 24);
 
-  // Convert to a string
+  // Convert to a string  
   const targetDay = new Date(nowMill);
-  
-  return `${targetDay.getFullYear()}-${targetDay.getMonth() + 1}-${targetDay.getDate()}`;  
+  const strMonth = String(targetDay.getMonth() + 1).padStart(2, '0');
+  const strDay = String(targetDay.getDate()).padStart(2, '0');
+
+  return `${targetDay.getFullYear()}-${strMonth}-${strDay}`;  
 }

@@ -1,4 +1,5 @@
 import LabelInfo from "./LabelInfo";
+import { MinMemberInfo } from "./MinMemberInfo";
 
 interface IMemberLabel {
     isOwnerOfLabel?:string;
@@ -6,17 +7,15 @@ interface IMemberLabel {
 };
 
 export default class ChurchLabels {
-    currentChurchId:string = '';
+    churchId:string = '';
     labelMap:Map<string, LabelInfo> = new Map<string, LabelInfo>();
     labelRoot:LabelInfo | null = null;
-    scheduledMap:Map<string, any> = new Map<string, any>();
-    memberLabels:IMemberLabel[] = [];
 
     async fetchAllLabels(churchId:string) {
-        this.currentChurchId = churchId;
-        
-        // Clear the list before loading
+        this.churchId = churchId;
+
         this.labelMap.clear();
+        this.labelRoot = null;
 
         // If no church ID, then return
         if (churchId.length <= 0) {
@@ -52,7 +51,9 @@ export default class ChurchLabels {
 
     async fetchScheduledLabels(serviceId:string) {
         // Clear the list before loading
-        this.scheduledMap.clear();
+        if (this.labelRoot) {
+            this.labelRoot.clearScheduled();
+        }
 
         // If no service id, then return
         if (serviceId.length <= 0) {
@@ -65,53 +66,45 @@ export default class ChurchLabels {
 
         if (data) {
             for (let i=0; i<data.length; i++) {
-                this.scheduledMap.set(data[i].label_id, data[i]);
+                const sInfo = data[i];
+                // Get the label by id
+                const lbl = this.labelMap.get(sInfo.label_id);
+
+                // Now add a scheduled person to the label
+                if (lbl) {
+                    lbl.addScheduled(new MinMemberInfo(sInfo));
+                }
             }
         }
     }
 
-    async fetchMemberLabels(memberId:string) {
-        this.memberLabels = [];
+    // async fetchMemberLabels(memberId:string) {
+        // this.memberLabels = [];
 
-        // Get the scheduled labels for a specific service
-        const res = await fetch('/api/labels/member?member_id=' + memberId, { cache: 'force-cache' });
-        this.memberLabels = (await res.json()) as IMemberLabel[];
-    }
+        // // Get the scheduled labels for a specific service
+        // const res = await fetch('/api/labels/member?member_id=' + memberId, { cache: 'force-cache' });
+        // this.memberLabels = (await res.json()) as IMemberLabel[];
+    // }
 
     getLabelGroups() : LabelInfo[] {
-        const resultMap:Map<string, LabelInfo> = new Map<string, LabelInfo>();
+        var resultMap:Map<string, LabelInfo> = new Map<string, LabelInfo>();
 
-        // Loop through the people scheduled and add them to the labels
-        this.scheduledMap.forEach((value:any, key:string) => {
-            const label = this.labelMap.get(value.label_id);
-            if (label) {
-                label.scheduled.push(value);
-            }
-        });
-
-        // Loop through the labels, create a group for every scheduled label
+        // Loop through the labels and add parents of scheduled labels
         this.labelMap.forEach((value:any, key:string) => {
             if (value.forSchedule) {
-                const owner = value.owner_id;
-                if (!resultMap.has(owner)) {
-                    const ownerLbl = this.labelMap.get(owner);
-                    const group = new LabelInfo(ownerLbl);
-                    resultMap.set(owner, group);
+                var parent = value.parentLabel;
+                if (parent) {
+                    resultMap.set(parent.label_id, parent);
                 }
-
-                // Now add it to the group
-                const group = resultMap.get(owner);
-                group?.addChildLabel(value);
             }
         });
 
         var result:LabelInfo[] = [];
         resultMap.forEach((value:any, key:string) => {
-            // Sort the children and add them to the result
-            value.sortChildLabels();
             result.push(value);
         });
 
+        // Now sort the result
         result.sort((a, b) => {
             if (a.labelName < b.labelName) {
                 return -1;
@@ -125,72 +118,76 @@ export default class ChurchLabels {
         return result;
     }
 
-    getMemberLabels() : LabelInfo[] {
-        this.resetMembership();
+    // getMemberLabels() : LabelInfo[] {
+    //     this.resetMembership();
 
-        // Loop through the member labels and set flags for all labels
-        for (var i=0; i<this.memberLabels.length; i++) {
-            const memberInfo = this.memberLabels[i];
-            this.setMemberOfLabelAndChildren(memberInfo.label_id || '', memberInfo.isOwnerOfLabel !== 'false');
-        }
+    //     // TODO JLS - HERE !! this logic is wrong
+    //     // Only members of linked labels
+    //     // But owner of all child labels
 
-        // Now get the labels that are members
-        var result:LabelInfo[] = [];
-        this.labelMap.forEach((value:any, key:string) => {
-            if (value.isMemberOfLabel) {
-                value.sortChildLabels();
-                result.push(value);
-            }
-        });
+    //     // Loop through the member labels and set flags for all labels
+    //     for (var i=0; i<this.memberLabels.length; i++) {
+    //         const memberInfo = this.memberLabels[i];
+    //         this.setMemberOfLabelAndChildren(memberInfo.label_id || '', memberInfo.isOwnerOfLabel !== 'false');
+    //     }
 
-        result.sort((a, b) => {
-            if (a.labelName < b.labelName) {
-                return -1;
-            }
-            if (a.labelName > b.labelName) {
-                return 1;
-            }
-            return 0;
-        });        
+    //     // Now get the labels that are members
+    //     var result:LabelInfo[] = [];
+    //     this.labelMap.forEach((value:any, key:string) => {
+    //         if (value.isMemberOfLabel) {
+    //             value.sortChildLabels();
+    //             result.push(value);
+    //         }
+    //     });
+
+    //     result.sort((a, b) => {
+    //         if (a.labelName < b.labelName) {
+    //             return -1;
+    //         }
+    //         if (a.labelName > b.labelName) {
+    //             return 1;
+    //         }
+    //         return 0;
+    //     });        
         
-        return result;
-    }
+    //     return result;
+    // }
 
-    isAdministrator() : boolean {
-        var result = false;
+    // isAdministrator() : boolean {
+    //     var result = false;
 
-        // Get the root label
-        if (this.labelRoot) {
-            if (this.labelRoot.isOwnerOfLabel) {
-                result = true;
-            }
-        }
+    //     // Get the root label
+    //     if (this.labelRoot) {
+    //         if (this.labelRoot.isOwnerOfLabel) {
+    //             result = true;
+    //         }
+    //     }
 
-        return result;
-    }
+    //     return result;
+    // }
 
-    private setMemberOfLabelAndChildren(labelId:string, isOwner:boolean) {
-        if (labelId.length <= 0) {
-            return;
-        }
+    // private setMemberOfLabelAndChildren(labelId:string, isOwner:boolean) {
+    //     if (labelId.length <= 0) {
+    //         return;
+    //     }
 
-        const lbl = this.labelMap.get(labelId);
-        if (lbl) {
-            lbl.isMemberOfLabel = true;
-            lbl.isOwnerOfLabel = lbl.isOwnerOfLabel || isOwner;
+    //     const lbl = this.labelMap.get(labelId);
+    //     if (lbl) {
+    //         lbl.isMemberOfLabel = true;
+    //         lbl.isOwnerOfLabel = lbl.isOwnerOfLabel || isOwner;
 
-            // Now mark the same for all the children
-            for (var i=0; i<lbl.childLabels.length; i++) {
-                this.setMemberOfLabelAndChildren(lbl.childLabels[i].label_id, isOwner);
-            }
-        }
-    }
+    //         // Now mark the same for all the children
+    //         for (var i=0; i<lbl.childLabels.length; i++) {
+    //             this.setMemberOfLabelAndChildren(lbl.childLabels[i].label_id, isOwner);
+    //         }
+    //     }
+    // }
 
-    private resetMembership() {
-        this.labelMap.forEach((value:any, key:string) => {
-            value.isMemberOfLabel = false;
-            value.isOwnerOfLabel = false;
-        });
-    }
+    // private resetMembership() {
+    //     this.labelMap.forEach((value:any, key:string) => {
+    //         value.isMemberOfLabel = false;
+    //         value.isOwnerOfLabel = false;
+    //     });
+    // }
 
 }
