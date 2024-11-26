@@ -4,4 +4,5 @@ export interface SCreateLabelProp {
     parentLabel?: LabelInfo;
     createrId?: string;
     churchId?: string;
+    onReload?: () => void;
 }

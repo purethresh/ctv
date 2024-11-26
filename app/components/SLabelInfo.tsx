@@ -6,6 +6,7 @@ import SCreateLabel from "./SCreateLabel";
 
 // TODO JLS
 // remove user from label (both as member and owner)
+// Allow edit of label description
 
 export default function SLabelInfo(props:SLabelInfoProps) {
     let [labelName, setLabelName] = useState<string>('');
@@ -31,7 +32,7 @@ export default function SLabelInfo(props:SLabelInfoProps) {
             <SMemberList labelInfo={props.labelInfo} memberList={props.memberList} title="Members of" />
             <SMemberList labelInfo={props.labelInfo} memberList={props.ownerList} title="Administrators of" />
             <br />
-            <SCreateLabel parentLabel={props.labelInfo} createrId={creator_id} churchId={churchId} />
+            <SCreateLabel parentLabel={props.labelInfo} createrId={creator_id} churchId={churchId} onReload={props.onReload} />
         </Box>
     );
 }

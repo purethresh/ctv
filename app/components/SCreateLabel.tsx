@@ -7,14 +7,6 @@ import { SCreateLabelProp } from "../props/SCreateLabelProp";
 import LabelInfo from '../lib/LabelInfo';
 import { v4 } from 'uuid';
 
-
-// TODO JLS
-// Create a control here
-// Show parent
-// Text for label name
-// Text for label description
-// Button to add label
-
 export default function SCreateLabel(props: SCreateLabelProp) {
     let [parentLabel, setParentLabel] = useState<LabelInfo | undefined>(props.parentLabel);
     let [labelName, setLabelName] = useState<string>('');
@@ -56,9 +48,15 @@ export default function SCreateLabel(props: SCreateLabelProp) {
         const url = `/api/labels/member?label_id=${lblId}&labelName=${lName}&labelDescription=${lDescription}&church_id=${cId}&forSchedule=${fSchedule}&owner_id=${oId}`;
         const result = await fetch(url, { method:"POST"});
         var rs = await result.json();
+        
+        if (props.onReload) {
+            props.onReload();
+        }
 
-        // TODO JLS
-        // Need to update the data with the new label
+        // Clear the form
+        setLabelName('');
+        setLabelDescription('');
+        setForSchedule(false);
     }
 
     useEffect(() => {

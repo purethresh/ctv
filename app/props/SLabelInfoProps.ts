@@ -7,4 +7,5 @@ export interface SLabelInfoProps {
     ownerList?:MinMemberInfo[];
     userId?:string;
     churchId?:string;
+    onReload?:() => void;
 }

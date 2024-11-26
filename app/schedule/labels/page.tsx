@@ -42,12 +42,18 @@ export default function LabelPage() {
     }
   }
 
-  useEffect(() => {
-    const getUserInfo = async() => {
+  const reloadLabelInfo = async() => {
+    await updateUserInfo();
+  }
+
+  const updateUserInfo = async() => {
       const uInfo = new UserInfo();
       await uInfo.loadMemberInfo();
       setUserId(uInfo.member_id);
       setChurchId(uInfo.church_id);
+
+      // Turn off caching
+      churchLabels.shouldUseCache(false);
 
       // Now load all the labels for the church
       await churchLabels.fetchAllLabels(uInfo.church_id);
@@ -68,9 +74,13 @@ export default function LabelPage() {
       // Get the labels this user is an owner of
       const ownerLabels = churchLabels.getOwnership(uInfo.member_id);
       setOwnerLabels(ownerLabels);
-    }
 
-    getUserInfo();
+      // Turn caching back on
+      churchLabels.shouldUseCache(true);
+  }
+
+  useEffect(() => {
+    updateUserInfo();
   }, []);  
 
   return (
@@ -80,7 +90,7 @@ export default function LabelPage() {
       <div>Labels I Administer</div>
       <SLabelList labelList={ownerLabels} onClick={onLabelClick} seletedLabel={selectedLabel}/>
       <div>Label Info goes here</div>
-      <SLabelInfo labelInfo={selectedInfo} memberList={memberList} ownerList={ownerList} userId={userId} churchId={churchId}/>
+      <SLabelInfo labelInfo={selectedInfo} memberList={memberList} ownerList={ownerList} userId={userId} churchId={churchId} onReload={reloadLabelInfo}/>
     </>
   );
 
