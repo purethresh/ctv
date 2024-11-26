@@ -50,7 +50,7 @@ export default function SAllMemberSelect(props:SAllMemberSelectProp) {
           onChange={handleChange}
         >
             {memberList.map((item, index) => (
-                <MenuItem value={item.member_id}>{item.first + " " + item.last}</MenuItem>
+                <MenuItem key={item.member_id} value={item.member_id}>{item.first + " " + item.last}</MenuItem>
             ))}                        
         </Select>
         <IconButton onClick={addPerson}>
