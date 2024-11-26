@@ -16,6 +16,8 @@ export default function LabelPage() {
   let [selectedInfo, setSelectedInfo] = useState<LabelInfo | undefined>(undefined);
   let [memberList, setMemberList] = useState<MinMemberInfo[]>([]);
   let [ownerList, setOwnerList] = useState<MinMemberInfo[]>([]);
+  let [userId, setUserId] = useState<string>('');
+  let [churchId, setChurchId] = useState<string>('');
 
   const onLabelClick = async (labelId:string) => {
     const lbl = churchLabels.labelMap.get(labelId);
@@ -44,6 +46,8 @@ export default function LabelPage() {
     const getUserInfo = async() => {
       const uInfo = new UserInfo();
       await uInfo.loadMemberInfo();
+      setUserId(uInfo.member_id);
+      setChurchId(uInfo.church_id);
 
       // Now load all the labels for the church
       await churchLabels.fetchAllLabels(uInfo.church_id);
@@ -76,7 +80,7 @@ export default function LabelPage() {
       <div>Labels I Administer</div>
       <SLabelList labelList={ownerLabels} onClick={onLabelClick} seletedLabel={selectedLabel}/>
       <div>Label Info goes here</div>
-      <SLabelInfo labelInfo={selectedInfo} memberList={memberList} ownerList={ownerList}/>
+      <SLabelInfo labelInfo={selectedInfo} memberList={memberList} ownerList={ownerList} userId={userId} churchId={churchId}/>
     </>
   );
 

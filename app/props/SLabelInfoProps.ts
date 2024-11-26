@@ -5,4 +5,6 @@ export interface SLabelInfoProps {
     labelInfo?:LabelInfo;
     memberList?:MinMemberInfo[];
     ownerList?:MinMemberInfo[];
+    userId?:string;
+    churchId?:string;
 }

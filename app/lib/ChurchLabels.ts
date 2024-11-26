@@ -122,8 +122,7 @@ export default class ChurchLabels {
 
     async fetchOwnersForLabel(labelId:string) {
         // Get the scheduled labels for a specific service
-        const res = await fetch('/api/labels/member?owner_id=' + labelId);
-        // const res = await fetch('/api/labels/member?owner_id=' + labelId, { cache: 'force-cache' });        // TODO JLS
+        const res = await fetch('/api/labels/member?owner_id=' + labelId, { cache: 'force-cache' });
         const data = await res.json();
 
         for(var i=0; i<data.length; i++) {
