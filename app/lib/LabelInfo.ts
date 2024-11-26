@@ -27,10 +27,10 @@ export default class LabelInfo {
     childLabels:LabelInfo[];
 
     // Labels can have members
-    members:MinMemberInfo[];
+    members:Map<string, MinMemberInfo>;
 
     // Labels can have owners
-    owners:MinMemberInfo[];
+    owners:Map<string, MinMemberInfo>;
 
     // List of people scheduled for this label
     scheduled:MinMemberInfo[];
@@ -53,8 +53,8 @@ export default class LabelInfo {
 
         this.parentLabel = null;
         this.childLabels = [];
-        this.members = [];
-        this.owners = [];
+        this.members = new Map<string, MinMemberInfo>();
+        this.owners = new Map<string, MinMemberInfo>();
         this.scheduled = [];
     }
 
@@ -77,18 +77,44 @@ export default class LabelInfo {
         label.parentLabel = this;
     }
 
-    addMember(member:MinMemberInfo) {        
-        this.members.push(member);
+    addMember(member:MinMemberInfo) {       
+        this.members.set(member.member_id, member); 
+    }
+
+    isMember(memberId:string) {
+        return this.members.has(memberId);
+    }
+
+    getMemberList() : MinMemberInfo[] {
+        var result:MinMemberInfo[] = [];
+        this.members.forEach((value:MinMemberInfo, key:string) => {
+            result.push(value);
+        });
+
+        return result;
+    }
+
+    isOwner(memberId:string) {
+        return this.owners.has(memberId);
     }
 
     addOwner(owner:MinMemberInfo) {
-        this.owners.push(owner);
+        this.owners.set(owner.member_id, owner);
 
         // Loop through and add this as an owner to all the children too
         this.childLabels.forEach((child) => {
             child.addOwner(owner);
         });
     }
+
+    getOwnerList() : MinMemberInfo[] {
+        var result:MinMemberInfo[] = [];
+        this.owners.forEach((value:MinMemberInfo, key:string) => {
+            result.push(value);
+        });
+
+        return result;
+    }   
 
     clearScheduled() {
         this.scheduled = [];

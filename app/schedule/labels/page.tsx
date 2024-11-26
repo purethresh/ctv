@@ -4,37 +4,43 @@ import React, { useState, useEffect } from 'react';
 import UserInfo from '@/app/lib/UserInfo';
 import ChurchLabels from '@/app/lib/ChurchLabels';
 import LabelInfo from '@/app/lib/LabelInfo';
-import SLabel from '@/app/components/SLabel';
-import { FormControl, InputLabel, Select, MenuItem, SelectChangeEvent } from '@mui/material';
+import SLabelList from '@/app/components/SLabelList';
+import SLabelInfo from '@/app/components/SLabelInfo';
+import { MinMemberInfo } from '@/app/lib/MinMemberInfo';
 
 export default function LabelPage() {
   let [churchLabels, setChurchLabels] = useState<ChurchLabels>(new ChurchLabels());
+  let [memberLabels, setMemberLabels] = useState<LabelInfo[]>([]);
+  let [ownerLabels, setOwnerLabels] = useState<LabelInfo[]>([]);
+  let [selectedLabel, setSelectedLabel] = useState<string>('');
+  let [selectedInfo, setSelectedInfo] = useState<LabelInfo | undefined>(undefined);
+  let [memberList, setMemberList] = useState<MinMemberInfo[]>([]);
+  let [ownerList, setOwnerList] = useState<MinMemberInfo[]>([]);
 
-  // let [memberLabels, setMemberLabels] = useState<LabelInfo[]>([]);
-  // let [showMemberList, setShowMemberList] = useState<boolean>(false);
-  // let [memberList, setMemberList] = useState<any[]>([]);
-  // let [selectedMember, setSelectedMember] = useState<string>('');
-  // let [churchId, setChurchId] = useState<string>('');
+  const onLabelClick = async (labelId:string) => {
+    const lbl = churchLabels.labelMap.get(labelId);
+    if (lbl) {
+      setSelectedLabel(lbl.label_id);
+      setSelectedInfo(lbl);
 
-  // TODO JLS -- HERE
-  // Show My Lables (as member)
-  // Show My Labels (as Owner)
-  // Show selected label, where we can edit the label
+      // Load the members of the label
+      await churchLabels.fetchMembersForLabel(lbl.label_id);
 
-  const loadLablesForMember = async(cId:string, memberId:string) => {
-  //   if (cId.length > 0) {
-  //     const allLabels = new ChurchLabels();
-  //     await allLabels.fetchAllLabels(cId);
+      // Get the label
+      setMemberList(lbl.getMemberList());
 
-  //     await allLabels.fetchMemberLabels(memberId);
-  //     const memberLabels = allLabels.getMemberLabels();
-
-  //     setMemberLabels(memberLabels);
-  //   }
+      // Get the owners
+      setOwnerList(lbl.getOwnerList());
+    }
+    else {
+      setSelectedLabel('');
+      setSelectedInfo(undefined);
+      setMemberList([]);
+      setOwnerList([]);
+    }
   }
 
   useEffect(() => {
-
     const getUserInfo = async() => {
       const uInfo = new UserInfo();
       await uInfo.loadMemberInfo();
@@ -45,31 +51,34 @@ export default function LabelPage() {
       // Load the labels for the member
       await churchLabels.fetchMemberLabels(uInfo.member_id);
 
-      // TODO JLS
-      // Now get list of labels that member is member of
-      // Now get list of labels that member is owner of
-      // TODO JLS, make a control for membership and ownership
+      // Load owners for all labels
+      await churchLabels.fetchOwnersForLabel('asdf');
+
+      // Set the church labels
+      setChurchLabels(churchLabels);
+
+      // Get the labels this user is a member of      
+      const memberLabels = churchLabels.getMembership(uInfo.member_id);
+      setMemberLabels(memberLabels);
+
+      // Get the labels this user is an owner of
+      const ownerLabels = churchLabels.getOwnership(uInfo.member_id);
+      setOwnerLabels(ownerLabels);
     }
 
     getUserInfo();
   }, []);  
 
   return (
-    <>Hi</>
+    <>
+      <div>My Labels</div>
+      <SLabelList labelList={memberLabels} onClick={onLabelClick} seletedLabel={selectedLabel}/>
+      <div>Labels I Administer</div>
+      <SLabelList labelList={ownerLabels} onClick={onLabelClick} seletedLabel={selectedLabel}/>
+      <div>Label Info goes here</div>
+      <SLabelInfo labelInfo={selectedInfo} memberList={memberList} ownerList={ownerList}/>
+    </>
   );
-
-  // return (
-  //   <>
-  //   <div>My Labels</div>
-  //     {memberLabels.map((item, index) => (
-  //       <SLabel key={index} labelInfo={item} compact={true} />
-  //     ))}
-  //   <div>My Owned Labes</div>
-    
-  //   </>
-  // );
-
-
 
 
 }

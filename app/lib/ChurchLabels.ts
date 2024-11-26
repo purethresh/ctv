@@ -103,6 +103,41 @@ export default class ChurchLabels {
         }
     }
 
+    async fetchMembersForLabel(labelId:string) {
+        // Get the scheduled labels for a specific service
+        const res = await fetch('/api/labels/member?label_id=' + labelId, { cache: 'force-cache' });        
+        const data = await res.json();
+
+        for(var i=0; i<data.length; i++) {
+            const d = data[i];
+            const lblId = d.label_id;
+            const member = new MinMemberInfo(d);
+
+            const lbl = this.labelMap.get(lblId);
+            if (lbl) {
+                lbl.addMember(member);
+            }
+        }
+    }
+
+    async fetchOwnersForLabel(labelId:string) {
+        // Get the scheduled labels for a specific service
+        const res = await fetch('/api/labels/member?owner_id=' + labelId);
+        // const res = await fetch('/api/labels/member?owner_id=' + labelId, { cache: 'force-cache' });        // TODO JLS
+        const data = await res.json();
+
+        for(var i=0; i<data.length; i++) {
+            const d = data[i];
+            const lblId = d.label_id;
+            const member = new MinMemberInfo(d);
+
+            const lbl = this.labelMap.get(lblId);
+            if (lbl) {
+                lbl.addOwner(member);
+            }
+        }
+    }    
+
     getLabelGroups() : LabelInfo[] {
         var resultMap:Map<string, LabelInfo> = new Map<string, LabelInfo>();
 
@@ -135,6 +170,29 @@ export default class ChurchLabels {
         return result;
     }
 
+    getMembership(memberId:string) : LabelInfo[] {
+        var result:LabelInfo[] = [];
+
+        this.labelMap.forEach((value:LabelInfo, key:string) => {
+            if (value.isMember(memberId)) {
+                result.push(value);
+            }
+        });
+
+        return result;
+    }
+
+    getOwnership(memberId:string) : LabelInfo[] {
+        var result:LabelInfo[] = [];
+
+        this.labelMap.forEach((value:LabelInfo, key:string) => {
+            if (value.isOwner(memberId)) {
+                result.push(value);
+            }
+        });
+
+        return result;
+    }
 
 
 }
