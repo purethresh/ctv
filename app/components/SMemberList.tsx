@@ -7,6 +7,7 @@ import { Chip } from "@mui/material";
 
 import { SMemberListProp } from "../props/SMemberListProp";
 import { MinMemberInfo } from '../lib/MinMemberInfo';
+import SAllMemberSelect from './SAllMemberSelect';
 
 export default function SMemberList( props:SMemberListProp) {
     let [title, setTitle] = useState<string>('');
@@ -30,6 +31,7 @@ export default function SMemberList( props:SMemberListProp) {
             {mList.map((item, index) => (
                 <Chip key={item.member_id} label={item.first + " " + item.last} />
             ))}
+            <SAllMemberSelect churchId={props.labelInfo?.church_id} />
         </>
     );
 

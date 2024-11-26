@@ -17,8 +17,6 @@ export default function SLabelInfo(props:SLabelInfoProps) {
         const calcValues = async () => {
             setLabelName(props.labelInfo?.labelName || '');
             setLabelDescription(props.labelInfo?.labelDescription || '');
-
-            console.log(props.memberList)
         }
         
         calcValues();
