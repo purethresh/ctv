@@ -34,8 +34,15 @@ export default class UserInfo {
     }
 
     async loadMemberAdminInfo(rootLabelId:string) {
-        // TODO JLS
         this.isMemberAdmin = false;
+
+        // Finding out if the member belongs to the church-member-admin label
+        const res = await fetch(`/api/member/admin?root_id=${rootLabelId}&member_id=${this.member_id}`, { cache: 'force-cache' });
+        const data = await res.json();
+
+        if (data && data.isAdmin === true) {
+            this.isMemberAdmin = true;
+        }
     }
 
     getInitials() {

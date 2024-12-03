@@ -1,6 +1,8 @@
 "use client";
 
+import SAllMemberSelect from "@/app/components/SAllMemberSelect";
 import ChurchLabels from "@/app/lib/ChurchLabels";
+import { MinMemberInfo } from "@/app/lib/MinMemberInfo";
 import UserInfo from "@/app/lib/UserInfo";
 import { useEffect, useState } from "react";
 
@@ -18,9 +20,6 @@ export default function MemberPage() {
     - If not, then show only self
     - User has access to edit self (others if admin)
 
-    - Need the ID of the root label
-
-
   */
 
   const updateUserInfo = async() => {
@@ -37,11 +36,9 @@ export default function MemberPage() {
     if (cLabels.labelRoot) {
       const rootId = cLabels.labelRoot.label_id;
 
-      // TODO JLS HERE - this doesn't work yet
-      // Find out if user is member admin
+      // Find out if the user is a member admin
       await uInfo.loadMemberAdminInfo(rootId);
       setIsMemberAdmin(uInfo.isMemberAdmin);
-
     }
 
   }
@@ -51,6 +48,9 @@ export default function MemberPage() {
   }, []);    
 
   return (
-    <div>Member page</div>
+    <>
+      <SAllMemberSelect churchId={churchId} isVisible={isMemberAdmin} showAddButton={false}  />
+    Member Page
+    </>  
   );
 }
