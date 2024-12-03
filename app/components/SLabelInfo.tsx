@@ -5,7 +5,7 @@ import SMemberList from "./SMemberList";
 import SCreateLabel from "./SCreateLabel";
 
 // TODO JLS
-// remove user from label (both as member and owner)
+// remove user from label (only as member)
 // Allow edit of label description
 
 export default function SLabelInfo(props:SLabelInfoProps) {
@@ -29,8 +29,8 @@ export default function SLabelInfo(props:SLabelInfoProps) {
         <Box style={{display:props.labelInfo ? 'block' : 'none'}}>
             <div>{labelName}</div>
             <div>{labelDescription}</div>
-            <SMemberList labelInfo={props.labelInfo} memberList={props.memberList} title="Members of" />
-            <SMemberList labelInfo={props.labelInfo} memberList={props.ownerList} title="Administrators of" />
+            <SMemberList labelInfo={props.labelInfo} memberList={props.memberList} title="Members of" allowRemove={true} />
+            <SMemberList labelInfo={props.labelInfo} memberList={props.ownerList} title="Administrators of" allowRemove={false} />
             <br />
             <SCreateLabel parentLabel={props.labelInfo} createrId={creator_id} churchId={churchId} onReload={props.onReload} />
         </Box>

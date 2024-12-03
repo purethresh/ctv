@@ -10,6 +10,7 @@ export default class UserInfo {
     churchName:string = '';
     first:string = '';
     last:string = '';
+    isMemberAdmin:boolean = false;
 
     constructor() {
         this.setToNotAuthenticated();
@@ -30,6 +31,11 @@ export default class UserInfo {
       catch(e) {
         this.setToNotAuthenticated();
       }
+    }
+
+    async loadMemberAdminInfo(rootLabelId:string) {
+        // TODO JLS
+        this.isMemberAdmin = false;
     }
 
     getInitials() {

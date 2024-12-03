@@ -1,13 +1,12 @@
-// import { SLabelGroupProps } from "../props/SLabelGroupProps";
-// import { Box } from "@mui/material";
 import { useEffect, useState } from 'react';
 import { Chip } from "@mui/material";
-// import LabelInfo from "../lib/LabelInfo";
-// import SLabel from "./SLabel";
 
 import { SMemberListProp } from "../props/SMemberListProp";
 import { MinMemberInfo } from '../lib/MinMemberInfo';
 import SAllMemberSelect from './SAllMemberSelect';
+
+// TODO JLS
+// remove user from label only if allowRemove is allowed
 
 export default function SMemberList( props:SMemberListProp) {
     let [title, setTitle] = useState<string>('');

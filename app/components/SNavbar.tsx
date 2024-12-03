@@ -77,8 +77,14 @@ export default function SNavbar(props: SNavBarProps) {
             keepMounted
             >
             <MenuItem>
+              <Link href="/" underline="none">Calandar</Link>
+            </MenuItem>                
+            <MenuItem>
               <Link href="/schedule/labels" underline="none">Labels</Link>
             </MenuItem>
+            <MenuItem>
+              <Link href="/schedule/member" underline="none">Members</Link>
+            </MenuItem>            
           </Menu>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             {churchName}
