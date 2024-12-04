@@ -5,20 +5,30 @@ import ChurchLabels from "@/app/lib/ChurchLabels";
 import { MinMemberInfo } from "@/app/lib/MinMemberInfo";
 import UserInfo from "@/app/lib/UserInfo";
 import { useEffect, useState } from "react";
+import { Button, IconButton } from "@mui/material";
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import SMemberInfo from "@/app/components/SMemberInfo";
+import SEditMemberInfo from "@/app/components/SEditMemberInfo";
 
 export default function MemberPage() {
   let [userId, setUserId] = useState<string>('');
   let [churchId, setChurchId] = useState<string>('');
   let [isMemberAdmin, setIsMemberAdmin] = useState<boolean>(false);
+  let [memberId, setMemberId] = useState<string>('');
 
   /*  
     TODO JLS HERE
+    - Creating SMembersInfo.tsx
+    - - Show member info
+    - - Create control to show phone numbers
+    - - Create control to show email addresses
+    - - Create control to show addresses
 
-    - Find out if member of church-member
-    - - If so, then show all members.
-    - - Give access to create new member
-    - If not, then show only self
-    - User has access to edit self (others if admin)
+    - Creating SEditMemberInfo.tsx
+    - - Show member info
+    - - Create control to show phone numbers
+    - - Create control to show email addresses
+    - - Create control to show addresses
 
   */
 
@@ -28,6 +38,7 @@ export default function MemberPage() {
     await uInfo.loadMemberInfo();
     setUserId(uInfo.member_id);
     setChurchId(uInfo.church_id);
+    setMemberId(uInfo.member_id);
 
     // We need the root label ID
     const cLabels = new ChurchLabels();
@@ -50,7 +61,9 @@ export default function MemberPage() {
   return (
     <>
       <SAllMemberSelect churchId={churchId} isVisible={isMemberAdmin} showAddButton={false}  />
-    Member Page
+      <Button endIcon={<PersonAddIcon />} style={{display:isMemberAdmin ? 'block' : 'none'}}>Create Member</Button>
+      <SMemberInfo isAdmin={isMemberAdmin} memberId={memberId}  />
+      <SEditMemberInfo isAdmin={isMemberAdmin} memberId={memberId}  />
     </>  
   );
 }
