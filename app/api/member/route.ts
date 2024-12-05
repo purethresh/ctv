@@ -5,6 +5,7 @@ import { NextRequest } from 'next/server';
 const USER_SUB_ID = 'sub';
 const CHURCH_ID = 'church_id';
 const LABEL_ID = 'label_id';
+const MEMBER_ID = 'member_id';
 
 export async function GET(req: NextRequest) {
     var result = {error: 'nothing happened'};
@@ -28,6 +29,11 @@ export async function GET(req: NextRequest) {
         // Get all tne members for a church
         query = 'SELECT members.member_id, members.first, members.last FROM dbname.members JOIN dbname.church_member ON dbname.members.member_id = dbname.church_member.member_id where dbname.church_member.church_id=?';
         queryParams = [params.get(CHURCH_ID)];
+    }
+    else if (params.has(MEMBER_ID)) {
+        // Get info on a specific member
+        query = "SELECT * FROM members WHERE member_id = ?";
+        queryParams = [params.get(MEMBER_ID)];
     }
 
     try {            

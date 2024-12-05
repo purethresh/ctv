@@ -1,4 +1,3 @@
-import { Interface } from "readline";
 
 interface IMinMemberInfo {
     member_id?:string;

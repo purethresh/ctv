@@ -2,13 +2,11 @@
 
 import SAllMemberSelect from "@/app/components/SAllMemberSelect";
 import ChurchLabels from "@/app/lib/ChurchLabels";
-import { MinMemberInfo } from "@/app/lib/MinMemberInfo";
 import UserInfo from "@/app/lib/UserInfo";
 import { useEffect, useState } from "react";
-import { Button, IconButton } from "@mui/material";
+import { Button } from "@mui/material";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import SMemberInfo from "@/app/components/SMemberInfo";
-import SEditMemberInfo from "@/app/components/SEditMemberInfo";
 
 export default function MemberPage() {
   let [userId, setUserId] = useState<string>('');
@@ -24,12 +22,7 @@ export default function MemberPage() {
     - - Create control to show email addresses
     - - Create control to show addresses
 
-    - Creating SEditMemberInfo.tsx
-    - - Show member info
-    - - Create control to show phone numbers
-    - - Create control to show email addresses
-    - - Create control to show addresses
-
+    - Make edit version of all these
   */
 
   const updateUserInfo = async() => {
@@ -63,7 +56,6 @@ export default function MemberPage() {
       <SAllMemberSelect churchId={churchId} isVisible={isMemberAdmin} showAddButton={false}  />
       <Button endIcon={<PersonAddIcon />} style={{display:isMemberAdmin ? 'block' : 'none'}}>Create Member</Button>
       <SMemberInfo isAdmin={isMemberAdmin} memberId={memberId}  />
-      <SEditMemberInfo isAdmin={isMemberAdmin} memberId={memberId}  />
     </>  
   );
 }

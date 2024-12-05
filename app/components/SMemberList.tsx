@@ -5,9 +5,6 @@ import { SMemberListProp } from "../props/SMemberListProp";
 import { MinMemberInfo } from '../lib/MinMemberInfo';
 import SAllMemberSelect from './SAllMemberSelect';
 
-// TODO JLS
-// remove user from label only if allowRemove is allowed
-
 export default function SMemberList( props:SMemberListProp) {
     let [title, setTitle] = useState<string>('');
     let [labelName, setLabelName] = useState<string>('');

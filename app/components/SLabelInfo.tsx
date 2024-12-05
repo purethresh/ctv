@@ -4,10 +4,6 @@ import { useEffect, useState } from 'react';
 import SMemberList from "./SMemberList";
 import SCreateLabel from "./SCreateLabel";
 
-// TODO JLS
-// remove user from label (only as member)
-// Allow edit of label description
-
 export default function SLabelInfo(props:SLabelInfoProps) {
     let [labelName, setLabelName] = useState<string>('');
     let [labelDescription, setLabelDescription] = useState<string>('');
