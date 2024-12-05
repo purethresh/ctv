@@ -14,18 +14,82 @@ export default function SMemberInfo(props:SMemberInfoProp) {
     let [isAdmin, setIsAdmin] = useState<boolean>(false);
     let [isEditing, setIsEditing] = useState<boolean>(false);
     let [isCreating, setIsCreating] = useState<boolean>(false);
+    let [needsSave, setNeedsSave] = useState<boolean>(false);
+
+    let [phoneNeedsSave, setPhoneNeedsSave] = useState<boolean>(false);
+    let [emailNeedsSave, setEmailNeedsSave] = useState<boolean>(false);
+    let [addressNeedsSave, setAddressNeedsSave] = useState<boolean>(false);
 
     const onSetEditMode = () => {
         setIsEditing(true);
     }
 
-    const onSave = () => {
-        // TODO JLS. Save and pass on to other components
-        // TODO JLS, reload info so it isn't using cached data
+    const onSave = async () => {
+        if (needsSave) {
+            const req: RequestInit = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(memberInfo)
+            }
+
+            // If creating, change to a put
+            if (isCreating) {
+                req.method = 'PUT';
+            }
+
+            // Do the request
+            await fetch('/api/member', req);
+
+            // No fetch without cache to update
+            await fetch(`/api/member?member_id=${memberInfo.member_id}`);
+        }
+
+        // TODO JLS
+        // Need to implement saving in setPhoneNeedsSave, setEmailNeedsSave, setAddressNeedsSave
+        
+        // Flag children that they need to be saved
+        setPhoneNeedsSave(true);
+        setEmailNeedsSave(true);
+        setAddressNeedsSave(true);
+        
         setIsEditing(false);
+        setNeedsSave(false);
     }
 
-    const updateMemberInfo = async() => {
+    const onPhoneSave = () => {
+        setPhoneNeedsSave(false);
+    }
+
+    const onEmailSave = () => {
+        setEmailNeedsSave(false);
+    }
+
+    const onAddressSave = () => {
+        setAddressNeedsSave(false);
+    }
+
+    const updateFirstName = (name:string) => {
+        const mInfo = memberInfo;
+        mInfo.first = name;
+        setMemberInfo(mInfo);
+        setNeedsSave(true);
+    }
+
+    const updateLastName = (name:string) => {
+        const mInfo = memberInfo;
+        mInfo.last = name;
+        setMemberInfo(mInfo);
+        setNeedsSave(true);
+    }
+
+    const updateNotes = (notes:string) => {
+        const mInfo = memberInfo;
+        mInfo.notes = notes;
+        setMemberInfo(mInfo);
+        setNeedsSave(true);
+    }    
+
+    const updateMemberInfo = async(useCache:boolean) => {
         // If no member Id, then we can't do anything
         if (props.memberId === undefined || props.memberId.length <= 0) {
             return
@@ -39,7 +103,11 @@ export default function SMemberInfo(props:SMemberInfoProp) {
         }
 
         // Get the member info
-        const result = await fetch(`/api/member?member_id=${mId}`, { cache: 'force-cache' });
+        let cObj:RequestInit | undefined = undefined;
+        if (useCache) {
+            cObj = { cache: 'force-cache' };
+        }
+        const result = await fetch(`/api/member?member_id=${mId}`, cObj);
         var rs = await result.json();
         if (rs.length > 0) { 
             const mInfo = new MinMemberInfo(rs[0]);
@@ -48,7 +116,7 @@ export default function SMemberInfo(props:SMemberInfoProp) {
     }
 
     useEffect(() => {
-        updateMemberInfo();
+        updateMemberInfo(true);
     }, [props.memberId, props.isAdmin]);  
 
     return (
@@ -62,18 +130,18 @@ export default function SMemberInfo(props:SMemberInfoProp) {
                 </Typography>
             </Box>
             <Box style={{display:isEditing ? 'block' : 'none'}}>
-                <TextField label="First Name" defaultValue={memberInfo.first} />
-                <TextField label="Last Name" defaultValue={memberInfo.last} />
+                <TextField label="First Name" defaultValue={memberInfo.first} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { updateFirstName(event.target.value); }} />
+                <TextField label="Last Name" defaultValue={memberInfo.last} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { updateLastName(event.target.value); }} />
             </Box>
             <Box style={{display:!isEditing ? 'block' : 'none'}}>
                 <Typography>{memberInfo.notes}</Typography>                
             </Box>
             <Box style={{display:isEditing ? 'block' : 'none'}}>
-                <TextField label="Notes" defaultValue={memberInfo.notes}/>
+                <TextField label="Notes" defaultValue={memberInfo.notes} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { updateNotes(event.target.value); }}/>
             </Box>                
-            <SMemberPhoneList memberId={memberId} isAdmin={isAdmin} isEditing={isEditing} isCreating={isCreating} />
-            <SMemberEmailList memberId={memberId} isAdmin={isAdmin} isEditing={isEditing} isCreating={isCreating} />
-            <SMemberAddressList memberId={memberId} isAdmin={isAdmin} isEditing={isEditing} isCreating={isCreating} />
+            <SMemberPhoneList memberId={memberId} isAdmin={isAdmin} isEditing={isEditing} isCreating={isCreating} needsSave={phoneNeedsSave} onSaveComplete={onPhoneSave} />
+            <SMemberEmailList memberId={memberId} isAdmin={isAdmin} isEditing={isEditing} isCreating={isCreating} needsSave={emailNeedsSave} onSaveComplete={onEmailSave}/>
+            <SMemberAddressList memberId={memberId} isAdmin={isAdmin} isEditing={isEditing} isCreating={isCreating} needsSave={addressNeedsSave} onSaveComplete={onAddressSave}/>
             <Box style={{display:isEditing ? 'block' : 'none'}}>
                 <Button endIcon={<DoneIcon />} onClick={onSave}>Save</Button>
             </Box>

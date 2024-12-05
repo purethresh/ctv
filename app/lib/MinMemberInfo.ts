@@ -1,5 +1,5 @@
 
-interface IMinMemberInfo {
+export interface IMinMemberInfo {
     member_id?:string;
     first?:string;
     last?:string;
