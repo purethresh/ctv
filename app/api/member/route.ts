@@ -57,8 +57,6 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-    console.log('INSIDE POST');
-
     var result = {error: 'nothing happened'};
     var resultStatus = {status: 500};
 
@@ -83,8 +81,6 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
-    console.log('INSIDE POST');
-
     var result = {error: 'nothing happened'};
     var resultStatus = {status: 500};
 
