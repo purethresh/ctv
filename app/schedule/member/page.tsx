@@ -14,17 +14,6 @@ export default function MemberPage() {
   let [isMemberAdmin, setIsMemberAdmin] = useState<boolean>(false);
   let [memberId, setMemberId] = useState<string>('');
 
-  /*  
-    TODO JLS HERE
-    - Creating SMembersInfo.tsx
-    - - Show member info
-    - - Create control to show phone numbers
-    - - Create control to show email addresses
-    - - Create control to show addresses
-
-    - Make edit version of all these
-  */
-
   const updateUserInfo = async() => {
     // Get the basic User Info
     const uInfo = new UserInfo();

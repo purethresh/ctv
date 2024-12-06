@@ -74,6 +74,7 @@ export default function SNavbar(props: SNavBarProps) {
             anchorOrigin={{vertical: 'top', horizontal: 'left'}}
             transformOrigin={{vertical: 'top', horizontal: 'left'}}
             onClose={onMenuClose}
+            onClick={onMenuClose}            
             keepMounted
             >
             <MenuItem>
@@ -84,7 +85,10 @@ export default function SNavbar(props: SNavBarProps) {
             </MenuItem>
             <MenuItem>
               <Link href="/schedule/member" underline="none">Members</Link>
-            </MenuItem>            
+            </MenuItem>
+            <MenuItem>
+              <Link href="/schedule/availability" underline="none">Availability</Link>
+            </MenuItem>
           </Menu>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             {churchName}

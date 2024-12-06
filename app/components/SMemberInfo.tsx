@@ -43,9 +43,6 @@ export default function SMemberInfo(props:SMemberInfoProp) {
             // No fetch without cache to update
             await fetch(`/api/member?member_id=${memberInfo.member_id}`);
         }
-
-        // TODO JLS
-        // Need to implement saving in setPhoneNeedsSave, setEmailNeedsSave, setAddressNeedsSave
         
         // Flag children that they need to be saved
         setPhoneNeedsSave(true);
