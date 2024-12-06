@@ -3,7 +3,7 @@ import { Box, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { IAddressInfo } from "../lib/IAddressInfo";
 
-export default function SMemberEmailList(props:SMemberInfoProp) {
+export default function SMemberAddressList(props:SMemberInfoProp) {
     let [memberId, setMemberId] = useState<string>('');
     let [addressList, setAddressList] = useState<IAddressInfo[]>([]);
 
@@ -30,10 +30,12 @@ export default function SMemberEmailList(props:SMemberInfoProp) {
         updateMemberInfo();
     }, [props.memberId, props.isAdmin]); 
 
+// TODO JLS - index should be correct
+
     return (
         <>
             {addressList.map((aInfo, index) => (
-                <Box>
+                <Box key={index}>
                     <Typography>
                         {aInfo.address1} <br />
                         {aInfo.address2} <br />
