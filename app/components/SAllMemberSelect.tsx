@@ -33,6 +33,10 @@ export default function SAllMemberSelect(props:SAllMemberSelectProp) {
 
     useEffect(() => {
         const originalSetup = async () => {
+            if (props.defaultMemberId) {
+                setSelectedMember(props.defaultMemberId);
+            }
+
             if (props.churchId) {
                 await getAllMembers();
             }
@@ -52,11 +56,11 @@ export default function SAllMemberSelect(props:SAllMemberSelectProp) {
       <Box style={{display:isVisible ? 'block' : 'none'}}>
       <InputLabel id="all-member-select-label">All Church Members</InputLabel>
         <Select
-          labelId="all-member-select-label"
-          id="all-member-select"
-          value={selectedMember}
-          label="All Members"
-          onChange={handleChange}
+            labelId="all-member-select-label"
+            id="all-member-select"
+            onChange={handleChange}
+            value={memberList.length > 0 ? selectedMember : ''}
+            defaultValue=''
         >
             {memberList.map((item, index) => (
                 <MenuItem key={item.member_id} value={item.member_id}>{item.first + " " + item.last}</MenuItem>

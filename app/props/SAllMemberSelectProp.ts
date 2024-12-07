@@ -3,4 +3,5 @@ interface SAllMemberSelectProp {
     onClick?: (memberId:string) => void;
     isVisible?: boolean;
     showAddButton?: boolean;
+    defaultMemberId?: string;
 }
