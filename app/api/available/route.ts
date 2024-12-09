@@ -5,6 +5,7 @@ import { runQuery } from '../../lib/db';
 const MEMBER_ID:string = 'member_id';
 const MIN_DATE:string = 'min';
 const MAX_DATE:string = 'max';
+const AVAILABLE_ID:string = 'availability_id';
 
 export async function GET(req:NextRequest) {
     var result = {error: 'nothing happened'};
@@ -20,6 +21,49 @@ export async function GET(req:NextRequest) {
 
             const [dbResults] = await runQuery(query, queryParams);
             result = dbResults;
+            resultStatus = {status: 200};
+        }
+        catch (e:any) {
+            result = { error: e.message  };
+        }
+    }
+
+    return NextResponse.json(result, resultStatus);
+}
+
+export async function DELETE(req:NextRequest) {
+    var result = {error: 'nothing happened'};
+    var resultStatus = {status: 500};
+
+    const params = req.nextUrl.searchParams;
+
+    // Only process if we have an availability_id
+    if (params.has(AVAILABLE_ID)) {
+        const query = 'DELETE FROM availability WHERE availability_id = ?';
+        const queryParams = [params.get(AVAILABLE_ID)];
+
+        await runQuery(query, queryParams);
+        // @ts-ignore
+        result = {response: 'blockout date removed'};
+        resultStatus = {status: 200};
+    }
+
+    return NextResponse.json(result, resultStatus);
+}
+
+export async function POST(req: NextRequest) {
+    var result = {error: 'nothing happened'};
+    var resultStatus = {status: 500};
+
+    const data = await req.json();
+    if (data.availability_id !== undefined && data.member_id !== undefined && data.blockOutDay !== undefined) {
+        const query = 'INSERT INTO availability (availability_id, member_id, blockOutDay) VALUES (?, ?, ?)';
+        const queryParams = [data.availability_id, data.member_id, data.blockOutDay];
+
+        try {
+            await runQuery(query, queryParams);
+            // @ts-ignore
+            result = {response: 'blockout date added'};
             resultStatus = {status: 200};
         }
         catch (e:any) {
