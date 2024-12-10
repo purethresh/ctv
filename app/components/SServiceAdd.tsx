@@ -7,6 +7,8 @@ import {AdapterMoment} from '@mui/x-date-pickers/AdapterMoment';
 import { SServiceAddProps } from "../props/SServiceAddProps";
 import moment from 'moment';
 import { Moment } from "moment";
+import { IServiceInfo, ServiceInfo } from "../lib/ServiceInfo";
+import { v4 } from "uuid";
 
 export default function SServiceAdd(props:SServiceAddProps) {
   let [isCreating, setIsCreating] = useState<Boolean>(false);
@@ -26,6 +28,10 @@ export default function SServiceAdd(props:SServiceAddProps) {
     setServiceTime(mom.toDate());
   }
 
+  const updateDefaultTime = () => {
+    setDefaultDate(props.defaultDate || new Date());
+  }
+
   const serviceNameChange = (event:any) => {
     setServiceName(event.target.value);
   }
@@ -34,21 +40,32 @@ export default function SServiceAdd(props:SServiceAddProps) {
     setServiceInfo(event.target.value);
   }
 
-  const createService = () => {
-    // TODO JLS
-    // Need to create a service using the API
-
+  const createService = async () => {
     setIsCreating(false);
 
     // If no church id, then we can't create a service
     if (props.church_id === undefined || props.church_id.length <= 0) {
       return;
     }
+
+    // Create Service info
+    const sObj: IServiceInfo = { service_id:v4(), church_id:props.church_id, serviceTime:serviceTime.getTime(), name:serviceName, info:serviceInfo };
+    var sInfo = new ServiceInfo( sObj );
+
+    // Call the API
+    await fetch('/api/services', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(sInfo)
+    });    
+
+    if (props.onCreateService) {
+      props.onCreateService();
+    }
   }
 
   useEffect(() => {
-    // TODO JLS
-    // When the default date has changed, we need to reset this info
+    updateDefaultTime();
   }, [props.defaultDate]);
 
   return (

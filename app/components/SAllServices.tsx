@@ -2,15 +2,7 @@
 
 import { useEffect, useState } from "react";
 import SServiceSchedule from "./SServiceSchedule";
-
-interface ServiceInfo {
-  church_id: string;
-  info: string;
-  name: string;
-  serviceDay: string;
-  serviceTime: number;
-  service_id: string;
-} 
+import { ServiceInfo } from "../lib/ServiceInfo";
 
 export default function SAllServices(props:SAllServicesProp) {
   let [serviceIdList, setServiceIdList] = useState<ServiceInfo[]>([]);

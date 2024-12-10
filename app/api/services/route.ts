@@ -1,6 +1,7 @@
 import { runQuery } from '../../lib/db';
 import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
+import { ServiceInfo } from '../../lib/ServiceInfo';
 
 const CHURCH_ID = 'church_id';
 const YEAR = 'year';
@@ -42,5 +43,53 @@ export async function GET(req: NextRequest) {
         }
     }
     
+    return NextResponse.json(result, resultStatus);
+}
+
+export async function POST(req: NextRequest) {
+    var result = {error: 'nothing happened'};
+    var resultStatus = {status: 500};
+
+    try {
+        const data = await req.json();
+        const sInfo = new ServiceInfo(data);
+
+        // Only update if we have a service_id
+        if (sInfo.service_id.length > 0) {
+            const query = 'UPDATE service SET church_id=?, serviceTime=?, name=?, info=? WHERE service_id=?';
+            const queryParams = [sInfo.church_id, sInfo.serviceTime, sInfo.name, sInfo.info, sInfo.service_id];
+            const [dbResults] = await runQuery(query, queryParams);
+            result = dbResults;
+            resultStatus = {status: 200};
+        }
+    }
+    catch(e) {
+        
+    }
+
+    return NextResponse.json(result, resultStatus);
+}
+
+export async function PUT(req: NextRequest) {
+    var result = {error: 'nothing happened'};
+    var resultStatus = {status: 500};
+
+    try {
+        const data = await req.json();
+        const sInfo = new ServiceInfo(data);
+
+        // Only update if we have a service_id
+        if (sInfo.service_id.length > 0) {
+            const query = 'INSERT INTO service (service_id, church_id, serviceTime, name, info) VALUES (?, ?, ?, ?, ?)';
+            const queryParams = [sInfo.service_id, sInfo.church_id, sInfo.serviceTime, sInfo.name, sInfo.info];
+            const [dbResults] = await runQuery(query, queryParams);
+            result = dbResults;
+            resultStatus = {status: 200};
+        }
+    }
+    catch(e) {
+        
+    }
+
     return NextResponse.json(result, resultStatus);
 }
