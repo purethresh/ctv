@@ -7,10 +7,7 @@ import SAllMemberSelect from "@/app/components/SAllMemberSelect";
 import SAvailabilityList from "@/app/components/SAvailabilityList";
 import { getDefaultSunday } from "@/app/lib/dateUtils";
 import { v4 } from 'uuid';
-import { AvailabilityInfo } from "@/app/lib/AvailabilityInfo";
-
-// TODO JLS
-// Show a list of blocked out days AvailabilityInfo
+import { IAvailabilityInfo, AvailabilityInfo } from "@/app/lib/AvailabilityInfo";
 
 export default function AvailabilityPage() {
   let [userInfo, setUserInfo] = useState<UserInfo>(new UserInfo());
@@ -18,6 +15,7 @@ export default function AvailabilityPage() {
   let [currentUserId, setCurrentUserId] = useState<string>('');
   let [blockOutList, setBlockOutList] = useState<number[]>([]);
   let [blockOutMap, setBlockOutMap] = useState<Map<number, AvailabilityInfo>>(new Map<number, AvailabilityInfo>());
+  let [blockFullList, setBlockFullList] = useState<AvailabilityInfo[]>([]);
 
   const addBlockOutDay = async(aInfo:AvailabilityInfo) => {
     await fetch(`/api/available`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(aInfo) });
@@ -35,17 +33,25 @@ export default function AvailabilityPage() {
     // Loop through the datat and track the days blocked out.
     const blockedOut:number[] = [];
     const blockMap:Map<number, AvailabilityInfo> = new Map<number, AvailabilityInfo>();
+    const bList:AvailabilityInfo[] = [];
     for(var i=0; i<data.length; i++) {
-      const info = data[i] as AvailabilityInfo;
+      const info = data[i] as IAvailabilityInfo;
       const epoc = Number(info.blockOutDay);
       const dayNum = new Date(epoc).getDate();
 
-      blockMap.set(dayNum, info);
+      const aInfo = new AvailabilityInfo(info);
+      blockMap.set(dayNum, aInfo);
       blockedOut.push(dayNum);
+      bList.push(aInfo);
     }
 
     setBlockOutMap(blockMap);
     setBlockOutList(blockedOut);
+    setBlockFullList(bList);
+  }
+
+  const onRemoveBlockedDate = async (aInfo:AvailabilityInfo) => {
+    await onDateChanged(aInfo.blockedAsDate)
   }
 
   const onDateChanged = async (date:Date) => { 
@@ -63,11 +69,7 @@ export default function AvailabilityPage() {
     }
     else {
       // We don't have one so add it
-      const aInfo:AvailabilityInfo = {
-        availability_id: v4(),
-        member_id: currentUserId,
-        blockOutDay: date.getTime().toString()
-      };
+      const aInfo:AvailabilityInfo = new AvailabilityInfo({ availability_id:v4(), member_id:currentUserId, blockOutDay: date.getTime().toString() } as IAvailabilityInfo);
       blockOutMap.set(dayNum, aInfo);
 
       await addBlockOutDay(aInfo);
@@ -76,10 +78,19 @@ export default function AvailabilityPage() {
 
     // Re-create the list
     const blockedOut:number[] = [];
+    const fullList:AvailabilityInfo[] = [];
     blockOutMap.forEach((value, key) => {
       blockedOut.push(key);
+      fullList.push(value);
     });
+
+    // Sort the list
+    fullList.sort((a, b) => {
+      return Number(a.blockOutDay) - Number(b.blockOutDay);
+    });
+
     setBlockOutList(blockedOut);    
+    setBlockFullList(fullList);
   }
 
   const onMonthYearChanged = async (month:string, year:string) => {
@@ -135,7 +146,7 @@ export default function AvailabilityPage() {
       {userInfo.first} {userInfo.last}
       <SAllMemberSelect churchId={churchId} isVisible={true} defaultMemberId={currentUserId} />      
       <SPersonCalendar memberId={currentUserId} restrictedDays={blockOutList} onDateChanged={onDateChanged} onMonthChanged={onMonthYearChanged} />      
-      <SAvailabilityList />
+      <SAvailabilityList blockedList={blockFullList} onRemove={onRemoveBlockedDate} />
     </>
   );
 }
