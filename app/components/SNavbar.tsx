@@ -89,6 +89,9 @@ export default function SNavbar(props: SNavBarProps) {
             <MenuItem>
               <Link href="/schedule/availability" underline="none">Availability</Link>
             </MenuItem>
+            <MenuItem>
+              <Link href="/schedule" underline="none">Scheduling</Link>
+            </MenuItem>            
           </Menu>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             {churchName}
