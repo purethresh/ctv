@@ -1,4 +1,4 @@
-import LabelInfo from "./LabelInfo";
+import { LabelInfo } from "./LabelInfo";
 import { MinMemberInfo } from "./MinMemberInfo";
 
 interface IMemberLabel {
@@ -118,6 +118,23 @@ export default class ChurchLabels {
             if (lbl) {
                 lbl.addMember(member);
             }
+        }
+    }
+
+    // For every label that can be scheduled, get all the members
+    async fetchMembersForScheduledLabels() {
+        // Create a list of all the scheduled labels
+        var scheduledLabels:LabelInfo[] = [];
+        this.labelMap.forEach((value:any, key:string) => {
+            if (value.forSchedule) {
+                scheduledLabels.push(value);
+            }
+        });
+
+        // Now loop through the scheduled labels and get the members
+        for(var i=0; i<scheduledLabels.length; i++) {
+            const lbl = scheduledLabels[i];
+            await this.fetchMembersForLabel(lbl.label_id);
         }
     }
 

@@ -4,7 +4,7 @@ import { MinMemberInfo } from "./MinMemberInfo";
 // This is a label.
 // It could have multiple people assigned to it
 
-interface ILabelInfo {
+export interface ILabelInfo {
     label_id?:string;
     labelName?:string;
     labelDescription?:string;
@@ -13,7 +13,7 @@ interface ILabelInfo {
     church_id?:string;
 }
 
-export default class LabelInfo {
+export class LabelInfo {
     // Label Properties
     church_id:string;
     label_id:string;

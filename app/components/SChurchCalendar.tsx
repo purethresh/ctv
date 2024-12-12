@@ -25,7 +25,7 @@ export default function SChurchCalendar(props: SCalendarProps) {
     if (props.churchId.length === 0) return [];
 
     var result = [];
-    const res = await fetch(`/api/services?church_id=${props.churchId}&year=${dt.getFullYear()}&month=${dt.getMonth()+1}`, { cache: 'force-cache' });    
+    const res = await fetch(`/api/services?church_id=${props.churchId}&year=${dt.getFullYear()}&month=${dt.getMonth()+1}`);    
     result = await res.json();
 
     return result;
@@ -54,12 +54,18 @@ export default function SChurchCalendar(props: SCalendarProps) {
 
   const onMonthYearChanged = (dChange:Moment) => {
     const dt = new Date(dChange.toDate());
+
+    // Notify that month year changed
+    if (props.onMonthChanged) {
+      props.onMonthChanged((dt.getMonth()+1).toString(), dt.getFullYear().toString());
+    }
+
     getServiceInfo(dt);
   }
 
   useEffect(() => {    
     getServiceInfo(moment(defaultDay).toDate());
-  }, [props.churchId]);  
+  }, [props.churchId, props.defaultDate, props.updateNumber]);  
 
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>

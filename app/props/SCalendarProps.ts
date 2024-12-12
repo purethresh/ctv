@@ -6,4 +6,5 @@ interface SCalendarProps {
     onDateChanged?: (date:Date) => void;
     onMonthChanged?: (month:string, year:string) => void;
     onDateClicked?: (date:Date) => void;
+    updateNumber?: number;
 }

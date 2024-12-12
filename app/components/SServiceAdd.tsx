@@ -29,6 +29,8 @@ export default function SServiceAdd(props:SServiceAddProps) {
   }
 
   const updateDefaultTime = () => {
+    setServiceName('');
+    setServiceInfo('');
     setDefaultDate(props.defaultDate || new Date());
   }
 
@@ -48,8 +50,15 @@ export default function SServiceAdd(props:SServiceAddProps) {
       return;
     }
 
+    // Create the propert time
+    const sTime = new Date(defaultDate.getTime());
+    sTime.setHours(serviceTime.getHours());
+    sTime.setMinutes(serviceTime.getMinutes());
+    sTime.setSeconds(0);
+    sTime.setMilliseconds(0);
+
     // Create Service info
-    const sObj: IServiceInfo = { service_id:v4(), church_id:props.church_id, serviceTime:serviceTime.getTime(), name:serviceName, info:serviceInfo };
+    const sObj: IServiceInfo = { service_id:v4(), church_id:props.church_id, serviceTime:sTime.getTime(), name:serviceName, info:serviceInfo };
     var sInfo = new ServiceInfo( sObj );
 
     // Call the API
@@ -77,8 +86,8 @@ export default function SServiceAdd(props:SServiceAddProps) {
         <LocalizationProvider dateAdapter={AdapterMoment}>
           <TimePicker label="Service Time" defaultValue={moment(defaultDate)} onChange={timeChange} />
         </LocalizationProvider>        
-        <TextField id="service-name" label="Service Name" onChange={serviceNameChange} />
-        <TextField id="service-info" label="Service Info" onChange={serviceInfoChange} />
+        <TextField id="service-name" label="Service Name" onChange={serviceNameChange} value={serviceName} />
+        <TextField id="service-info" label="Service Info" onChange={serviceInfoChange} value={serviceInfo} />
         <Button onClick={createService}>Create</Button>
       </Box>
     </>
