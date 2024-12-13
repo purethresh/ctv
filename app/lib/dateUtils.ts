@@ -35,6 +35,49 @@ export const getDefaultSunday = () : string => {
   return `${targetDay.getFullYear()}-${strMonth}-${strDay}`;  
 }
 
+export const getMinTimeForDay = (dt:Date) : number => {
+  const currentTime = new Date(dt);
+  currentTime.setHours(0);
+  currentTime.setMinutes(0);
+  currentTime.setSeconds(0);
+  currentTime.setMilliseconds(0);
+
+  return currentTime.getTime();
+}
+
+export const getMaxTimeForDay = (dt:Date) : number => {
+  const currentTime = new Date(dt);
+
+  // Move to the next day
+  currentTime.setDate(currentTime.getDate() + 1);
+
+  currentTime.setHours(0);
+  currentTime.setMinutes(0);
+  currentTime.setSeconds(0);
+  currentTime.setMilliseconds(-1);
+
+  return currentTime.getTime();
+}
+
+export const getStartOfPreviousMonth = (dt:Date) : Date => {
+  // Make sure we are on the first
+  const dateStr = `${dt.getFullYear().toString()}-${(dt.getMonth()+1).toString()}-01`;
+  const currentTime = new Date(dateStr);
+
+  currentTime.setMonth(currentTime.getMonth() - 1);
+  return currentTime;
+}
+
+export const getEndOfNextMonth = (dt:Date) : Date => {
+  const dateStr = `${dt.getFullYear().toString()}-${(dt.getMonth()+1).toString()}-01`;
+  const currentTime = new Date(dateStr);
+
+  currentTime.setMonth(currentTime.getMonth() + 2);
+  currentTime.setDate(currentTime.getDate() - 1);
+
+  return currentTime;
+}
+
 export const getDayString = (dt:Date) : string => {
   return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
 }

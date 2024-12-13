@@ -10,6 +10,7 @@ export class AvailabilityInfo {
   blockOutDay:string;
   blockedAsDate:Date;
   blockedAsDateStr:string;
+  blockedAsNumber:number;
 
   constructor(info:IAvailabilityInfo = {}) {
     this.availability_id = info.availability_id || '';
@@ -17,5 +18,6 @@ export class AvailabilityInfo {
     this.blockOutDay = info.blockOutDay || '0';
     this.blockedAsDate = new Date(Number(this.blockOutDay));
     this.blockedAsDateStr = this.blockedAsDate.toDateString();
+    this.blockedAsNumber = this.blockedAsDate.getTime();
   }
 }

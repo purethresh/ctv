@@ -40,10 +40,20 @@ export default function SServiceInfo(props: SServiceInfoProps) {
       await allLabels.fetchMembersForScheduledLabels();
 
       // Get all the scheduled services for the month (before, current, and after)
-      await churchSchedule.fetchScheduleWithBuffer(new Date(sInfo.serviceTime));
+      const sTime = new Date(sInfo.serviceTime);
+      await churchSchedule.fetchScheduleWithBufferMonths(sTime);
+
+      // Get all the blocked out days
+      await churchSchedule.fetchBlockedOutDaysWithBufferMonths(sTime)
 
       // If there is a service id, then get the scheduled members
       await updateServiceInfo();
+
+      // Now get the service schedule
+      churchSchedule.updateMembersWithSchedule(allLabels.getMemberMap(), sInfo.service_id);
+
+      // Also update availability
+      churchSchedule.updateMemberWithBlockOutDays(allLabels.getMemberMap(), sInfo.serviceAsDate());
     }
   }
 

@@ -1,6 +1,7 @@
 import { runQuery } from '../../lib/db';
 import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
+import { getStartOfPreviousMonth, getEndOfNextMonth } from '@/app/lib/dateUtils';
 
 const CHURCH_ID = 'church_id';
 const YEAR = 'year';
@@ -17,14 +18,9 @@ export async function GET(req: NextRequest) {
         try {
             const currentTime = new Date(`${params.get(YEAR)}-${params.get(MONTH)}-01`);
 
-            // Start is one month before
-            const startTime = new Date(currentTime);
-            startTime.setMonth(startTime.getMonth() - 1);
-
-            // End is one month after (which we get by adding 2 months and subtracting 1 day)
-            const endTime = new Date(currentTime);
-            endTime.setMonth(endTime.getMonth() + 2);
-            endTime.setDate(endTime.getDate() - 1);
+            // Get Start and End
+            const startTime = getStartOfPreviousMonth(currentTime);
+            const endTime = getEndOfNextMonth(currentTime);
 
             // Now do the query
             const dbQuery = 'SELECT * FROM dbname.schedule JOIN dbname.service on dbname.schedule.service_id = dbname.service.service_id where dbname.schedule.church_id=? AND dbname.service.serviceTime>=? AND dbname.service.serviceTime<?';

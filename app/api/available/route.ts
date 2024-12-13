@@ -3,6 +3,7 @@ import { NextRequest } from 'next/server';
 import { runQuery } from '../../lib/db';
 
 const MEMBER_ID:string = 'member_id';
+const CHURCH_ID:string = 'church_id';
 const MIN_DATE:string = 'min';
 const MAX_DATE:string = 'max';
 const AVAILABLE_ID:string = 'availability_id';
@@ -26,6 +27,19 @@ export async function GET(req:NextRequest) {
         catch (e:any) {
             result = { error: e.message  };
         }
+    }
+    else if (params.has(CHURCH_ID) && params.has(MIN_DATE) && params.has(MAX_DATE)) {
+        try {
+            const query = 'SELECT * FROM dbname.availability JOIN dbname.church_member ON dbname.availability.member_id = dbname.church_member.member_id WHERE dbname.church_member.church_id=? AND availability.blockOutDay>=? AND dbname.availability.blockOutDay<?'
+            const queryParams = [params.get(CHURCH_ID), Number(params.get(MIN_DATE)), Number(params.get(MAX_DATE))];
+
+            const [dbResults] = await runQuery(query, queryParams);
+            result = dbResults;
+            resultStatus = {status: 200};
+        }
+        catch (e:any) {
+            result = { error: e.message  };
+        }        
     }
 
     return NextResponse.json(result, resultStatus);

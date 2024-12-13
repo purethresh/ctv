@@ -8,7 +8,8 @@ import SLabelMember from "./SLabelMember";
 export default function SScheduledLabel(props:SLabelGroupProps) {
     let [labelInfo, setLabelInfo] = useState<LabelInfo>(props.groupInfo || new LabelInfo({}));
     let [memberList, setMemberList] = useState<MinMemberInfo[]>([]);
-    // TODO JLS
+    // TODO JLS - HERE
+    // Need to render the members for this label
     // Show Label Name
     // Show list of scheduled members
     // Show list of suggested members
