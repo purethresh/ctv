@@ -11,6 +11,7 @@ export default function SMemberEmailList(props:SMemberInfoProp) {
     let [emailList, setEmailList] = useState<MemberEmailInfo[]>([]);
     let [isDirty, setIsDirty] = useState<boolean>(false);
     let [isEditing, setIsEditing] = useState<boolean>(props.isEditing ? true : false);
+    let [isCreating, setIsCreating] = useState<boolean>(props.isCreating ? true : false);
     let [updateMap, setUpdateMap] = useState<Map<string, UpdateType>>(new Map<string, UpdateType>());
 
     const onAddEmail = () => {
@@ -138,9 +139,18 @@ export default function SMemberEmailList(props:SMemberInfoProp) {
 
     const updateIsEditing = () => {
         const editing = props.isEditing ? true : false;
+        const creating = props.isCreating ? true : false;
+        setIsCreating(creating);
 
         if (editing !== isEditing) {
             setIsEditing(editing);
+
+            if (creating) {                
+                const mp = emailMap;
+                mp.clear();
+                setEmailMap(mp);
+                setEmailList([]);
+            }            
         }
     }
     
@@ -172,7 +182,7 @@ export default function SMemberEmailList(props:SMemberInfoProp) {
 
     useEffect(() => {
         updateIsEditing();
-    }, [props.isEditing]);
+    }, [props.isEditing, props.isCreating]);
 
     useEffect(() => {
         onSave();

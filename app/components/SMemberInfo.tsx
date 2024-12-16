@@ -125,6 +125,7 @@ export default function SMemberInfo(props:SMemberInfoProp) {
         }
         else {
             const mInfo = new MinMemberInfo({ member_id: v4() });
+            setMemberId(mInfo.member_id);
             setMemberInfo(mInfo);
             setIsEditing(true);
         }
@@ -132,7 +133,7 @@ export default function SMemberInfo(props:SMemberInfoProp) {
 
     useEffect(() => {
         updateMemberInfo(true);
-    }, [props.memberId, props.isAdmin, props.isCreating, props.churchId]);  
+    }, [props.memberId, props.isAdmin, props.isCreating, props.churchId, props.updateNumber]);  
 
     return (
         <>

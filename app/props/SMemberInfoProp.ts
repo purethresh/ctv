@@ -6,6 +6,7 @@ export interface SMemberInfoProp {
     isCreating?: boolean;
     needsSave?: boolean;
     churchId?: string;
+    updateNumber?: number;
     onSaveComplete?: () => void;
     onMemberCreated?: () => void;
 }

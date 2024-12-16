@@ -138,7 +138,6 @@ export default function SMemberPhoneList(props:SMemberInfoProp) {
     }
 
     const updateIsEditing = () => {
-        console.log('TODO JLS - - - - - - start of updateIsEditing');
         const editing = props.isEditing ? true : false;
         const creating = props.isCreating ? true : false;
         setIsCreating(creating);
@@ -146,20 +145,16 @@ export default function SMemberPhoneList(props:SMemberInfoProp) {
         if (editing !== isEditing) {
             setIsEditing(editing);            
 
-            if (creating) {
-                // TODO JLS, there is an item in the phone map when starting
-                // WHY?  It should be empty
-                // Maybe the member id is wrong?
-                //
-                // updateMap.set(v4(), UpdateType.create);
-                console.log('Adding a phone');
-                console.log(phoneMap);
+            if (creating) {                
+                const mp = phoneMap;
+                mp.clear();
+                setPhoneMap(mp);
+                setPhoneList([]);
             }
         }
     }
 
     const updateMemberInfo = async() => {
-        
         // If no member Id, then we can't do anything
         if (props.memberId === undefined || props.memberId.length <= 0) {
             return

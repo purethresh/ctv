@@ -8,17 +8,13 @@ import { Button } from "@mui/material";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import SMemberInfo from "@/app/components/SMemberInfo";
 
-// TODO JLS - Here
-// Need to get the member id from the selected member
-// Then for the member info, need to set the member id from the select.
-// But if is creating, then have the control create the member id
-
 export default function MemberPage() {
   let [shouldCreateMember, setShouldCreateMember] = useState<boolean>(false);
   let [userId, setUserId] = useState<string>('');
   let [churchId, setChurchId] = useState<string>('');
   let [isMemberAdmin, setIsMemberAdmin] = useState<boolean>(false);
   let [memberId, setMemberId] = useState<string>('');
+  let [updateNumber, setUpdateNumber] = useState<number>(0);
 
   const onCreateMember = () => {
     setShouldCreateMember(true);
@@ -28,6 +24,8 @@ export default function MemberPage() {
     setShouldCreateMember(false);
     // Reset back to the current user
     setMemberId(userId);
+    setUpdateNumber(updateNumber + 1);
+    setShouldCreateMember(false);
   }
 
   const onMemberSelected = (memberId:string) => {
@@ -61,9 +59,9 @@ export default function MemberPage() {
 
   return (
     <>
-      <SAllMemberSelect churchId={churchId} isVisible={isMemberAdmin} defaultMemberId={userId} onClick={onMemberSelected}  />
+      <SAllMemberSelect churchId={churchId} isVisible={isMemberAdmin} defaultMemberId={userId} onClick={onMemberSelected} updateNumber={updateNumber}  />
       <Button endIcon={<PersonAddIcon />} onClick={onCreateMember} style={{display:isMemberAdmin ? 'block' : 'none'}}>Create Member</Button>
-      <SMemberInfo isAdmin={isMemberAdmin} userId={userId} memberId={memberId} isCreating={shouldCreateMember} onMemberCreated={onMemberCreated} churchId={churchId}  />
+      <SMemberInfo isAdmin={isMemberAdmin} userId={userId} memberId={memberId} isCreating={shouldCreateMember} onMemberCreated={onMemberCreated} churchId={churchId} updateNumber={updateNumber}  />
     </>  
   );
 }

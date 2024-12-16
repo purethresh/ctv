@@ -11,6 +11,7 @@ export default function SMemberAddressList(props:SMemberInfoProp) {
     let [addressList, setAddressList] = useState<MemberAddressInfo[]>([]);
     let [isDirty, setIsDirty] = useState<boolean>(false);
     let [isEditing, setIsEditing] = useState<boolean>(props.isEditing ? true : false);
+    let [isCreating, setIsCreating] = useState<boolean>(props.isCreating ? true : false);
     let [updateMap, setUpdateMap] = useState<Map<string, UpdateType>>(new Map<string, UpdateType>());
 
     const onAddAddress = () => {
@@ -190,9 +191,18 @@ export default function SMemberAddressList(props:SMemberInfoProp) {
 
     const updateIsEditing = () => {
         const editing = props.isEditing ? true : false;
+        const creating = props.isCreating ? true : false;
+        setIsCreating(creating);
 
         if (editing !== isEditing) {
             setIsEditing(editing);
+
+            if (creating) {                
+                const mp = addressMap;
+                mp.clear();
+                setAddressMap(mp);
+                setAddressList([]);
+            }
         }
     }    
 
@@ -228,7 +238,7 @@ export default function SMemberAddressList(props:SMemberInfoProp) {
 
     useEffect(() => {
         updateIsEditing();
-    }, [props.isEditing]);
+    }, [props.isEditing, props.isCreating]);
 
     useEffect(() => {
         onSave();

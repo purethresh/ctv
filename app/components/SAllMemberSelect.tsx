@@ -44,7 +44,7 @@ export default function SAllMemberSelect(props:SAllMemberSelectProp) {
         }
         
         originalSetup();
-    }, [props.churchId, props.isVisible]);    
+    }, [props.churchId, props.isVisible, props.updateNumber]);    
 
     return (
       <Box style={{display:isVisible ? 'block' : 'none'}}>
