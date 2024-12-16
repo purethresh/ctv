@@ -27,7 +27,7 @@ export class LabelInfo {
     childLabels:LabelInfo[];
 
     // Labels can have members
-    members:Map<string, MinMemberInfo>;
+    memberMap:Map<string, MinMemberInfo>;
 
     // Labels can have owners
     owners:Map<string, MinMemberInfo>;
@@ -53,7 +53,7 @@ export class LabelInfo {
 
         this.parentLabel = null;
         this.childLabels = [];
-        this.members = new Map<string, MinMemberInfo>();
+        this.memberMap = new Map<string, MinMemberInfo>();
         this.owners = new Map<string, MinMemberInfo>();
         this.scheduled = [];
     }
@@ -77,17 +77,17 @@ export class LabelInfo {
         label.parentLabel = this;
     }
 
-    addMember(member:MinMemberInfo) {       
-        this.members.set(member.member_id, member); 
+    addMember(member:MinMemberInfo) {     
+        this.memberMap.set(member.member_id, member); 
     }
 
     isMember(memberId:string) {
-        return this.members.has(memberId);
+        return this.memberMap.has(memberId);
     }
 
     getMemberList() : MinMemberInfo[] {
         var result:MinMemberInfo[] = [];
-        this.members.forEach((value:MinMemberInfo, key:string) => {
+        this.memberMap.forEach((value:MinMemberInfo, key:string) => {
             result.push(value);
         });
 

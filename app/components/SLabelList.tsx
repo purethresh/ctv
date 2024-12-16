@@ -1,6 +1,6 @@
 import { SLabelListProps } from "../props/SLabelListProps";
 import { useEffect, useState } from 'react';
-import LabelInfo from "../lib/LabelInfo";
+import { LabelInfo } from "../lib/LabelInfo";
 import Chip from '@mui/material/Chip';
 
 export default function SLabelList(props:SLabelListProps) {

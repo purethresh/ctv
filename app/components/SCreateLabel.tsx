@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { TextField, Button, Checkbox, FormControlLabel } from "@mui/material";
 import CreateIcon from '@mui/icons-material/Create';
 import { SCreateLabelProp } from "../props/SCreateLabelProp";
-import LabelInfo from '../lib/LabelInfo';
+import { LabelInfo } from '../lib/LabelInfo';
 import { v4 } from 'uuid';
 
 export default function SCreateLabel(props: SCreateLabelProp) {

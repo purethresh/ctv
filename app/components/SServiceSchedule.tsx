@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Box } from '@mui/material';
 import ChurchLabels from '../lib/ChurchLabels';
 import SLabelGroup from './SLabelGroup';
-import LabelInfo from '../lib/LabelInfo';
+import { LabelInfo } from '../lib/LabelInfo';
 
 // Custom day Render
 export default function SServiceSchedule(props:SServiceScheduleProps) {

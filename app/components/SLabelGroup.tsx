@@ -6,11 +6,18 @@ import { group } from "console";
 import SScheduledLabel from "./SScheduledLabel";
 
 export default function SLabelGroup(props:SLabelGroupProps) {
-    let [groupInfo, setGroupInfo] = useState<LabelInfo>(props.groupInfo || new LabelInfo({}));
+    let [labelName, setLabelName] = useState<string>(props.groupInfo?.labelName || '');
+    let [childLabels, setChildLabels] = useState<LabelInfo[]>([]);
+    let [updateNumber, setUpdateNumber] = useState<number>(props.updateNumber || 0);
+
+    const needsUpdate = () => {
+        setUpdateNumber(props.updateNumber || 0);
+    }
 
     const getInitialInfo = async() => {
         if (props.groupInfo !== undefined) {
-            setGroupInfo(props.groupInfo);
+            setLabelName(props.groupInfo.labelName);
+            setChildLabels(props.groupInfo.childLabels);
         }        
     }
 
@@ -18,12 +25,15 @@ export default function SLabelGroup(props:SLabelGroupProps) {
         getInitialInfo();
     }, [props.groupInfo]);
 
+    useEffect(() => {
+        needsUpdate();
+    }, [props.updateNumber]);
+
     return (
         <Box>
-            {groupInfo.labelName}
-
-            {groupInfo.childLabels.map((item, index) => (
-                <SScheduledLabel key={item.label_id} groupInfo={item} />
+            {labelName}
+            {childLabels.map((item, index) => (                
+                <SScheduledLabel key={item.label_id} groupInfo={item} updateNumber={updateNumber} />
             ))}            
         </Box>
     );

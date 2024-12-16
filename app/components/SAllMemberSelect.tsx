@@ -8,20 +8,17 @@ export default function SAllMemberSelect(props:SAllMemberSelectProp) {
     let [memberList, setMemberList] = useState<MinMemberInfo[]>([]);
     let [selectedMember, setSelectedMember] = useState<string>('');
     let [isVisible, setIsVisible] = useState<boolean>(false);
-    let [showAddButton, setShowAddButton] = useState<boolean>(false);
 
     const handleChange = (event: SelectChangeEvent) => {
-        setSelectedMember(event.target.value as string);
+        const memberId = event.target.value as string;
+        setSelectedMember(memberId);
+        if (props.onClick) {
+            props.onClick(memberId);
+        }
     };   
     
-    const addPerson = async () => {
-        if (props.onClick) {
-            props.onClick(selectedMember);
-        }
-    }
-
     const getAllMembers = async () => {
-        const result = await fetch(`/api/member?church_id=${props.churchId}`, { cache: 'force-cache' });
+        const result = await fetch(`/api/member?church_id=${props.churchId}`);
         var rs = await result.json();
 
         const mList = [];
@@ -44,13 +41,10 @@ export default function SAllMemberSelect(props:SAllMemberSelectProp) {
             if (props.isVisible) {
                 setIsVisible(true);
             }
-            if (props.showAddButton) {
-                setShowAddButton(true);
-            }
         }
         
         originalSetup();
-    }, [props.churchId, props.isVisible, props.showAddButton]);    
+    }, [props.churchId, props.isVisible]);    
 
     return (
       <Box style={{display:isVisible ? 'block' : 'none'}}>
@@ -66,9 +60,6 @@ export default function SAllMemberSelect(props:SAllMemberSelectProp) {
                 <MenuItem key={item.member_id} value={item.member_id}>{item.first + " " + item.last}</MenuItem>
             ))}                        
         </Select>
-        <IconButton onClick={addPerson} style={{display:showAddButton ? 'block' : 'none'}}>
-            <PersonAddIcon />
-        </IconButton>
       </Box>
     );
 

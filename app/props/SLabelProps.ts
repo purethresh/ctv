@@ -1,4 +1,4 @@
-import LabelInfo from "../lib/LabelInfo";
+import { LabelInfo } from "../lib/LabelInfo";
 
 export interface SLabelProps {
     labelInfo?:LabelInfo;

@@ -1,4 +1,4 @@
-import LabelInfo from '../lib/LabelInfo';
+import { LabelInfo } from '../lib/LabelInfo';
 import { MinMemberInfo } from '../lib/MinMemberInfo';
 
 export interface SMemberListProp {

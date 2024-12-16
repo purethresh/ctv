@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import UserInfo from '@/app/lib/UserInfo';
 import ChurchLabels from '@/app/lib/ChurchLabels';
-import LabelInfo from '@/app/lib/LabelInfo';
+import { LabelInfo } from '@/app/lib/LabelInfo';
 import SLabelList from '@/app/components/SLabelList';
 import SLabelInfo from '@/app/components/SLabelInfo';
 import { MinMemberInfo } from '@/app/lib/MinMemberInfo';

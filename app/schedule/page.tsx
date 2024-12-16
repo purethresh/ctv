@@ -8,11 +8,6 @@ import SChurchCalendar from "../components/SChurchCalendar";
 import UserInfo from "../lib/UserInfo";
 import { IServiceInfo, ServiceInfo } from "../lib/ServiceInfo";
 
-// TODO JLS - Here
-// Need a control for all services on a specific day
-// Then show labels for each service.
-// Make it so a service can be minimized and expanded
-
 export default function SchedulePage() {
   let [curentDate, setCurrentDate] = useState<string>(getDefaultSunday());
   let [currentTime, setCurrentTime] = useState<Date>(new Date(getDefaultSunday()));
@@ -28,9 +23,7 @@ export default function SchedulePage() {
   }
 
   const onMonthChange = async (month:string, year:string) => {
-    // TODO JLS - HERE
-    // TODO JLS, need to get all the scheduled for the month before to the month after
-    // SELECT * FROM dbname.schedule JOIN dbname.service on dbname.schedule.service_id = dbname.service.service_id;
+    
   }
 
   const onServiceCreated = async () => {

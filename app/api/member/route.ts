@@ -2,6 +2,7 @@ import { runQuery } from '../../lib/db';
 import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
 import { MinMemberInfo } from '../../lib/MinMemberInfo';
+import { v4 } from 'uuid';
 
 const USER_SUB_ID = 'sub';
 const CHURCH_ID = 'church_id';
@@ -83,16 +84,25 @@ export async function POST(req: NextRequest) {
 export async function PUT(req: NextRequest) {
     var result = {error: 'nothing happened'};
     var resultStatus = {status: 500};
+    const params = req.nextUrl.searchParams;
 
     try {
         const data = await req.json();
         const mInfo = new MinMemberInfo(data);
+        const cId:string = params.get(CHURCH_ID) || '';
 
         // Only update if we have a member_id
-        if (mInfo.member_id.length > 0) {
-            const query = 'INSERT INTO members (member_id, first, last, notes) VALUES (?, ?, ?, ?)';
-            const queryParams = [mInfo.member_id, mInfo.first, mInfo.last, mInfo.notes];
-            const [dbResults] = await runQuery(query, queryParams);
+        if (mInfo.member_id.length > 0 && cId.length > 0) {
+            // Insert user
+            var query = 'INSERT INTO members (member_id, first, last, notes) VALUES (?, ?, ?, ?)';
+            var queryParams = [mInfo.member_id, mInfo.first, mInfo.last, mInfo.notes];
+            var [dbResults] = await runQuery(query, queryParams);
+            result = dbResults;
+
+            // Add the member to the church
+            query = 'INSERT INTO church_member (church_member_id, church_id, member_id) VALUES (?, ?, ?)';
+            queryParams = [v4(), cId, mInfo.member_id];
+            var [dbResults] = await runQuery(query, queryParams);
             result = dbResults;
             resultStatus = {status: 200};
         }

@@ -8,11 +8,31 @@ import { Button } from "@mui/material";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import SMemberInfo from "@/app/components/SMemberInfo";
 
+// TODO JLS - Here
+// Need to get the member id from the selected member
+// Then for the member info, need to set the member id from the select.
+// But if is creating, then have the control create the member id
+
 export default function MemberPage() {
+  let [shouldCreateMember, setShouldCreateMember] = useState<boolean>(false);
   let [userId, setUserId] = useState<string>('');
   let [churchId, setChurchId] = useState<string>('');
   let [isMemberAdmin, setIsMemberAdmin] = useState<boolean>(false);
   let [memberId, setMemberId] = useState<string>('');
+
+  const onCreateMember = () => {
+    setShouldCreateMember(true);
+  }
+
+  const onMemberCreated = () => {
+    setShouldCreateMember(false);
+    // Reset back to the current user
+    setMemberId(userId);
+  }
+
+  const onMemberSelected = (memberId:string) => {
+    setMemberId(memberId);
+  }
 
   const updateUserInfo = async() => {
     // Get the basic User Info
@@ -33,7 +53,6 @@ export default function MemberPage() {
       await uInfo.loadMemberAdminInfo(rootId);
       setIsMemberAdmin(uInfo.isMemberAdmin);
     }
-
   }
 
   useEffect(() => {
@@ -42,9 +61,9 @@ export default function MemberPage() {
 
   return (
     <>
-      <SAllMemberSelect churchId={churchId} isVisible={isMemberAdmin} showAddButton={false}  />
-      <Button endIcon={<PersonAddIcon />} style={{display:isMemberAdmin ? 'block' : 'none'}}>Create Member</Button>
-      <SMemberInfo isAdmin={isMemberAdmin} memberId={memberId}  />
+      <SAllMemberSelect churchId={churchId} isVisible={isMemberAdmin} defaultMemberId={userId} onClick={onMemberSelected}  />
+      <Button endIcon={<PersonAddIcon />} onClick={onCreateMember} style={{display:isMemberAdmin ? 'block' : 'none'}}>Create Member</Button>
+      <SMemberInfo isAdmin={isMemberAdmin} userId={userId} memberId={memberId} isCreating={shouldCreateMember} onMemberCreated={onMemberCreated} churchId={churchId}  />
     </>  
   );
 }

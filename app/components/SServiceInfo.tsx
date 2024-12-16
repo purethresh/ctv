@@ -14,6 +14,7 @@ export default function SServiceInfo(props: SServiceInfoProps) {
   let [labelGroupList, setLabelGroupList] = useState<LabelInfo[]>([]);
   let [sInfo, setSInfo] = useState<ServiceInfo>(props.serviceInfo || new ServiceInfo({}));
   let [serviceTime, setServiceTime] = useState<string>('');
+  let [updateNum, setUpdateNum] = useState<number>(0);
   
   const updateServiceInfo = async() => {
       // Get the scheduled members
@@ -27,10 +28,6 @@ export default function SServiceInfo(props: SServiceInfoProps) {
     if (sInfo.church_id.length > 0) {
       const cId:string = sInfo.church_id;
       await allLabels.fetchAllLabels(cId);
-
-      // Get the label groups
-      const lGroup = allLabels.getLabelGroups();
-      setLabelGroupList(lGroup);
 
       // Get the time
       const tString = new Date(sInfo.serviceTime).toLocaleTimeString();
@@ -54,6 +51,12 @@ export default function SServiceInfo(props: SServiceInfoProps) {
 
       // Also update availability
       churchSchedule.updateMemberWithBlockOutDays(allLabels.getMemberMap(), sInfo.serviceAsDate());
+
+      setUpdateNum(updateNum + 1);
+
+      // Get the label groups
+      const lGroup = allLabels.getLabelGroups();
+      setLabelGroupList(lGroup);
     }
   }
 
@@ -61,20 +64,12 @@ export default function SServiceInfo(props: SServiceInfoProps) {
     getInitialInfo();
   }, [props.serviceInfo]);
 
-  // TODO JLS - Here
-  // Show label groups
-  // Pass in the all Labels object
-  // If a user is added or removed, update the obj. And update within the component
-  // (Show blue for scheduled, green for suggesteed, and red for blocked)
-  // Also show the number of times a person has been scheduled in prev, this, and next month
-  // Sort them by that number
-
   return (
     <Box>
       {sInfo.name} {serviceTime}<br />
       {sInfo.info}
       {labelGroupList.map((item, index) => (
-        <SLabelGroup key={item.label_id} groupInfo={item} />
+        <SLabelGroup key={item.label_id} groupInfo={item} updateNumber={updateNum} />
       ))}      
     </Box>
   );

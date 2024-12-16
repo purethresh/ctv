@@ -11,7 +11,8 @@ export default function SMemberPhoneList(props:SMemberInfoProp) {
     let [phoneList, setPhoneList] = useState<MemberPhoneInfo[]>([]);
     let [isDirty, setIsDirty] = useState<boolean>(false);
     let [isEditing, setIsEditing] = useState<boolean>(props.isEditing ? true : false);
-    let [updateMap, setUpdateMap] = useState<Map<string, UpdateType>>(new Map<string, UpdateType>());
+    let [isCreating, setIsCreating] = useState<boolean>(props.isCreating ? true : false);
+    let [updateMap, setUpdateMap] = useState<Map<string, UpdateType>>(new Map<string, UpdateType>());    
 
     const onAddPhone = () => {
         const pInfo = new MemberPhoneInfo({});
@@ -137,10 +138,23 @@ export default function SMemberPhoneList(props:SMemberInfoProp) {
     }
 
     const updateIsEditing = () => {
+        console.log('TODO JLS - - - - - - start of updateIsEditing');
         const editing = props.isEditing ? true : false;
+        const creating = props.isCreating ? true : false;
+        setIsCreating(creating);
 
         if (editing !== isEditing) {
-            setIsEditing(editing);
+            setIsEditing(editing);            
+
+            if (creating) {
+                // TODO JLS, there is an item in the phone map when starting
+                // WHY?  It should be empty
+                // Maybe the member id is wrong?
+                //
+                // updateMap.set(v4(), UpdateType.create);
+                console.log('Adding a phone');
+                console.log(phoneMap);
+            }
         }
     }
 
@@ -175,7 +189,7 @@ export default function SMemberPhoneList(props:SMemberInfoProp) {
     
     useEffect(() => {
         updateIsEditing();
-    }, [props.isEditing]);
+    }, [props.isEditing, props.isCreating]);
 
     useEffect(() => {
         onSave();
