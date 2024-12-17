@@ -1,39 +1,35 @@
 import { SLabelListProps } from "../props/SLabelListProps";
 import { useEffect, useState } from 'react';
 import { LabelInfo } from "../lib/LabelInfo";
-import Chip from '@mui/material/Chip';
+import SLabelChip from "./SLabelChip";
+import { Box } from "@mui/material";
+
 
 export default function SLabelList(props:SLabelListProps) {
     let [labelList, setLabelList] = useState<LabelInfo[]>([]);
+    let [userId, setUserId] = useState<string>('');
 
-    const handleInternalClick = (labelId:string) => {
+    const setup = () => {
+        const lblList = props.labelList || [];
+        setLabelList(lblList);
+        setUserId(props.userId || '');
+    }
+
+    const onLabelClick = (label:LabelInfo) => {
         if (props.onClick) {
-            props.onClick(labelId);
+            props.onClick(label.label_id);
         }
     }
 
     useEffect(() => {
-        const setup = async() => {
-            if (props.labelList) {
-                setLabelList(props.labelList);
-            }
-        }
-    
         setup();
-    }, [props.labelList, props.seletedLabel]);  
+    }, [props.labelList, props.userId]); 
 
     return (
-        <>
-            {labelList.map((item, index) => (
-                <Chip
-                    key={item.label_id}
-                    label={item.labelName}
-                    onClick={(e) => {handleInternalClick(item.label_id)}}
-                    color="primary"
-                    variant={props.seletedLabel === item.label_id ? 'filled' : 'outlined'}
-                />
-            ))}
-        </>
-    );
-
+        <Box>
+        {labelList.map((item, index) => (
+            <SLabelChip key={item.label_id + '_label'} labelInfo={item} userId={userId} onClick={onLabelClick} />
+        ))}
+        </Box>
+    )
 }

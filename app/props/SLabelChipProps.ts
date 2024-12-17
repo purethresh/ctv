@@ -1,8 +1,7 @@
 import { LabelInfo } from "../lib/LabelInfo";
 
-export interface SLabelProps {
+export interface SLabelChipProps {
     labelInfo?:LabelInfo;
-    compact?:boolean;
-    admin?:boolean;
+    userId?:string;
     onClick?:(labelInfo:LabelInfo) => void;
 }

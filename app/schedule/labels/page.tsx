@@ -11,7 +11,6 @@ import { MinMemberInfo } from '@/app/lib/MinMemberInfo';
 export default function LabelPage() {
   let [churchLabels, setChurchLabels] = useState<ChurchLabels>(new ChurchLabels());
   let [memberLabels, setMemberLabels] = useState<LabelInfo[]>([]);
-  let [ownerLabels, setOwnerLabels] = useState<LabelInfo[]>([]);
   let [selectedLabel, setSelectedLabel] = useState<string>('');
   let [selectedInfo, setSelectedInfo] = useState<LabelInfo | undefined>(undefined);
   let [memberList, setMemberList] = useState<MinMemberInfo[]>([]);
@@ -67,13 +66,8 @@ export default function LabelPage() {
       // Set the church labels
       setChurchLabels(churchLabels);
 
-      // Get the labels this user is a member of      
-      const memberLabels = churchLabels.getMembership(uInfo.member_id);
-      setMemberLabels(memberLabels);
-
-      // Get the labels this user is an owner of
-      const ownerLabels = churchLabels.getOwnership(uInfo.member_id);
-      setOwnerLabels(ownerLabels);
+      const lst = churchLabels.getMemberAndOwner(uInfo.member_id);
+      setMemberLabels(lst);
 
       // Turn caching back on
       churchLabels.shouldUseCache(true);
@@ -86,9 +80,7 @@ export default function LabelPage() {
   return (
     <>
       <div>My Labels</div>
-      <SLabelList labelList={memberLabels} onClick={onLabelClick} seletedLabel={selectedLabel}/>
-      <div>Labels I Administer</div>
-      <SLabelList labelList={ownerLabels} onClick={onLabelClick} seletedLabel={selectedLabel}/>
+      <SLabelList labelList={memberLabels} userId={userId} onClick={onLabelClick} seletedLabel={selectedLabel}/>
       <div>Label Info goes here</div>
       <SLabelInfo labelInfo={selectedInfo} memberList={memberList} ownerList={ownerList} userId={userId} churchId={churchId} onReload={reloadLabelInfo}/>
     </>

@@ -5,6 +5,11 @@ import { SMemberListProp } from "../props/SMemberListProp";
 import { MinMemberInfo } from '../lib/MinMemberInfo';
 import SAllMemberSelect from './SAllMemberSelect';
 
+// TODO JLS - HERE
+// Need to add ability to add member
+// Need to add ability to remove member
+// This isn't working correctly.
+
 export default function SMemberList( props:SMemberListProp) {
     let [title, setTitle] = useState<string>('');
     let [labelName, setLabelName] = useState<string>('');

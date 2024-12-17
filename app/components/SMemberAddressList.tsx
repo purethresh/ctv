@@ -150,7 +150,7 @@ export default function SMemberAddressList(props:SMemberInfoProp) {
         }
     }
     
-    const onSave = async() => {
+    const onSave = async() => {        
         // Ignore if we are not editing
         if (props.needsSave === false) {
             return;

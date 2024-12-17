@@ -225,6 +225,18 @@ export default class ChurchLabels {
         return result;
     }
 
+    getMemberAndOwner(memberId:string) : LabelInfo[] {
+        var result:LabelInfo[] = [];
+
+        this.labelMap.forEach((value:LabelInfo, key:string) => {
+            if (value.isMember(memberId) || value.isOwner(memberId)) {
+                result.push(value);
+            }
+        });
+
+        return result;
+    }
+
     async doGet(url:string) : Promise<Response> {
         if (this.useCache) {
             return fetch(url, { cache: 'force-cache' });

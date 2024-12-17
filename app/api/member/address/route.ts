@@ -41,8 +41,8 @@ export async function POST(req: NextRequest) {
 
         // Only update if we have a member_id
         if (mInfo.address_id.length > 0) {
-            const query = 'UPDATE addresses SET address1=?, address2=?, city=?, state=?, zip=? WHERE address_id=?';
-            const queryParams = [mInfo.address1, mInfo.address2, mInfo.city, mInfo.state, mInfo.zip, mInfo.address_id];
+            const query = 'UPDATE addresses SET member_id=?, address1=?, address2=?, city=?, state=?, zip=? WHERE address_id=?';
+            const queryParams = [mInfo.member_id, mInfo.address1, mInfo.address2, mInfo.city, mInfo.state, mInfo.zip, mInfo.address_id];
             const [dbResults] = await runQuery(query, queryParams);
             result = dbResults;
             resultStatus = {status: 200};
@@ -65,8 +65,8 @@ export async function PUT(req: NextRequest) {
 
         // Only update if we have a member_id
         if (mInfo.member_id.length > 0) {
-            const query = 'INSERT INTO addresses (address_id, address1, address2, city, state, zip) VALUES (?, ?, ?, ?, ?, ?)';
-            const queryParams = [mInfo.address_id, mInfo.address1, mInfo.address2, mInfo.city, mInfo.state, mInfo.zip];
+            const query = 'INSERT INTO addresses (address_id, member_id, address1, address2, city, state, zip) VALUES (?, ?, ?, ?, ?, ?, ?)';
+            const queryParams = [mInfo.address_id, mInfo.member_id, mInfo.address1, mInfo.address2, mInfo.city, mInfo.state, mInfo.zip];
             const [dbResults] = await runQuery(query, queryParams);
             result = dbResults;
             resultStatus = {status: 200};
