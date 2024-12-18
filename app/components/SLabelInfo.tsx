@@ -17,6 +17,12 @@ export default function SLabelInfo(props:SLabelInfoProps) {
     let [canAddMember, setCanAddMember] = useState<boolean>(false);
     let [canAddOwner, setCanOwner] = useState<boolean>(false);
 
+    const removeUser = async (memberId:string) => {
+        if (props.onRemoveMember) {
+            props.onRemoveMember(memberId, labelInfo.label_id);
+        }
+    }
+
     const userSelected = async (memberId:string) => {
         setSelectedMember(memberId);
 
@@ -61,8 +67,8 @@ export default function SLabelInfo(props:SLabelInfoProps) {
         <Box style={{display:props.labelInfo ? 'block' : 'none'}}>
             <div>{labelName}</div>
             <div>{labelDescription}</div>
-            <SMemberList labelInfo={props.labelInfo} memberList={props.memberList} title="Members of" userId={userId}/>
-            <SMemberList labelInfo={props.labelInfo} memberList={props.ownerList} title="Administrators of" userId={userId} />
+            <SMemberList labelInfo={props.labelInfo} memberList={props.memberList} title="Members of" userId={userId} onRemoveMember={removeUser}/>
+            <SMemberList labelInfo={props.labelInfo} memberList={props.ownerList} title="Administrators of" userId={userId} onRemoveMember={removeUser}/>
             <br />
             <SCreateLabel parentLabel={props.labelInfo} userId={userId} churchId={churchId} onReload={props.onReload} />
 

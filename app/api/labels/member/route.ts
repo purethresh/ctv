@@ -76,3 +76,24 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(result, resultStatus);
 }
+
+
+export async function DELETE(req:NextRequest) {
+    var result = {error: 'nothing happened'};
+    var resultStatus = {status: 500};
+
+    const params = req.nextUrl.searchParams;
+
+    // Only process if we have an availability_id
+    if (params.has(LABEL_ID) && params.has(MEMBER_ID)) {
+        const query = 'DELETE FROM label_member WHERE label_id = ? AND member_id = ?';
+        const queryParams = [params.get(LABEL_ID), params.get(MEMBER_ID)];
+
+        await runQuery(query, queryParams);
+        // @ts-ignore
+        result = {response: 'member removed from label'};
+        resultStatus = {status: 200};
+    }
+
+    return NextResponse.json(result, resultStatus);
+}

@@ -6,4 +6,5 @@ export interface SMemberListProp {
     memberList?:MinMemberInfo[];
     userId?:string;
     title?:string;
+    onRemoveMember?: (memberId:string) => void;
 }

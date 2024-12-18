@@ -57,16 +57,21 @@ export default function LabelPage() {
         if (asOwner) {
           l.addOwner(m);
           setSelectedInfo(l);
-          labelQuery += 'false';
+          labelQuery += 'true';
         }
         else {
           l.addMember(m);
           setSelectedInfo(l);
-          labelQuery += 'true';
+          labelQuery += 'false';
         }
 
         // Update the label
         const result = await fetch(labelQuery, {method: 'POST'});
+
+        // Force updated data
+        churchLabels.shouldUseCache(false);
+        await churchLabels.fetchMembersForLabel(labelId);
+        churchLabels.shouldUseCache(true);
 
         // Reload
         await onLabelClick(labelId);
@@ -74,9 +79,23 @@ export default function LabelPage() {
     }
   }
 
-  const removeMemberFromLabel = async (memberId:string, labelId:string, asOwner:boolean) => {
-    // TODO JLS - here
-    // Need to implement removing a member from a label
+  const removeMemberFromLabel = async (memberId:string, labelId:string) => {
+    const result = await fetch(`/api/labels/member?label_id=${labelId}&member_id=${memberId}`, {method: 'DELETE'});
+    var rs = await result.json();
+
+    // Remove the person from the label
+    const l = churchLabels.labelMap.get(labelId);
+    l?.removeMember(memberId);
+    l?.removeOwner(memberId);
+
+    // Force updated data
+    churchLabels.shouldUseCache(false);
+    await churchLabels.fetchMembersForLabel(labelId);
+    churchLabels.shouldUseCache(true);
+
+    // Reload
+    await onLabelClick(labelId);
+
   }
 
   const getAllMembers = async (churchId:string) => {

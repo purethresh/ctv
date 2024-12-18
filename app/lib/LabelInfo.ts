@@ -81,6 +81,10 @@ export class LabelInfo {
         this.memberMap.set(member.member_id, member); 
     }
 
+    removeMember(memberId:string) {
+        this.memberMap.delete(memberId);        
+    }
+
     isMember(memberId:string) {
         return this.memberMap.has(memberId);
     }
@@ -104,6 +108,15 @@ export class LabelInfo {
         // Loop through and add this as an owner to all the children too
         this.childLabels.forEach((child) => {
             child.addOwner(owner);
+        });
+    }
+
+    removeOwner(ownerId:string) {
+        this.owners.delete(ownerId);
+
+        // Loop through and remove this as an owner from all the children
+        this.childLabels.forEach((child) => {
+            child.removeOwner(ownerId);
         });
     }
 

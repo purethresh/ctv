@@ -9,5 +9,5 @@ export interface SLabelInfoProps {
     churchId?:string;
     onReload?:() => void;
     onAddMember?: (memberId:string, labelId:string, owner:boolean) => void;
-    onRemoveMember?: (memberId:string, labelId:string, owner:boolean) => void;
+    onRemoveMember?: (memberId:string, labelId:string) => void;
 }
