@@ -1,14 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Chip } from "@mui/material";
-
 import { SMemberListProp } from "../props/SMemberListProp";
 import { MinMemberInfo } from '../lib/MinMemberInfo';
-import SAllMemberSelect from './SAllMemberSelect';
-
-// TODO JLS - HERE
-// Need to add ability to add member
-// Need to add ability to remove member
-// This isn't working correctly.
+import { LabelInfo } from '../lib/LabelInfo';
 
 export default function SMemberList( props:SMemberListProp) {
     let [title, setTitle] = useState<string>('');
@@ -17,14 +11,17 @@ export default function SMemberList( props:SMemberListProp) {
 
     useEffect(() => {
         const updateShowElements = async () => {
+
+            const lblInfo = props.labelInfo || new LabelInfo({});
+            const userId = props.userId || '';
             
             setTitle(props.title || '');
-            setLabelName(props.labelInfo?.labelName || '');
+            setLabelName(lblInfo.labelName);
             setMList(props.memberList || []);
         }
         
         updateShowElements();
-    }, [props.labelInfo, props.memberList, props.title]);
+    }, [props.labelInfo, props.memberList, props.title, props.userId]);
 
     return (
         <>
@@ -32,7 +29,6 @@ export default function SMemberList( props:SMemberListProp) {
             {mList.map((item, index) => (
                 <Chip key={item.member_id} label={item.first + " " + item.last} />
             ))}
-            <SAllMemberSelect churchId={props.labelInfo?.church_id} />
         </>
     );
 

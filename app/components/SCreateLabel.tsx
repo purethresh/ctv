@@ -45,7 +45,7 @@ export default function SCreateLabel(props: SCreateLabelProp) {
         const fSchedule = encodeURIComponent(forSchedule ? 'true' : 'false');
         const oId = encodeURIComponent(parentLabel?.label_id || '');
 
-        const url = `/api/labels/member?label_id=${lblId}&labelName=${lName}&labelDescription=${lDescription}&church_id=${cId}&forSchedule=${fSchedule}&owner_id=${oId}`;
+        const url = `/api/labels?label_id=${lblId}&labelName=${lName}&labelDescription=${lDescription}&church_id=${cId}&forSchedule=${fSchedule}&owner_id=${oId}`;
         const result = await fetch(url, { method:"POST"});
         var rs = await result.json();
         
@@ -66,7 +66,7 @@ export default function SCreateLabel(props: SCreateLabelProp) {
         }
         
         updateParentLabel();
-    }, [props.parentLabel, props.createrId, props.churchId]);    
+    }, [props.parentLabel, props.userId, props.churchId]);    
 
     return (
         <>

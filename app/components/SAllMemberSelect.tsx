@@ -8,6 +8,7 @@ export default function SAllMemberSelect(props:SAllMemberSelectProp) {
     let [memberList, setMemberList] = useState<MinMemberInfo[]>([]);
     let [selectedMember, setSelectedMember] = useState<string>('');
     let [isVisible, setIsVisible] = useState<boolean>(false);
+    let [defaultMemberId, setDefaultMemberId] = useState<string>('');
 
     const handleChange = (event: SelectChangeEvent) => {
         const memberId = event.target.value as string;
@@ -30,9 +31,8 @@ export default function SAllMemberSelect(props:SAllMemberSelectProp) {
 
     useEffect(() => {
         const originalSetup = async () => {
-            if (props.defaultMemberId) {
-                setSelectedMember(props.defaultMemberId);
-            }
+
+            setSelectedMember(props.defaultMemberId || '');
 
             if (props.churchId) {
                 await getAllMembers();
@@ -54,7 +54,7 @@ export default function SAllMemberSelect(props:SAllMemberSelectProp) {
             id="all-member-select"
             onChange={handleChange}
             value={memberList.length > 0 ? selectedMember : ''}
-            defaultValue=''
+            defaultValue={defaultMemberId}
         >
             {memberList.map((item, index) => (
                 <MenuItem key={item.member_id} value={item.member_id}>{item.first + " " + item.last}</MenuItem>

@@ -1,14 +1,12 @@
 import { runQuery } from '@/app/lib/db';
 import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
+import { v4 } from 'uuid';
 
 const MEMBER_ID = 'member_id';
 const LABEL_ID = 'label_id';
 const OWNER_ID = 'owner_id';
-const LABEL_NAME = 'labelName';
-const LABEL_DESCRIPTION = 'labelDescription';
-const CHURCH_ID = 'church_id';
-const FOR_SCHEDULE = 'forSchedule';
+const IS_OWNER = 'owner';
 
 export async function GET(req: NextRequest) {
     var result = {error: 'nothing happened'};
@@ -47,6 +45,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(result, resultStatus);
 }
 
+
 export async function POST(req: NextRequest) {
     var result = {error: 'nothing happened'};
     var resultStatus = {status: 500};
@@ -54,23 +53,20 @@ export async function POST(req: NextRequest) {
     const params = req.nextUrl.searchParams;
     var query = '';
     var queryParams:any[] = [];
-    if (params.has(LABEL_ID) && params.has(LABEL_NAME) && params.has(CHURCH_ID) && params.has(FOR_SCHEDULE) && params.has(OWNER_ID)) {
-        const lblId = params.get(LABEL_ID);
-        const lbl = params.get(LABEL_NAME);
-        const church = params.get(CHURCH_ID);
-        const schedule = params.get(FOR_SCHEDULE);
-        const owner_id = params.get(OWNER_ID);
-        const desc = params.has(LABEL_DESCRIPTION) ? params.get(LABEL_DESCRIPTION) : '';
 
-        query = "INSERT INTO dbname.labels (label_id, labelName, labelDescription, church_id, forSchedule, owner_id) VALUES (?, ?, ?, ?, ?, ?)";
-        queryParams = [lblId, lbl, desc, church, schedule, owner_id];
+    if (params.has(LABEL_ID) && params.has(MEMBER_ID)) {
+        var isOwner:string = params.get(IS_OWNER) === 'true' ? 'true' : 'false';
+        const lableMemberId = v4();
+
+        query = "INSERT INTO dbname.label_member (label_member_id, label_id, member_id, isOwnerOfLabel) VALUES (?, ?, ?, ?)";
+        queryParams = [lableMemberId, params.get(LABEL_ID), params.get(MEMBER_ID), isOwner];
     }
 
     if (query.length > 0) {
         try {
             const [dbResults] = await runQuery(query, queryParams);
             // @ts-ignore
-            result = {response: 'label created'};;
+            result = {response: 'member added to label'};
             resultStatus = {status: 200};
         }
         catch (e:any) {
