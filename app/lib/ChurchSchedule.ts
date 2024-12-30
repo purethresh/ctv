@@ -3,6 +3,7 @@ import { ScheduleInfo } from "./ScheduleInfo";
 import { getStartOfPreviousMonth, getEndOfNextMonth, getMinTimeForDay, getMaxTimeForDay } from "@/app/lib/dateUtils";
 import { AvailabilityInfo } from "./AvailabilityInfo";
 import { ScheduleStatus } from "./ScheduleStatus";
+import { API_CALLS, APIHandler } from "./APIHanlder";
 
 
 export class ChurchSchedule {
@@ -23,10 +24,12 @@ export class ChurchSchedule {
         const month = (dt.getMonth() + 1).toString();
         const year = dt.getFullYear().toString();
 
-        const res = await this.doGet(`/api/schedule?church_id=${this.church_id}&year=${year}&month=${month}`);
+        const api = new APIHandler();
+        const res = await api.getData(API_CALLS.schedule, { church_id: this.church_id, year: year, month: month }, this.useCache);
         const data = await res.json();
 
-        if (data != null && data.length > 0) {
+        this.scheduleList = [];
+        if (data != null && data.length > 0) {            
             for(var i=0; i<data.length; i++) {
                 this.scheduleList.push(new ScheduleInfo(data[i]));
             }
@@ -38,7 +41,8 @@ export class ChurchSchedule {
         const min = getStartOfPreviousMonth(dt);
         const max = getEndOfNextMonth(dt);
 
-        const res = await this.doGet(`/api/available?church_id=${this.church_id}&min=${min.getTime().toString()}&max=${max.getTime().toString()}`);
+        const api = new APIHandler();
+        const res = await api.getData(API_CALLS.availability, { church_id: this.church_id, min: min.getTime().toString(), max: max.getTime().toString() }, this.useCache);
         const data = await res.json();
 
         this.blockedOutList = [];
@@ -87,19 +91,10 @@ export class ChurchSchedule {
                 // This date is blocked out. Get the member and mark there status as blocked out
                 if (memberMap.has(bInfo.member_id)) {
                     const m = memberMap.get(bInfo.member_id) as MinMemberInfo;
-                    m.scheduledStatus = ScheduleStatus.blockedOut;
+                    m.setBockedOut();
                 }
             }
         }
-
     }
 
-    private async doGet(url:string) : Promise<Response> {
-        if (this.useCache) {
-            return fetch(url, { cache: 'force-cache' });
-        }
-        else {
-            return fetch(url);
-        }
-    }
 }

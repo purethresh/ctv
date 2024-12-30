@@ -7,6 +7,7 @@ import { LabelInfo } from '@/app/lib/LabelInfo';
 import SLabelList from '@/app/components/SLabelList';
 import SLabelInfo from '@/app/components/SLabelInfo';
 import { MinMemberInfo } from '@/app/lib/MinMemberInfo';
+import { API_CALLS, APIHandler } from '@/app/lib/APIHanlder';
 
 export default function LabelPage() {
   let [churchLabels, setChurchLabels] = useState<ChurchLabels>(new ChurchLabels());
@@ -52,21 +53,21 @@ export default function LabelPage() {
     if (m !== undefined) {
       // Get Label
       const l = churchLabels.labelMap.get(labelId);
-      var labelQuery = `/api/labels/member?member_id=${memberId}&label_id=${labelId}&owner=`;
+      const params = {member_id: memberId, label_id: labelId, owner:false};
       if (l !== undefined) {
         if (asOwner) {
           l.addOwner(m);
           setSelectedInfo(l);
-          labelQuery += 'true';
+          params.owner = true;
         }
         else {
           l.addMember(m);
           setSelectedInfo(l);
-          labelQuery += 'false';
         }
 
         // Update the label
-        const result = await fetch(labelQuery, {method: 'POST'});
+        const api = new APIHandler();
+        await api.postData(API_CALLS.labelMember, params);
 
         // Force updated data
         churchLabels.shouldUseCache(false);
@@ -80,7 +81,8 @@ export default function LabelPage() {
   }
 
   const removeMemberFromLabel = async (memberId:string, labelId:string) => {
-    const result = await fetch(`/api/labels/member?label_id=${labelId}&member_id=${memberId}`, {method: 'DELETE'});
+    const api = new APIHandler();
+    const result = await api.removeData(API_CALLS.labelMember, {member_id: memberId, label_id: labelId});
     var rs = await result.json();
 
     // Remove the person from the label
@@ -99,7 +101,8 @@ export default function LabelPage() {
   }
 
   const getAllMembers = async (churchId:string) => {
-      const result = await fetch(`/api/member?church_id=${churchId}`);
+      const api = new APIHandler();
+      const result = await api.getData(API_CALLS.member, {church_id: churchId}, true);
       var rs = await result.json();
 
       const mMap = new Map<string, MinMemberInfo>();

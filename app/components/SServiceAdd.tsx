@@ -9,6 +9,7 @@ import moment from 'moment';
 import { Moment } from "moment";
 import { IServiceInfo, ServiceInfo } from "../lib/ServiceInfo";
 import { v4 } from "uuid";
+import { API_CALLS, APIHandler } from "../lib/APIHanlder";
 
 export default function SServiceAdd(props:SServiceAddProps) {
   let [isCreating, setIsCreating] = useState<Boolean>(false);
@@ -62,11 +63,8 @@ export default function SServiceAdd(props:SServiceAddProps) {
     var sInfo = new ServiceInfo( sObj );
 
     // Call the API
-    await fetch('/api/services', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(sInfo)
-    });    
+    const api = new APIHandler();
+    await api.createData(API_CALLS.services, sInfo);
 
     if (props.onCreateService) {
       props.onCreateService();

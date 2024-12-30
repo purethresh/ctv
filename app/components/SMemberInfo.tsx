@@ -8,6 +8,7 @@ import SMemberEmailList from "./SMemberEmailList";
 import DoneIcon from '@mui/icons-material/Done';
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import { v4 } from 'uuid';
+import { API_CALLS, APIHandler } from "../lib/APIHanlder";
 
 export default function SMemberInfo(props:SMemberInfoProp) {
     let [memberId, setMemberId] = useState<string>('');
@@ -29,22 +30,17 @@ export default function SMemberInfo(props:SMemberInfoProp) {
 
     const onSave = async () => {
         if (needsSave) {
-            const req: RequestInit = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(memberInfo)
-            }
+            const api = new APIHandler();
 
-            // If creating, change to a put
             if (isCreating) {
-                req.method = 'PUT';
+                await api.createData(API_CALLS.member, {church_id: churchId});
+            }   
+            else {
+                await api.createData(API_CALLS.member, {member_id: memberId});
             }
-
-            // Do the request
-            await fetch(`/api/member?church_id=${churchId}`, req);
 
             // fetch without cache to update
-            await fetch(`/api/member?member_id=${memberInfo.member_id}`);
+            await api.getData(API_CALLS.member, {member_id: memberId}, false);
 
             // Inform parent if it was created
             if (isCreating) {
@@ -112,11 +108,8 @@ export default function SMemberInfo(props:SMemberInfoProp) {
         const create = props.isCreating || false;
         setIsCreating(create);
         if (!create) {
-            let cObj:RequestInit | undefined = undefined;
-            if (useCache) {
-                cObj = { cache: 'force-cache' };
-            }
-            const result = await fetch(`/api/member?member_id=${mId}`, cObj);
+            const api = new APIHandler();
+            const result = await api.getData(API_CALLS.member, { member_id: mId }, useCache);
             var rs = await result.json();
             if (rs.length > 0) { 
                 const mInfo = new MinMemberInfo(rs[0]);

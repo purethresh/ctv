@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import SServiceSchedule from "./SServiceSchedule";
 import { ServiceInfo } from "../lib/ServiceInfo";
+import { API_CALLS, APIHandler } from "../lib/APIHanlder";
 
 export default function SAllServices(props:SAllServicesProp) {
   let [serviceIdList, setServiceIdList] = useState<ServiceInfo[]>([]);
@@ -18,7 +19,8 @@ export default function SAllServices(props:SAllServicesProp) {
     const mo = serviceDate.getMonth() + 1;
     const dy = serviceDate.getDate() + 1;
 
-    const result = await fetch(`/api/services?church_id=${props.churchId}&year=${yr}&month=${mo}&day=${dy}`, { cache: 'force-cache' });
+    const api = new APIHandler();
+    const result = await api.getData(API_CALLS.services, { church_id: props.churchId, year: yr, month: mo, day: dy }, true);
     var rs = await result.json();
 
     const serviceList = [];

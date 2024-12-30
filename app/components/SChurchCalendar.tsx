@@ -6,6 +6,7 @@ import moment, { Moment } from 'moment';
 import { useState, useEffect } from 'react';
 import SCalendarDayComponent from './SCalendarDayComponent';
 import { getDefaultSunday } from '../lib/dateUtils';
+import { API_CALLS, APIHandler } from '../lib/APIHanlder';
 
 export default function SChurchCalendar(props: SCalendarProps) {
   let [defaultDay, setDefaultDay] = useState<string>(props.defaultDate || getDefaultSunday());
@@ -24,9 +25,9 @@ export default function SChurchCalendar(props: SCalendarProps) {
     if (props.churchId == undefined) return [];
     if (props.churchId.length === 0) return [];
 
-    var result = [];
-    const res = await fetch(`/api/services?church_id=${props.churchId}&year=${dt.getFullYear()}&month=${dt.getMonth()+1}`);    
-    result = await res.json();
+    const api = new APIHandler();
+    const res = await api.getData(API_CALLS.services, { church_id: props.churchId, year: dt.getFullYear(), month: dt.getMonth()+1 }, true);
+    const result = await res.json();
 
     return result;
   }

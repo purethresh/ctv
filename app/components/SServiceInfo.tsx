@@ -7,6 +7,8 @@ import { Box } from "@mui/material";
 import { ServiceInfo } from "../lib/ServiceInfo";
 import SLabelGroup from "./SLabelGroup";
 import { ChurchSchedule } from "../lib/ChurchSchedule";
+import { MinMemberInfo } from "../lib/MinMemberInfo";
+import { API_CALLS, APIHandler } from "../lib/APIHanlder";
 
 export default function SServiceInfo(props: SServiceInfoProps) {
   let [allLabels, setAllLabels] = useState<ChurchLabels>(new ChurchLabels());
@@ -15,6 +17,47 @@ export default function SServiceInfo(props: SServiceInfoProps) {
   let [sInfo, setSInfo] = useState<ServiceInfo>(props.serviceInfo || new ServiceInfo({}));
   let [serviceTime, setServiceTime] = useState<string>('');
   let [updateNum, setUpdateNum] = useState<number>(0);
+
+  const addMember = async (memberInfo:MinMemberInfo, labelInfo:LabelInfo) => {
+    // Values we need to schedule
+    const cId = sInfo.church_id;
+    const sId = sInfo.service_id;
+    const lId = labelInfo.label_id;
+    const mId = memberInfo.member_id;
+
+    // Do the Schedule
+    const api = new APIHandler();
+    await api.postData(API_CALLS.schedule, {church_id: cId, service_id: sId, label_id: lId, member_id: mId});
+
+    // Refetch the schedule without cache
+    churchSchedule.useCache = false;
+    const sTime = new Date(sInfo.serviceTime);
+    await churchSchedule.fetchScheduleWithBufferMonths(sTime);
+    churchSchedule.useCache = true;
+
+    await getInitialInfo();
+    setUpdateNum(updateNum + 1);
+  }
+
+  const removeMember = async (memberInfo:MinMemberInfo, labelInfo:LabelInfo) => {
+    // Values we need to schedule
+    const sId = sInfo.service_id;
+    const lId = labelInfo.label_id;
+    const mId = memberInfo.member_id;
+
+    // Do the Schedule
+    const api = new APIHandler();
+    await api.removeData(API_CALLS.schedule, {service_id: sId, label_id: lId, member_id: mId});
+
+    // Refetch the schedule without cache
+    churchSchedule.useCache = false;
+    const sTime = new Date(sInfo.serviceTime);
+    await churchSchedule.fetchScheduleWithBufferMonths(sTime);
+    churchSchedule.useCache = true;
+
+    await getInitialInfo();
+    setUpdateNum(updateNum + 1);
+  }
   
   const updateServiceInfo = async() => {
       // Get the scheduled members
@@ -69,7 +112,7 @@ export default function SServiceInfo(props: SServiceInfoProps) {
       {sInfo.name} {serviceTime}<br />
       {sInfo.info}
       {labelGroupList.map((item, index) => (
-        <SLabelGroup key={item.label_id} groupInfo={item} updateNumber={updateNum} />
+        <SLabelGroup key={item.label_id} groupInfo={item} updateNumber={updateNum} onAddMember={addMember} onRemoveMember={removeMember} />
       ))}      
     </Box>
   );

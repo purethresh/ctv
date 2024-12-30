@@ -3,6 +3,7 @@ import { MinMemberInfo } from '../lib/MinMemberInfo';
 import { InputLabel, Select, MenuItem, IconButton, Box } from '@mui/material';
 import { SelectChangeEvent } from '@mui/material/Select';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import { API_CALLS, APIHandler } from '../lib/APIHanlder';
 
 export default function SAllMemberSelect(props:SAllMemberSelectProp) {
     let [memberList, setMemberList] = useState<MinMemberInfo[]>([]);
@@ -19,7 +20,8 @@ export default function SAllMemberSelect(props:SAllMemberSelectProp) {
     };   
     
     const getAllMembers = async () => {
-        const result = await fetch(`/api/member?church_id=${props.churchId}`);
+        const apiHandler = new APIHandler();
+        const result = await apiHandler.getData(API_CALLS.member, { church_id: props.churchId }, true);
         var rs = await result.json();
 
         const mList = [];

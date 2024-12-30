@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { MemberEmailInfo } from "../lib/MemberEmailInfo";
 import { UpdateType } from "../lib/UpdateType";
 import { v4 } from 'uuid';
+import { API_CALLS, APIHandler } from "../lib/APIHanlder";
 
 export default function SMemberEmailList(props:SMemberInfoProp) {
     let [memberId, setMemberId] = useState<string>('');
@@ -76,25 +77,16 @@ export default function SMemberEmailList(props:SMemberInfoProp) {
             return;
         }
 
-        const req:RequestInit = {
-            method: '',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(eInfo)
-        }
-
+        const api = new APIHandler();
         switch (updateType) {
             case UpdateType.create:
-                req.method = 'PUT';
+                await api.createData(API_CALLS.email, eInfo);
                 break;
             case UpdateType.update:
-                req.method = 'POST';
+                await api.postData(API_CALLS.email, eInfo);
                 break;
             default:
                 // Nothing else is currently implemented
-        }
-
-        if (req.method !== undefined && req.method.length > 0) {
-            await fetch('/api/member/email', req);
         }
     }    
 
@@ -125,7 +117,8 @@ export default function SMemberEmailList(props:SMemberInfoProp) {
             updateMap.clear();
 
             // Get the member info (without cache)
-            const result = await fetch(`/api/member/email?member_id=${memberId}`);
+            const api = new APIHandler();
+            const result = await api.getData(API_CALLS.email, { member_id: memberId }, false);
 
             // Now clear the dirty flag
             setIsDirty(false);
@@ -166,7 +159,8 @@ export default function SMemberEmailList(props:SMemberInfoProp) {
         setMemberId(mId);
 
         // Get the member info
-        const result = await fetch(`/api/member/email?member_id=${mId}`, { cache: 'force-cache' });
+        const api = new APIHandler();
+        const result = await api.getData(API_CALLS.email, { member_id: mId }, true);
         var rs = await result.json();
 
         var mp = new Map<string, MemberEmailInfo>();

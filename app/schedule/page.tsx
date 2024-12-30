@@ -7,6 +7,7 @@ import SServiceAdd from "../components/SServiceAdd";
 import SChurchCalendar from "../components/SChurchCalendar";
 import UserInfo from "../lib/UserInfo";
 import { IServiceInfo, ServiceInfo } from "../lib/ServiceInfo";
+import { API_CALLS, APIHandler } from "../lib/APIHanlder";
 
 export default function SchedulePage() {
   let [curentDate, setCurrentDate] = useState<string>(getDefaultSunday());
@@ -35,8 +36,8 @@ export default function SchedulePage() {
   }
 
   const loadServiceInfo = async(dt:Date, useCache:boolean = true) => {
-    const opt = useCache ? { cache: 'force-cache' } as RequestInit : undefined;
-    const res = await fetch(`/api/services?church_id=${userInfo.church_id}&year=${dt.getFullYear()}&month=${dt.getMonth()+1}&day=${dt.getDate().toString()}`, opt);
+    const api = new APIHandler();
+    const res = await api.getData(API_CALLS.services, {church_id: userInfo.church_id, year: dt.getFullYear(), month: dt.getMonth()+1, day: dt.getDate().toString()}, useCache);
     const result = await res.json();
 
     const lst = [];

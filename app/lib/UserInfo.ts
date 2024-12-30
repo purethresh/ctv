@@ -1,4 +1,5 @@
 import { fetchUserAttributes } from "aws-amplify/auth";
+import { API_CALLS, APIHandler } from "./APIHanlder";
 
 const DEFAULT_CHURCH_ID = 'asdf';
 const DEFAULT_CHURCH_NAME = 'Calvary Tri Valley';
@@ -37,7 +38,8 @@ export default class UserInfo {
         this.isMemberAdmin = false;
 
         // Finding out if the member belongs to the church-member-admin label
-        const res = await fetch(`/api/member/admin?root_id=${rootLabelId}&member_id=${this.member_id}`, { cache: 'force-cache' });
+        const api = new APIHandler();
+        const res = await api.getData(API_CALLS.memberAdmin, { root_id: rootLabelId, member_id: this.member_id }, true);
         const data = await res.json();
 
         if (data && data.isAdmin === true) {
@@ -60,7 +62,8 @@ export default class UserInfo {
     private async getMemberInfo(subId:string) {
         if (subId && subId.length > 0) {
             // Get the member info by looking for the sub
-            const res = await fetch('/api/member?sub=' + subId, { cache: 'force-cache' });
+            const api = new APIHandler();
+            const res = await api.getData(API_CALLS.member, { sub: subId }, true);
             const data = await res.json();
             if (data) {
                 this.first = data.first;
@@ -74,7 +77,8 @@ export default class UserInfo {
     private async getChurchInfo(memberId:string) {
         if (memberId && memberId.length > 0) {
             // Get the church info by looking for the member_id
-            const res = await fetch('/api/church?member_id=' + memberId, { cache: 'force-cache' });
+            const api = new APIHandler();
+            const res = await api.getData(API_CALLS.church, { member_id: memberId }, true);
             const data = await res.json();
             if (data) {
                 this.church_id = data.church_id;

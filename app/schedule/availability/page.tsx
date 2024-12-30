@@ -8,6 +8,7 @@ import SAvailabilityList from "@/app/components/SAvailabilityList";
 import { getDefaultSunday } from "@/app/lib/dateUtils";
 import { v4 } from 'uuid';
 import { IAvailabilityInfo, AvailabilityInfo } from "@/app/lib/AvailabilityInfo";
+import { API_CALLS, APIHandler } from "@/app/lib/APIHanlder";
 
 export default function AvailabilityPage() {
   let [userInfo, setUserInfo] = useState<UserInfo>(new UserInfo());
@@ -16,18 +17,27 @@ export default function AvailabilityPage() {
   let [blockOutList, setBlockOutList] = useState<number[]>([]);
   let [blockOutMap, setBlockOutMap] = useState<Map<number, AvailabilityInfo>>(new Map<number, AvailabilityInfo>());
   let [blockFullList, setBlockFullList] = useState<AvailabilityInfo[]>([]);
+  let [currentViewedDate, setCurrentViewedDate] = useState<Date>(new Date());
+
+  const onMemberChanged = async (memberId:string) => {
+    setCurrentUserId(memberId);
+    await getBlockOutDays(memberId, getMonthStart(currentViewedDate), getMonthEnd(currentViewedDate));
+  }
 
   const addBlockOutDay = async(aInfo:AvailabilityInfo) => {
-    await fetch(`/api/available`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(aInfo) });
+    const api = new APIHandler();
+    await api.postData(API_CALLS.availability, aInfo);
   }
 
   const removeBlockOutDay = async(aInfo:AvailabilityInfo) => {
-    await fetch(`/api/available?availability_id=${aInfo.availability_id}`, { method: 'DELETE' });
+    const api = new APIHandler();
+    await api.removeData(API_CALLS.availability, {availability_id: aInfo.availability_id});
   }
 
   const getBlockOutDays = async(memberId:string, min:number, max:number) => {
     // Don't use cache for this one
-    const res = await fetch(`/api/available?member_id=${memberId}&min=${min}&max=${max}`);
+    const api = new APIHandler();
+    const res = await api.getData(API_CALLS.availability, { member_id: memberId, min: min.toString(), max: max.toString() }, true);
     const data = await res.json();
 
     // Loop through the datat and track the days blocked out.
@@ -98,6 +108,7 @@ export default function AvailabilityPage() {
     const dtStr = `${year}-${month}-01`;
     const dt = new Date(dtStr);
 
+    setCurrentViewedDate(dt);
     await getBlockOutDays(currentUserId, getMonthStart(dt), getMonthEnd(dt));
   }
 
@@ -135,6 +146,7 @@ export default function AvailabilityPage() {
         setCurrentUserId(uInfo.member_id);
 
         const dt = new Date(getDefaultSunday());
+        setCurrentViewedDate(dt);
         await getBlockOutDays(uInfo.member_id, getMonthStart(dt), getMonthEnd(dt));
     }    
 
@@ -144,7 +156,7 @@ export default function AvailabilityPage() {
   return (
     <>
       {userInfo.first} {userInfo.last}
-      <SAllMemberSelect churchId={churchId} isVisible={true} defaultMemberId={currentUserId} />      
+      <SAllMemberSelect churchId={churchId} isVisible={true} defaultMemberId={currentUserId} onClick={onMemberChanged} />      
       <SPersonCalendar memberId={currentUserId} restrictedDays={blockOutList} onDateChanged={onDateChanged} onMonthChanged={onMonthYearChanged} />      
       <SAvailabilityList blockedList={blockFullList} onRemove={onRemoveBlockedDate} />
     </>

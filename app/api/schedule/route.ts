@@ -2,8 +2,12 @@ import { runQuery } from '../../lib/db';
 import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
 import { getStartOfPreviousMonth, getEndOfNextMonth } from '@/app/lib/dateUtils';
+import { v4 } from 'uuid';
 
 const CHURCH_ID = 'church_id';
+const MEMBER_ID = 'member_id';
+const SERVICE_ID = 'service_id';
+const LABEL_ID = 'label_id';
 const YEAR = 'year';
 const MONTH = 'month';
 
@@ -37,3 +41,42 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(result, resultStatus);
 }
 
+export async function POST(req: NextRequest) {
+    var result = {error: 'nothing happened'};
+    var resultStatus = {status: 500};
+
+    try {
+        const params = req.nextUrl.searchParams;
+        if (params.has(CHURCH_ID) && params.has(SERVICE_ID) && params.has(LABEL_ID) && params.has(MEMBER_ID)) {
+            const query = 'INSERT INTO dbname.schedule (schedule_id, church_id, service_id, label_id, member_id) VALUES (?, ?, ?, ?, ?)';
+            const queryParams = [v4(), params.get(CHURCH_ID), params.get(SERVICE_ID), params.get(LABEL_ID), params.get(MEMBER_ID)];
+            const [dbResults] = await runQuery(query, queryParams);
+            result = dbResults;
+            resultStatus = {status: 200};
+        }
+    }
+    catch(e) {
+        
+    }
+
+    return NextResponse.json(result, resultStatus);
+}
+
+export async function DELETE(req:NextRequest) {
+    var result = {error: 'nothing happened'};
+    var resultStatus = {status: 500};
+
+    const params = req.nextUrl.searchParams;
+    // Only process if we have an availability_id
+    if (params.has(SERVICE_ID) && params.has(LABEL_ID) && params.has(MEMBER_ID)) {
+        const query = 'DELETE FROM dbname.schedule WHERE service_id = ? AND label_id = ? AND member_id = ?';
+        const queryParams = [params.get(SERVICE_ID), params.get(LABEL_ID), params.get(MEMBER_ID)];
+
+        await runQuery(query, queryParams);
+        // @ts-ignore
+        result = {response: 'member removed from schedule'};
+        resultStatus = {status: 200};
+    }
+
+    return NextResponse.json(result, resultStatus);
+}

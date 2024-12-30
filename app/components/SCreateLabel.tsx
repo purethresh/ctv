@@ -6,6 +6,7 @@ import CreateIcon from '@mui/icons-material/Create';
 import { SCreateLabelProp } from "../props/SCreateLabelProp";
 import { LabelInfo } from '../lib/LabelInfo';
 import { v4 } from 'uuid';
+import { API_CALLS, APIHandler } from '../lib/APIHanlder';
 
 export default function SCreateLabel(props: SCreateLabelProp) {
     let [parentLabel, setParentLabel] = useState<LabelInfo | undefined>(props.parentLabel);
@@ -45,8 +46,8 @@ export default function SCreateLabel(props: SCreateLabelProp) {
         const fSchedule = encodeURIComponent(forSchedule ? 'true' : 'false');
         const oId = encodeURIComponent(parentLabel?.label_id || '');
 
-        const url = `/api/labels?label_id=${lblId}&labelName=${lName}&labelDescription=${lDescription}&church_id=${cId}&forSchedule=${fSchedule}&owner_id=${oId}`;
-        const result = await fetch(url, { method:"POST"});
+        const api = new APIHandler();
+        const result = await api.postData(API_CALLS.labels, { label_id: lblId, labelName: lName, labelDescription: lDescription, church_id: cId, forSchedule: fSchedule, owner_id: oId });
         var rs = await result.json();
         
         if (props.onReload) {
