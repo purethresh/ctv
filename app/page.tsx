@@ -12,15 +12,17 @@ import { useEffect } from "react";
 import SAllServices from "./components/SAllServices";
 import UserInfo from "./lib/UserInfo";
 
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
+import { Grid2, Paper, Stack } from "@mui/material";
+
+
 Amplify.configure(outputs);
 
-/* TODO JLS - HERE
-  * Simplify using APIs
-  * Setup theme for the app
-  * Setup design
-*/
-
 export default function App() {
+  let [defaultDate, setDefaultDate] = useState<string>(getDefaultSunday());
   let [selectedDay, setSelectedDay] = useState<string>(getDefaultSunday());
   let [userInfo, setUserInfo] = useState<UserInfo>(new UserInfo());
 
@@ -47,8 +49,11 @@ export default function App() {
   return (
     <main>
       <SNavbar userInfo={userInfo} onSignout={onSignout} />
-      <SChurchCalendar defaultDate={selectedDay} onDateChanged={onDateChange} churchId={userInfo.church_id} />
-      <SAllServices serviceDate={selectedDay} churchId={userInfo.church_id} />
+      <br />
+        <Grid2 container spacing={2}>
+          <SChurchCalendar selectedDate={selectedDay} defaultDate={defaultDate} onDateChanged={onDateChange} churchId={userInfo.church_id} />
+          <SAllServices serviceDate={selectedDay} churchId={userInfo.church_id} />
+        </Grid2>        
     </main>
   )
 }

@@ -5,6 +5,7 @@ import { LabelInfo } from "../lib/LabelInfo";
 import SScheduledLabel from "./SScheduledLabel";
 import { MinMemberInfo } from "../lib/MinMemberInfo";
 import { Console } from "console";
+import { Typography } from "@mui/material";
 
 export default function SLabelGroup(props:SLabelGroupProps) {
     let [labelName, setLabelName] = useState<string>(props.groupInfo?.labelName || '');
@@ -27,7 +28,7 @@ export default function SLabelGroup(props:SLabelGroupProps) {
         setUpdateNumber(props.updateNumber || 0);
     }
 
-    const getInitialInfo = async() => {
+    const getInitialInfo = async() => {        
         if (props.groupInfo !== undefined) {
             setLabelName(props.groupInfo.labelName);
             setChildLabels(props.groupInfo.childLabels);
@@ -44,7 +45,9 @@ export default function SLabelGroup(props:SLabelGroupProps) {
 
     return (
         <Box>
-            {labelName}
+            <Box sx={{textAlign:'left', marginLeft:4}}>
+                <Typography variant="h6" color="primary.contrastText">{labelName}</Typography>
+            </Box>            
             {childLabels.map((item, index) => (                
                 <SScheduledLabel key={item.label_id} groupInfo={item} updateNumber={updateNumber} onAddMember={addMember} onRemoveMember={removeMember} />
             ))}            

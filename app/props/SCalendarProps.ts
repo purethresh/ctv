@@ -1,5 +1,6 @@
 interface SCalendarProps {
     defaultDate?: string;
+    selectedDate?: string;
     restrictedDays?: number[];
     churchId?: string;
     memberId?: string;

@@ -7,8 +7,10 @@ import { useState, useEffect } from 'react';
 import SCalendarDayComponent from './SCalendarDayComponent';
 import { getDefaultSunday } from '../lib/dateUtils';
 import { API_CALLS, APIHandler } from '../lib/APIHanlder';
+import { Grid2, Paper } from '@mui/material';
 
-export default function SChurchCalendar(props: SCalendarProps) {
+export default function SChurchCalendar(props: SCalendarProps) {  
+  let [selectedDate, setSelectedDate] = useState<string>(props.selectedDate || props.defaultDate || getDefaultSunday());
   let [defaultDay, setDefaultDay] = useState<string>(props.defaultDate || getDefaultSunday());
   let [scheduledDays, setScheduledDays] = useState<number[]>([]);
   
@@ -64,20 +66,27 @@ export default function SChurchCalendar(props: SCalendarProps) {
     getServiceInfo(dt);
   }
 
-  useEffect(() => {    
-    getServiceInfo(moment(defaultDay).toDate());
-  }, [props.churchId, props.defaultDate, props.updateNumber]);  
+  useEffect(() => {
+    const strDt = props.selectedDate || props.defaultDate || getDefaultSunday();
+    setSelectedDate(strDt);
+
+    getServiceInfo(moment(strDt).toDate());
+  }, [props.churchId, props.defaultDate, props.updateNumber, props.selectedDate]);  
 
   return (
-    <LocalizationProvider dateAdapter={AdapterMoment}>
-      <DateCalendar
-      defaultValue={moment(defaultDay)}
-      onChange={setCalValue}
-      slots={{ day: SCalendarDayComponent }}
-      slotProps={{ day: { scheduledDays } as any }}
-      onMonthChange={onMonthYearChanged}
-      onYearChange={onMonthYearChanged}
-       />
-    </LocalizationProvider>
+    <Grid2 size={{ xs: 12, sm: 6 }}>
+      <LocalizationProvider dateAdapter={AdapterMoment}>
+        <Paper>
+          <DateCalendar
+            defaultValue={moment(defaultDay)}
+            onChange={setCalValue}
+            slots={{ day: SCalendarDayComponent }}
+            slotProps={{ day: { scheduledDays } as any }}
+            onMonthChange={onMonthYearChanged}
+            onYearChange={onMonthYearChanged}
+        />
+        </Paper>
+      </LocalizationProvider>
+    </Grid2>
   );
 }

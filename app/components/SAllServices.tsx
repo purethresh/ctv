@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import SServiceSchedule from "./SServiceSchedule";
 import { ServiceInfo } from "../lib/ServiceInfo";
 import { API_CALLS, APIHandler } from "../lib/APIHanlder";
+import { Grid2, Box } from "@mui/material";
 
 export default function SAllServices(props:SAllServicesProp) {
   let [serviceIdList, setServiceIdList] = useState<ServiceInfo[]>([]);
@@ -23,9 +24,10 @@ export default function SAllServices(props:SAllServicesProp) {
     const result = await api.getData(API_CALLS.services, { church_id: props.churchId, year: yr, month: mo, day: dy }, true);
     var rs = await result.json();
 
-    const serviceList = [];
+    const serviceList:ServiceInfo[] = [];
     for(var i=0; i<rs.length; i++) {
-      serviceList.push(rs[i]);
+      const sInfo = new ServiceInfo(rs[i]);
+      serviceList.push(sInfo);
     }
 
     setServiceIdList(serviceList);
@@ -38,7 +40,9 @@ export default function SAllServices(props:SAllServicesProp) {
   return (
     <>
       {serviceIdList.map((item, index) => (
-        <SServiceSchedule key={index} serviceId={item.service_id} churchId={item.church_id} serviceName={item.name} serviceInfo={item.info} />
+        <Grid2 size={{ xs: 12, sm: 6}}>
+          <SServiceSchedule key={index+'_schedule'} serviceInfo={item} />
+        </Grid2>        
       ))}
     </>
   );

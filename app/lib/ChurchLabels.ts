@@ -53,7 +53,7 @@ export default class ChurchLabels {
         });
     }
 
-    async fetchScheduledLabels(serviceId:string) {
+    async fetchScheduledLabels(serviceId:string) {        
         // Clear the list before loading
         if (this.labelRoot) {
             this.labelRoot.clearScheduled();

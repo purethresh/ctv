@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react';
 import { getDefaultSunday } from '../lib/dateUtils';
 import moment, { Moment } from 'moment';
 import SCalendarDayComponent from './SCalendarDayComponent';
+import { Grid2, Paper } from '@mui/material';
 
 export default function SPersonCalendar(props: SCalendarProps) {
     let [defaultDay, setDefaultDay] = useState<string>(props.defaultDate || getDefaultSunday());
@@ -41,18 +42,20 @@ export default function SPersonCalendar(props: SCalendarProps) {
     }, [props.restrictedDays]);
 
     return (
-        <>
-            <LocalizationProvider dateAdapter={AdapterMoment}>
-                <DateCalendar
-                    defaultValue={moment(defaultDay)}
-                    slots={{ day: SCalendarDayComponent }}
-                    slotProps={{ day: { restrictedDays } as any }}
+        <Grid2 size={{ xs: 12, sm: 6 }}>
+            <Paper>
+                <LocalizationProvider dateAdapter={AdapterMoment}>
+                    <DateCalendar
+                        defaultValue={moment(defaultDay)}
+                        slots={{ day: SCalendarDayComponent }}
+                        slotProps={{ day: { restrictedDays } as any }}
 
-                    onChange={setCalValue}
-                    onMonthChange={onMonthYearChanged}
-                    onYearChange={onMonthYearChanged}
-                    />
-            </LocalizationProvider>
-        </>
+                        onChange={setCalValue}
+                        onMonthChange={onMonthYearChanged}
+                        onYearChange={onMonthYearChanged}
+                        />
+                </LocalizationProvider>
+            </Paper>
+        </Grid2>
     );
 }

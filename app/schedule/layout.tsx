@@ -35,6 +35,7 @@ export default function ScheduleLayout({children}: {children: React.ReactNode;})
     return (
         <Authenticator>
             <SNavbar userInfo={userInfo} onSignout={onSignout} />
+            <br />
             {children}
         </Authenticator>
     );

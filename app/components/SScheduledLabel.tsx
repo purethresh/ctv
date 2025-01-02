@@ -1,10 +1,11 @@
 import { SLabelGroupProps } from "../props/SLabelGroupProps";
-import { Box, FormLabelPropsColorOverrides } from "@mui/material";
+import { Box } from "@mui/material";
 import { useEffect, useState } from 'react';
 import { LabelInfo, ILabelInfo } from "../lib/LabelInfo";
 import { MinMemberInfo } from "../lib/MinMemberInfo";
 import SLabelMember from "./SLabelMember";
 import { ScheduleStatus } from "../lib/ScheduleStatus";
+import { Typography } from "@mui/material";
 
 export default function SScheduledLabel(props:SLabelGroupProps) {
     let [labelName, setLabelName] = useState<string>(props.groupInfo?.labelName || '');
@@ -12,7 +13,9 @@ export default function SScheduledLabel(props:SLabelGroupProps) {
     let [scheduledMemberList, setScheduledMemberList] = useState<MinMemberInfo[]>([]);
     let [nonScheduledMemberList, setNonScheduledMemberList] = useState<MinMemberInfo[]>([]);
     let [updateNumber, setUpdateNumber] = useState<number>(props.updateNumber || 0);
-
+    let [showAddMember, setShowAddMember] = useState<boolean>(props.showAddMember || false);
+    let [showRemoveMember, setShowRemoveMember] = useState<boolean>(props.showRemoveMember || false);
+    
     const onAdd = (memberInfo:MinMemberInfo) => {
         if (props.onAddMember) {
             props.onAddMember(memberInfo, labelInfo);
@@ -65,12 +68,14 @@ export default function SScheduledLabel(props:SLabelGroupProps) {
     
     return (
         <Box>
-            {labelName} <br />
+            <Box sx={{textAlign:'left', marginLeft:2}}>
+                <Typography variant="subtitle2" color="primary.contrastText">{labelName}</Typography>
+            </Box>            
             { scheduledMemberList.map((item, index) => (
-                <SLabelMember key={item.member_id + props.groupInfo?.label_id + "scheduled"} memberInfo={item} showStatus={true} removeMember={onRemove} updateNumber={updateNumber}/>
+                <SLabelMember key={item.member_id + props.groupInfo?.label_id + "scheduled"} memberInfo={item} removeMember={onRemove} updateNumber={updateNumber} showAdd={false} showRemove={showRemoveMember}/>
             ))}
             { nonScheduledMemberList.map((item, index) => (
-                <SLabelMember key={item.member_id + props.groupInfo?.label_id + "not-scheduled"} memberInfo={item} showStatus={true} addMember={onAdd} updateNumber={updateNumber}/>
+                <SLabelMember key={item.member_id + props.groupInfo?.label_id + "not-scheduled"} memberInfo={item} addMember={onAdd} updateNumber={updateNumber} showAdd={showAddMember} showRemove={false}/>
             ))}
         </Box>
     )

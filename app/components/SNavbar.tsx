@@ -21,6 +21,8 @@ export default function SNavbar(props: SNavBarProps) {
 
   const router = useRouter();
 
+  const txtColor = 'primary.contrastText';
+
   const gotoLogin = async () => {
     router.push('/guest/login');
   };
@@ -54,8 +56,7 @@ export default function SNavbar(props: SNavBarProps) {
   }
 
   return (
-    <div>
-    <Box sx={{ flexGrow: 1 }}>
+    <Box>
       <AppBar position="static">
         <Toolbar>
           <IconButton
@@ -78,19 +79,19 @@ export default function SNavbar(props: SNavBarProps) {
             keepMounted
             >
             <MenuItem>
-              <Link href="/" underline="none">Calandar</Link>
+              <Link href="/" underline="none" color={txtColor}>Calandar</Link>
             </MenuItem>                
             <MenuItem>
-              <Link href="/schedule/labels" underline="none">Labels</Link>
+              <Link href="/schedule/labels" underline="none" color={txtColor}>Labels</Link>
             </MenuItem>
             <MenuItem>
-              <Link href="/schedule/member" underline="none">Members</Link>
+              <Link href="/schedule/member" underline="none" color={txtColor}>Members</Link>
             </MenuItem>
             <MenuItem>
-              <Link href="/schedule/availability" underline="none">Availability</Link>
+              <Link href="/schedule/availability" underline="none" color={txtColor}>Availability</Link>
             </MenuItem>
             <MenuItem>
-              <Link href="/schedule" underline="none">Scheduling</Link>
+              <Link href="/schedule" underline="none" color={txtColor}>Scheduling</Link>
             </MenuItem>            
           </Menu>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
@@ -109,6 +110,5 @@ export default function SNavbar(props: SNavBarProps) {
         </Toolbar>
       </AppBar>
     </Box>
-    </div>
   );
 }

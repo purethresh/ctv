@@ -9,6 +9,7 @@ import { getDefaultSunday } from "@/app/lib/dateUtils";
 import { v4 } from 'uuid';
 import { IAvailabilityInfo, AvailabilityInfo } from "@/app/lib/AvailabilityInfo";
 import { API_CALLS, APIHandler } from "@/app/lib/APIHanlder";
+import { Grid2 } from "@mui/material";
 
 export default function AvailabilityPage() {
   let [userInfo, setUserInfo] = useState<UserInfo>(new UserInfo());
@@ -151,14 +152,16 @@ export default function AvailabilityPage() {
     }    
 
     getUserInfo();        
-  }, []);  
+  }, []);
+
+  // TODO JLS - HERE
+  // Style this
 
   return (
-    <>
-      {userInfo.first} {userInfo.last}
+    <Grid2 container spacing={2}>
       <SAllMemberSelect churchId={churchId} isVisible={true} defaultMemberId={currentUserId} onClick={onMemberChanged} />      
       <SPersonCalendar memberId={currentUserId} restrictedDays={blockOutList} onDateChanged={onDateChanged} onMonthChanged={onMonthYearChanged} />      
       <SAvailabilityList blockedList={blockFullList} onRemove={onRemoveBlockedDate} />
-    </>
+    </Grid2>
   );
 }
