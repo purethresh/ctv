@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { MinMemberInfo } from '../lib/MinMemberInfo';
-import { InputLabel, Select, MenuItem, IconButton, Box } from '@mui/material';
+import { InputLabel, Select, MenuItem, IconButton, Box, Typography } from '@mui/material';
 import { SelectChangeEvent } from '@mui/material/Select';
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import { API_CALLS, APIHandler } from '../lib/APIHanlder';
+import { Paper } from '@mui/material';
 
 export default function SAllMemberSelect(props:SAllMemberSelectProp) {
     let [memberList, setMemberList] = useState<MinMemberInfo[]>([]);
@@ -49,19 +49,22 @@ export default function SAllMemberSelect(props:SAllMemberSelectProp) {
     }, [props.churchId, props.isVisible, props.updateNumber]);    
 
     return (
-      <Box style={{display:isVisible ? 'block' : 'none'}}>
-      <InputLabel id="all-member-select-label">All Church Members</InputLabel>
+      <Box style={{display:isVisible ? 'block' : 'none', textAlign:'center'}}>
+        <Paper>
+        <InputLabel id="all-member-select-label"><Typography variant='subtitle1' color='primary.contrastText'>All Church Members</Typography></InputLabel>
         <Select
             labelId="all-member-select-label"
             id="all-member-select"
             onChange={handleChange}
             value={memberList.length > 0 ? selectedMember : ''}
             defaultValue={defaultMemberId}
+            sx={{marginBottom: '10px'}}
         >
             {memberList.map((item, index) => (
                 <MenuItem key={item.member_id} value={item.member_id}>{item.first + " " + item.last}</MenuItem>
             ))}                        
         </Select>
+        </Paper>
       </Box>
     );
 

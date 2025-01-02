@@ -1,7 +1,7 @@
 "use client";
 
 import { SAvailabilityListProp} from "@/app/props/SAvailabilityListProp";
-import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
+import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useState, useEffect } from 'react';
 import { AvailabilityInfo } from "../lib/AvailabilityInfo";
@@ -29,7 +29,8 @@ export default function SAvailabilityList(props:SAvailabilityListProp) {
     }, [props.blockedList]);
 
     return (
-        <Box>
+        <Box sx={{ textAlign: 'center' }}>
+            <Paper>
             <List>
                 {blockedOutList.map((item, index) => {
                     return (
@@ -44,6 +45,7 @@ export default function SAvailabilityList(props:SAvailabilityListProp) {
                     );
                 })}
             </List>
+            </Paper>
         </Box>
     );
 }

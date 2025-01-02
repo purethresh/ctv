@@ -10,6 +10,7 @@ import { v4 } from 'uuid';
 import { IAvailabilityInfo, AvailabilityInfo } from "@/app/lib/AvailabilityInfo";
 import { API_CALLS, APIHandler } from "@/app/lib/APIHanlder";
 import { Grid2 } from "@mui/material";
+import { Grid } from "@aws-amplify/ui-react";
 
 export default function AvailabilityPage() {
   let [userInfo, setUserInfo] = useState<UserInfo>(new UserInfo());
@@ -154,14 +155,15 @@ export default function AvailabilityPage() {
     getUserInfo();        
   }, []);
 
-  // TODO JLS - HERE
-  // Style this
-
   return (
     <Grid2 container spacing={2}>
-      <SAllMemberSelect churchId={churchId} isVisible={true} defaultMemberId={currentUserId} onClick={onMemberChanged} />      
+      <Grid2 size={12}>
+        <SAllMemberSelect churchId={churchId} isVisible={true} defaultMemberId={currentUserId} onClick={onMemberChanged} />
+      </Grid2>      
       <SPersonCalendar memberId={currentUserId} restrictedDays={blockOutList} onDateChanged={onDateChanged} onMonthChanged={onMonthYearChanged} />      
-      <SAvailabilityList blockedList={blockFullList} onRemove={onRemoveBlockedDate} />
+      <Grid2 size={{ xs: 12, sm: 6 }}>
+        <SAvailabilityList blockedList={blockFullList} onRemove={onRemoveBlockedDate} />
+      </Grid2>
     </Grid2>
   );
 }
