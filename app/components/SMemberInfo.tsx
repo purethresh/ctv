@@ -1,4 +1,4 @@
-import { Box, Typography, TextField, Button, IconButton } from "@mui/material";
+import { Box, Typography, TextField, Button, IconButton, Paper, Grid2 } from "@mui/material";
 import { SMemberInfoProp } from "../props/SMemberInfoProp";
 import { useEffect, useState } from "react";
 import { MinMemberInfo } from "../lib/MinMemberInfo";
@@ -6,6 +6,7 @@ import SMemberPhoneList from "./SMemberPhoneList";
 import SMemberAddressList from "./SMemberAddressList";
 import SMemberEmailList from "./SMemberEmailList";
 import DoneIcon from '@mui/icons-material/Done';
+import CancelIcon from '@mui/icons-material/Cancel';
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import { v4 } from 'uuid';
 import { API_CALLS, APIHandler } from "../lib/APIHanlder";
@@ -26,6 +27,10 @@ export default function SMemberInfo(props:SMemberInfoProp) {
 
     const onSetEditMode = () => {
         setIsEditing(true);
+    }
+
+    const onCancel = async () => {
+        setIsEditing(false);
     }
 
     const onSave = async () => {
@@ -129,34 +134,41 @@ export default function SMemberInfo(props:SMemberInfoProp) {
     }, [props.memberId, props.isAdmin, props.isCreating, props.churchId, props.updateNumber]);  
 
     return (
-        <>
-        <Box>
-            <Box style={{display:!isEditing ? 'block' : 'none'}}>
-                <Typography>{memberInfo.first} {memberInfo.last}
-                    <IconButton onClick={onSetEditMode}>
-                        <ModeEditIcon />
-                    </IconButton>
-                </Typography>
-            </Box>
-            <Box style={{display:isEditing ? 'block' : 'none'}}>
-                <TextField label="First Name" defaultValue={memberInfo.first} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { updateFirstName(event.target.value); }} />
-                <TextField label="Last Name" defaultValue={memberInfo.last} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { updateLastName(event.target.value); }} />
-            </Box>
-            <Box style={{display:!isEditing ? 'block' : 'none'}}>
-                <Typography>{memberInfo.notes}</Typography>                
-            </Box>
-            <Box style={{display:isEditing ? 'block' : 'none'}}>
-                <TextField label="Notes" defaultValue={memberInfo.notes} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { updateNotes(event.target.value); }}/>
-            </Box>                
-            <SMemberPhoneList memberId={memberId} isAdmin={isAdmin} isEditing={isEditing} isCreating={isCreating} needsSave={phoneNeedsSave} onSaveComplete={onPhoneSave} />
-            <SMemberEmailList memberId={memberId} isAdmin={isAdmin} isEditing={isEditing} isCreating={isCreating} needsSave={emailNeedsSave} onSaveComplete={onEmailSave}/>
-            <SMemberAddressList memberId={memberId} isAdmin={isAdmin} isEditing={isEditing} isCreating={isCreating} needsSave={addressNeedsSave} onSaveComplete={onAddressSave}/>
-            <Box style={{display:isEditing ? 'block' : 'none'}}>
-                <Button endIcon={<DoneIcon />} onClick={onSave}>Save</Button>
-            </Box>
+        <Box sx={{paddingTop:'5px'}}>
+            <Paper>
+            <Grid2 container>
+                <Grid2 size={12}>
+                    <Box bgcolor='secondary.main' style={{display:!isEditing ? 'block' : 'none'}}>
+                        <Typography variant="h6" color='secondary.contrastText'>{memberInfo.first} {memberInfo.last}
+                            <IconButton onClick={onSetEditMode}>
+                                <ModeEditIcon color='primary' />
+                            </IconButton>
+                        </Typography>
+                    </Box>
+                </Grid2>
+                <Grid2 size={{xs: 12, sm: 6}}>
+                    <Box style={{display:isEditing ? 'block' : 'none'}}>
+                        <TextField sx={{margin: '5px', padding: '10px'}} label="First Name" defaultValue={memberInfo.first} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { updateFirstName(event.target.value); }} />
+                        <br />
+                        <TextField label="Last Name" defaultValue={memberInfo.last} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { updateLastName(event.target.value); }} />
+                    </Box>
+                    <Box style={{display:!isEditing ? 'block' : 'none'}}>
+                        <Typography variant='subtitle1' color="primary.contrastText">{memberInfo.notes}</Typography>                
+                    </Box>
+                    <Box style={{display:isEditing ? 'block' : 'none'}}>
+                        <TextField sx={{margin: '5px', padding: '10px'}} label="Notes" defaultValue={memberInfo.notes} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { updateNotes(event.target.value); }}/>
+                    </Box>
+                </Grid2>
+                <SMemberPhoneList memberId={memberId} isAdmin={isAdmin} isEditing={isEditing} isCreating={isCreating} needsSave={phoneNeedsSave} onSaveComplete={onPhoneSave} />
+                <SMemberEmailList memberId={memberId} isAdmin={isAdmin} isEditing={isEditing} isCreating={isCreating} needsSave={emailNeedsSave} onSaveComplete={onEmailSave}/>
+                <SMemberAddressList memberId={memberId} isAdmin={isAdmin} isEditing={isEditing} isCreating={isCreating} needsSave={addressNeedsSave} onSaveComplete={onAddressSave}/>
+                <Box style={{display:isEditing ? 'block' : 'none'}}>
+                    <Button variant="contained" color='secondary' endIcon={<CancelIcon />} onClick={onCancel}>Cancel</Button>
+                    <Button variant="contained" color='secondary' endIcon={<DoneIcon />} onClick={onSave}>Save</Button>
+                </Box>
+            </Grid2>
+            </Paper>
         </Box>
-        <br />
-        </>
     );
 
 

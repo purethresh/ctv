@@ -9,8 +9,7 @@ import { getDefaultSunday } from "@/app/lib/dateUtils";
 import { v4 } from 'uuid';
 import { IAvailabilityInfo, AvailabilityInfo } from "@/app/lib/AvailabilityInfo";
 import { API_CALLS, APIHandler } from "@/app/lib/APIHanlder";
-import { Grid2 } from "@mui/material";
-import { Grid } from "@aws-amplify/ui-react";
+import { Grid2, Paper } from "@mui/material";
 
 export default function AvailabilityPage() {
   let [userInfo, setUserInfo] = useState<UserInfo>(new UserInfo());
@@ -158,7 +157,9 @@ export default function AvailabilityPage() {
   return (
     <Grid2 container spacing={2}>
       <Grid2 size={12}>
-        <SAllMemberSelect churchId={churchId} isVisible={true} defaultMemberId={currentUserId} onClick={onMemberChanged} />
+        <Paper>
+          <SAllMemberSelect churchId={churchId} isVisible={true} defaultMemberId={currentUserId} onClick={onMemberChanged} />
+        </Paper>
       </Grid2>      
       <SPersonCalendar memberId={currentUserId} restrictedDays={blockOutList} onDateChanged={onDateChanged} onMonthChanged={onMonthYearChanged} />      
       <Grid2 size={{ xs: 12, sm: 6 }}>

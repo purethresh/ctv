@@ -3,7 +3,7 @@ import { SServiceInfoProps } from "../props/SServiceInfoProps";
 import { useState, useEffect } from 'react';
 import ChurchLabels from "../lib/ChurchLabels";
 import { LabelInfo} from "../lib/LabelInfo";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { ServiceInfo } from "../lib/ServiceInfo";
 import SLabelGroup from "./SLabelGroup";
 import { ChurchSchedule } from "../lib/ChurchSchedule";
@@ -109,8 +109,8 @@ export default function SServiceInfo(props: SServiceInfoProps) {
 
   return (
     <Box>
-      {sInfo.name} {serviceTime}<br />
-      {sInfo.info}
+      <Box bgcolor='secondary.main'><Typography variant="h6" color='secondary.contrastText' sx={{padding: '5px'}}>{sInfo.name} {serviceTime}</Typography></Box>
+      <Box bgcolor='secondary.dark'><Typography variant="subtitle1" color='secondary.contrastText' sx={{padding: '5px'}}>{sInfo.info}</Typography></Box>      
       {labelGroupList.map((item, index) => (
         <SLabelGroup key={item.label_id} groupInfo={item} updateNumber={updateNum} onAddMember={addMember} onRemoveMember={removeMember} />
       ))}      

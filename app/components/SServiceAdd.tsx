@@ -1,5 +1,5 @@
 "use client"
-import { Button, TextField, IconButton, Box } from "@mui/material";
+import { Button, TextField, Paper, Box } from "@mui/material";
 import { useState, useEffect } from 'react';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -76,18 +76,28 @@ export default function SServiceAdd(props:SServiceAddProps) {
   }, [props.defaultDate]);
 
   return (
-    <>
+    <Box>
+      <Paper>
       <Box style={{display:isCreating ? 'none' : 'block'}}>
-        <Button onClick={startCreating}>Add Service</Button>
+        <Button color="secondary" variant="contained" onClick={startCreating}>Add Service</Button>
       </Box>
       <Box style={{display:isCreating ? 'block' : 'none'}}>
-        <LocalizationProvider dateAdapter={AdapterMoment}>
-          <TimePicker label="Service Time" defaultValue={moment(defaultDate)} onChange={timeChange} />
-        </LocalizationProvider>        
-        <TextField id="service-name" label="Service Name" onChange={serviceNameChange} value={serviceName} />
-        <TextField id="service-info" label="Service Info" onChange={serviceInfoChange} value={serviceInfo} />
-        <Button onClick={createService}>Create</Button>
+        <Box sx={{textAlign:'left', padding:'5px'}}>
+          <LocalizationProvider dateAdapter={AdapterMoment} >
+            <TimePicker label="Service Time" defaultValue={moment(defaultDate)} onChange={timeChange} />
+          </LocalizationProvider>        
+        </Box>
+        <Box sx={{textAlign:'center'}}>
+          <TextField sx={{ padding: '5px', width:'100%'}} id="service-name" label="Service Name" onChange={serviceNameChange} value={serviceName} />
+        </Box>
+        <Box sx={{textAlign:'center'}}>
+          <TextField sx={{ padding:'5px', width:'100%'}} id="service-info" label="Service Info" onChange={serviceInfoChange} value={serviceInfo} />
+        </Box>
+        <Box sx={{textAlign:'center', padding:'5px'}}>
+          <Button color="secondary" variant="contained" onClick={createService}>Create</Button>
+        </Box>        
       </Box>
-    </>
+      </Paper>
+    </Box>
   );
 }

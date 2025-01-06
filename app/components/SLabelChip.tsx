@@ -43,7 +43,7 @@ export default function SLabelChip(props:SLabelChipProps) {
 
     return (
         // @ts-ignore
-        <Button variant="contained" color={colorName} sx={{borderRadius:'15px'}} onClick={onClickedButton}>{labelName}</Button>
+        <Button variant="contained" color={colorName} sx={{borderRadius:'15px', marginLeft: '5px', marginRight: '5px'}} onClick={onClickedButton}>{labelName}</Button>
     );
 
 

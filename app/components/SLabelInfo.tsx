@@ -1,10 +1,11 @@
-import { Box, Button } from "@mui/material";
+import { Box, Button, Paper, Typography } from "@mui/material";
 import { SLabelInfoProps } from "../props/SLabelInfoProps";
 import { useEffect, useState } from 'react';
 import SMemberList from "./SMemberList";
 import SCreateLabel from "./SCreateLabel";
 import { LabelInfo } from "../lib/LabelInfo";
 import SAllMemberSelect from "./SAllMemberSelect";
+import { text } from "stream/consumers";
 
 export default function SLabelInfo(props:SLabelInfoProps) {
     let [labelName, setLabelName] = useState<string>('');
@@ -65,16 +66,31 @@ export default function SLabelInfo(props:SLabelInfoProps) {
 
     return (
         <Box style={{display:props.labelInfo ? 'block' : 'none'}}>
-            <div>{labelName}</div>
-            <div>{labelDescription}</div>
+            <Paper>
+                <Box style={{paddingBottom: '10px', textAlign: 'center'}}>
+                    <Box bgcolor={'secondary.main'}>
+                        <Typography variant="h6" color='secondary.contrastText'>{labelName}</Typography>
+                    </Box>                    
+                    <Box bgcolor={'secondary.dark'}>
+                        <Typography variant="h6" color='secondary.contrastText'>{labelDescription}</Typography>
+                    </Box>                    
+                </Box>
+            </Paper>
             <SMemberList labelInfo={props.labelInfo} memberList={props.memberList} title="Members of" userId={userId} onRemoveMember={removeUser}/>
             <SMemberList labelInfo={props.labelInfo} memberList={props.ownerList} title="Administrators of" userId={userId} onRemoveMember={removeUser}/>
-            <br />
-            <SCreateLabel parentLabel={props.labelInfo} userId={userId} churchId={churchId} onReload={props.onReload} />
-
-            <SAllMemberSelect churchId={props.labelInfo?.church_id} defaultMemberId={userId} onClick={userSelected} isVisible={isAdmin} />
-            <Button onClick={addAsMember} style={{display:isAdmin && canAddMember ? 'block' : 'none'}}>Add As Member</Button>
-            <Button onClick={addAsOwner} style={{display:isAdmin && canAddOwner ? 'block' : 'none'}}>Add As Owner</Button>
+            <Paper>
+                <Box sx={{marginTop: '10px', marginBottom: '10px', paddingBottom: '10px'}}>
+                    <SCreateLabel parentLabel={props.labelInfo} userId={userId} churchId={churchId} onReload={props.onReload} />
+                </Box>
+            </Paper>
+            <Paper>
+                <Box bgcolor={'secondary.main'} sx={{ display:isAdmin ? 'block' : 'none', paddingLeft: '10px', paddingTop: '4px', paddingBottom: '4px', marginBottom: '5px'}}>
+                    <Typography variant="h6" color='secondary.contrastText'>Add Member To Label</Typography>
+                </Box> 
+                <SAllMemberSelect churchId={props.labelInfo?.church_id} defaultMemberId={userId} onClick={userSelected} isVisible={isAdmin} />
+                <Button onClick={addAsMember} style={{display:isAdmin && canAddMember ? 'block' : 'none'}} variant='contained' color='secondary'>Add As Member</Button>
+                <Button onClick={addAsOwner} style={{display:isAdmin && canAddOwner ? 'block' : 'none'}} variant='contained' color='secondary'>Add As Owner</Button>
+            </Paper>
         </Box>
     );
 }

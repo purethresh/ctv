@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
     var resultStatus = {status: 500};
 
     try {
-        const data = await req.json();        
+        const data = await req.json();
 
         const params = req.nextUrl.searchParams;
         if (data[CHURCH_ID] !== undefined && data[SERVICE_ID] !== undefined && data[LABEL_ID] !== undefined && data[MEMBER_ID] !== undefined) {

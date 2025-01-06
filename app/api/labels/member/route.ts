@@ -50,16 +50,16 @@ export async function POST(req: NextRequest) {
     var result = {error: 'nothing happened'};
     var resultStatus = {status: 500};
 
-    const params = req.nextUrl.searchParams;
+    const data = await req.json();
     var query = '';
     var queryParams:any[] = [];
 
-    if (params.has(LABEL_ID) && params.has(MEMBER_ID)) {
-        var isOwner:string = params.get(IS_OWNER) === 'true' ? 'true' : 'false';
+    if (data[LABEL_ID] !== undefined && data[MEMBER_ID] !== undefined) {
+        var isOwner:string = data[IS_OWNER] === 'true' ? 'true' : 'false';
         const lableMemberId = v4();
 
         query = "INSERT INTO dbname.label_member (label_member_id, label_id, member_id, isOwnerOfLabel) VALUES (?, ?, ?, ?)";
-        queryParams = [lableMemberId, params.get(LABEL_ID), params.get(MEMBER_ID), isOwner];
+        queryParams = [lableMemberId, data[LABEL_ID], data[MEMBER_ID], isOwner];
     }
 
     if (query.length > 0) {
@@ -82,12 +82,12 @@ export async function DELETE(req:NextRequest) {
     var result = {error: 'nothing happened'};
     var resultStatus = {status: 500};
 
-    const params = req.nextUrl.searchParams;
+    const data = await req.json();
 
     // Only process if we have an availability_id
-    if (params.has(LABEL_ID) && params.has(MEMBER_ID)) {
+    if (data[LABEL_ID] !== undefined && data[MEMBER_ID] !== undefined) {
         const query = 'DELETE FROM label_member WHERE label_id = ? AND member_id = ?';
-        const queryParams = [params.get(LABEL_ID), params.get(MEMBER_ID)];
+        const queryParams = [data[LABEL_ID], data[MEMBER_ID]];
 
         await runQuery(query, queryParams);
         // @ts-ignore

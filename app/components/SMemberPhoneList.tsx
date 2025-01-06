@@ -1,10 +1,11 @@
 import { SMemberInfoProp } from "../props/SMemberInfoProp";
-import { Box, Typography, Button, TextField, Checkbox } from "@mui/material";
+import { Box, Typography, Button, TextField, Checkbox, Grid2 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { MemberPhoneInfo } from "../lib/MemberPhoneInfo";
 import { v4 } from 'uuid';
 import { UpdateType } from "../lib/UpdateType";
 import { API_CALLS, APIHandler } from "../lib/APIHanlder";
+import { Grid } from "@aws-amplify/ui-react";
 
 export default function SMemberPhoneList(props:SMemberInfoProp) {
     let [memberId, setMemberId] = useState<string>('');
@@ -188,13 +189,17 @@ export default function SMemberPhoneList(props:SMemberInfoProp) {
     return (
         <>
             {phoneList.map((pInfo, index) => (
-                <Box key={pInfo.phone_id}>
-                    <Typography style={{display:isEditing ? 'none' : 'block'}}>{pInfo.pNumber}</Typography>
-                    <TextField style={{display:isEditing ? 'block' : 'none'}} label="Phone Number" defaultValue={pInfo.pNumber} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { updatePhoneNumber(pInfo.phone_id, event.target.value); }} />
-                    <Checkbox style={{display:isEditing ? 'block' : 'none'}} defaultChecked={pInfo.isPrimary === 'true'} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { updateIsPrimary(pInfo.phone_id, event.target.checked); }} />
-                </Box>
-            ))}         
-            <Button onClick={onAddPhone} style={{display:isEditing ? 'block' : 'none'}}>Add Phone</Button>
+                <Grid2 size={{xs: 12, sm: 6}}>
+                    <Box key={pInfo.phone_id}>
+                        <Typography style={{display:isEditing ? 'none' : 'block'}}>{pInfo.pNumber}</Typography>
+                        <TextField style={{display:isEditing ? 'block' : 'none'}} label="Phone Number" defaultValue={pInfo.pNumber} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { updatePhoneNumber(pInfo.phone_id, event.target.value); }} />
+                        <Checkbox color='secondary' style={{display:isEditing ? 'block' : 'none'}} defaultChecked={pInfo.isPrimary === 'true'} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { updateIsPrimary(pInfo.phone_id, event.target.checked); }} />
+                    </Box>
+                </Grid2>
+            ))}
+            <Grid2 size={{xs: 12, sm: 6}}>
+                <Button color='secondary' variant="contained" onClick={onAddPhone} style={{display:isEditing ? 'block' : 'none'}}>Add Phone</Button>
+            </Grid2>
         </>
     );
 }

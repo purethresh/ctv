@@ -4,7 +4,7 @@ import SAllMemberSelect from "@/app/components/SAllMemberSelect";
 import ChurchLabels from "@/app/lib/ChurchLabels";
 import UserInfo from "@/app/lib/UserInfo";
 import { useEffect, useState } from "react";
-import { Button } from "@mui/material";
+import { Button, Box, Paper } from "@mui/material";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import SMemberInfo from "@/app/components/SMemberInfo";
 
@@ -58,10 +58,12 @@ export default function MemberPage() {
   }, []);    
 
   return (
-    <>
-      <SAllMemberSelect churchId={churchId} isVisible={isMemberAdmin} defaultMemberId={userId} onClick={onMemberSelected} updateNumber={updateNumber}  />
-      <Button endIcon={<PersonAddIcon />} onClick={onCreateMember} style={{display:isMemberAdmin ? 'block' : 'none'}}>Create Member</Button>
+    <Box sx={{textAlign:'center'}}>
+      <Paper>
+        <SAllMemberSelect churchId={churchId} isVisible={isMemberAdmin} defaultMemberId={userId} onClick={onMemberSelected} updateNumber={updateNumber}  />
+        <Button color="secondary" endIcon={<PersonAddIcon />} onClick={onCreateMember} style={{display:isMemberAdmin ? 'block' : 'none'}}>Create Member</Button>
+      </Paper>
       <SMemberInfo isAdmin={isMemberAdmin} userId={userId} memberId={memberId} isCreating={shouldCreateMember} onMemberCreated={onMemberCreated} churchId={churchId} updateNumber={updateNumber}  />
-    </>  
+    </Box>
   );
 }

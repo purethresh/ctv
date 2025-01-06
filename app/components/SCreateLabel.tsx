@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from 'react';
-import { TextField, Button, Checkbox, FormControlLabel } from "@mui/material";
+import { TextField, Button, Checkbox, FormControlLabel, Box, Typography } from "@mui/material";
 import CreateIcon from '@mui/icons-material/Create';
 import { SCreateLabelProp } from "../props/SCreateLabelProp";
 import { LabelInfo } from '../lib/LabelInfo';
@@ -70,14 +70,16 @@ export default function SCreateLabel(props: SCreateLabelProp) {
     }, [props.parentLabel, props.userId, props.churchId]);    
 
     return (
-        <>
-            Parent is {parentLabel?.labelName}
-            <TextField required label="Label Name" onChange={labelNameChange} />
-            <TextField label="Label Information" onChange={labelInfoChange} />
-            <FormControlLabel control={<Checkbox checked={forSchedule} onChange={checkForSchedule} />} label="For Schedule" />            
-            <Button endIcon={<CreateIcon />} onClick={createLabel}>
-                Create Label
-            </Button>
-        </>
+        <Box>
+            <Box bgcolor='secondary.main' sx={{ paddingLeft: '10px', paddingTop: '5px', paddingBottom: '5px'}}>
+                <Typography variant="h6" color='secondary.contrastText'>Create a child label for {parentLabel?.labelName}</Typography>
+            </Box>
+            <Box>
+                <TextField required label="Label Name" onChange={labelNameChange} sx={{ paddingLeft: '10px', paddingRight:'5px', paddingTop:'8px'}}/>
+                <TextField label="Label Information" onChange={labelInfoChange} sx={{ paddingLeft: '5px', paddingRight:'5px', paddingTop:'8px'}}/>
+                <FormControlLabel control={<Checkbox checked={forSchedule} onChange={checkForSchedule} />} label="For Schedule" sx={{marginTop: '14px'}}/>            
+                <Button variant='contained' color='secondary' endIcon={<CreateIcon />} onClick={createLabel} sx={{ marginTop:'16px'}}>Create Label</Button>
+            </Box>
+        </Box>
     );
 }

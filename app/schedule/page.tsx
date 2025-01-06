@@ -8,6 +8,8 @@ import SChurchCalendar from "../components/SChurchCalendar";
 import UserInfo from "../lib/UserInfo";
 import { IServiceInfo, ServiceInfo } from "../lib/ServiceInfo";
 import { API_CALLS, APIHandler } from "../lib/APIHanlder";
+import { Grid2 } from "@mui/material";
+import { Grid } from "@aws-amplify/ui-react";
 
 export default function SchedulePage() {
   let [curentDate, setCurrentDate] = useState<string>(getDefaultSunday());
@@ -62,14 +64,22 @@ export default function SchedulePage() {
     getUserInfo();
   }, []);
 
+  // TODO JLS - Style this
+  // Fix colors of people in schedualable labels
+  // Also include buttons to add / remove people to the service
+
   return (
-    <>
+    <Grid2 container spacing={2}>
       <SChurchCalendar defaultDate={curentDate} onDateChanged={onDateChange} churchId={userInfo.church_id} updateNumber={updateScheduleNum} onMonthChanged={onMonthChange} />
-      <SServiceAdd defaultDate={currentTime} onCreateService={onServiceCreated} church_id={userInfo.church_id} />
+      <Grid2 size={{ xs: 12, sm: 6 }}>
+        <SServiceAdd defaultDate={currentTime} onCreateService={onServiceCreated} church_id={userInfo.church_id} />
+      </Grid2>
       {serviceList.map((item, index) => (
-        <SServiceInfo key={item.service_id} serviceInfo={item}  />
+        <Grid2 size={12}>
+          <SServiceInfo key={item.service_id} serviceInfo={item}  />
+        </Grid2>
       ))}
-    </>  
+    </Grid2>  
   );
 }
 

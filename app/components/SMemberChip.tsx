@@ -1,4 +1,4 @@
-import { Box, IconButton } from "@mui/material";
+import { Box, IconButton, Typography } from "@mui/material";
 import { useEffect, useState } from 'react';
 import { SMemberChipProps } from "../props/SMemberChipProps";
 import { MinMemberInfo } from "../lib/MinMemberInfo";
@@ -33,10 +33,10 @@ export default function SMemberChip(props:SMemberChipProps) {
     }, [props.memberInfo]);
 
     return (
-        <Box sx={{display:'inline-flex', margin:'5px', paddingLeft:'10px', paddingRight:'10px', paddingTop:'5px', paddingBottom:'5px', borderRadius:'15px', backgroundColor:'#f0f0f0'}}>
-            {memberName}
-            <IconButton aria-label="remove" onClick={onRemove} sx={{display: showRemove ? 'inline' : 'none'}}>
-                <DeleteIcon/>
+        <Box bgcolor='secondary.main' sx={{display:'inline-flex', margin:'5px', paddingLeft:'10px', paddingRight:'10px', paddingTop:'5px', paddingBottom:'5px', borderRadius:'15px'}}>
+            <Typography variant='button' color="secondary.contrastText">{memberName}</Typography>
+            <IconButton aria-label="remove" onClick={onRemove} sx={{display: showRemove ? 'inline' : 'none', height:'24px', marginTop:'-12px'}}>
+                <DeleteIcon color="primary"/>
             </IconButton>
         </Box>
     );

@@ -26,10 +26,10 @@ export default function SLabelList(props:SLabelListProps) {
     }, [props.labelList, props.userId]); 
 
     return (
-        <Box>
+        <>
         {labelList.map((item, index) => (
             <SLabelChip key={item.label_id + '_label'} labelInfo={item} userId={userId} onClick={onLabelClick} />
         ))}
-        </Box>
+        </>
     )
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { MinMemberInfo } from '../lib/MinMemberInfo';
-import { InputLabel, Select, MenuItem, IconButton, Box, Typography } from '@mui/material';
+import { InputLabel, Select, MenuItem, IconButton, Box, Typography, Stack } from '@mui/material';
 import { SelectChangeEvent } from '@mui/material/Select';
 import { API_CALLS, APIHandler } from '../lib/APIHanlder';
 import { Paper } from '@mui/material';
@@ -50,21 +50,23 @@ export default function SAllMemberSelect(props:SAllMemberSelectProp) {
 
     return (
       <Box style={{display:isVisible ? 'block' : 'none', textAlign:'center'}}>
-        <Paper>
-        <InputLabel id="all-member-select-label"><Typography variant='subtitle1' color='primary.contrastText'>All Church Members</Typography></InputLabel>
-        <Select
-            labelId="all-member-select-label"
-            id="all-member-select"
-            onChange={handleChange}
-            value={memberList.length > 0 ? selectedMember : ''}
-            defaultValue={defaultMemberId}
-            sx={{marginBottom: '10px'}}
-        >
-            {memberList.map((item, index) => (
-                <MenuItem key={item.member_id} value={item.member_id}>{item.first + " " + item.last}</MenuItem>
-            ))}                        
-        </Select>
-        </Paper>
+        <Stack>
+            <InputLabel id="all-member-select-label">
+                <Typography variant='subtitle1' color='primary.contrastText'>All Church Members</Typography>
+            </InputLabel>
+            <Select
+                labelId="all-member-select-label"
+                id="all-member-select"
+                onChange={handleChange}
+                value={memberList.length > 0 ? selectedMember : ''}
+                defaultValue={defaultMemberId}
+                sx={{marginBottom: '10px'}}
+            >
+                {memberList.map((item, index) => (
+                    <MenuItem key={item.member_id} value={item.member_id}>{item.first + " " + item.last}</MenuItem>
+                ))}                        
+            </Select>
+        </Stack>
       </Box>
     );
 

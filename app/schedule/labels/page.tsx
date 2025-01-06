@@ -8,6 +8,7 @@ import SLabelList from '@/app/components/SLabelList';
 import SLabelInfo from '@/app/components/SLabelInfo';
 import { MinMemberInfo } from '@/app/lib/MinMemberInfo';
 import { API_CALLS, APIHandler } from '@/app/lib/APIHanlder';
+import { Grid2, Paper, Box, Typography } from '@mui/material';
 
 export default function LabelPage() {
   let [churchLabels, setChurchLabels] = useState<ChurchLabels>(new ChurchLabels());
@@ -149,12 +150,21 @@ export default function LabelPage() {
   }, []);  
 
   return (
-    <>
-      <div>My Labels</div>
-      <SLabelList labelList={memberLabels} userId={userId} onClick={onLabelClick} seletedLabel={selectedLabel}/>
-      <div>Label Info goes here</div>
-      <SLabelInfo labelInfo={selectedInfo} memberList={memberList} ownerList={ownerList} userId={userId} churchId={churchId} onReload={reloadLabelInfo} onAddMember={addMemberToLabel} onRemoveMember={removeMemberFromLabel}/>
-    </>
+    <Grid2 container spacing={2}>
+      <Grid2 size={12}>
+        <Paper>
+          <Box sx={{ paddingBottom: '5px'}}>
+            <Box bgcolor={'secondary.main'} sx={{ padding: '2px', marginBottom: '5px'}}>
+              <Typography variant='h6' color='secondary.contrastText'>My Labels</Typography>
+            </Box>            
+            <SLabelList labelList={memberLabels} userId={userId} onClick={onLabelClick} seletedLabel={selectedLabel}/>
+          </Box>
+        </Paper>
+      </Grid2>
+      <Grid2 size={12}>
+        <SLabelInfo labelInfo={selectedInfo} memberList={memberList} ownerList={ownerList} userId={userId} churchId={churchId} onReload={reloadLabelInfo} onAddMember={addMemberToLabel} onRemoveMember={removeMemberFromLabel}/>
+      </Grid2>
+    </Grid2>
   );
 
 

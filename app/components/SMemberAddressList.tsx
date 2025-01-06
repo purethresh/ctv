@@ -1,5 +1,5 @@
 import { SMemberInfoProp } from "../props/SMemberInfoProp";
-import { Box, Typography, TextField, Button } from "@mui/material";
+import { Box, Typography, TextField, Button, Grid2 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { MemberAddressInfo } from "../lib/MemberAddressInfo";
 import { UpdateType } from "../lib/UpdateType";
@@ -241,6 +241,7 @@ export default function SMemberAddressList(props:SMemberInfoProp) {
     return (
         <>
             {addressList.map((aInfo, index) => (
+                <Grid2 size={{xs: 12, sm: 6}}>
                 <Box key={aInfo.address_id}>
                     <Typography style={{display:isEditing ? 'none' : 'block'}}>
                         {aInfo.address1} <br />
@@ -253,8 +254,11 @@ export default function SMemberAddressList(props:SMemberInfoProp) {
                     <TextField style={{display:isEditing ? 'block' : 'none'}} label="State" defaultValue={aInfo.address1} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { updateState(aInfo.address_id, event.target.value); }} />                        
                     <TextField style={{display:isEditing ? 'block' : 'none'}} label="Zip" defaultValue={aInfo.address1} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { updateZipcode(aInfo.address_id, event.target.value); }} />                        
                 </Box>
-            ))}        
-            <Button onClick={onAddAddress} style={{display:isEditing ? 'block' : 'none'}}>Add Address</Button>
+                </Grid2>
+            ))}
+            <Grid2 size={{xs: 12, sm: 6}}>
+                <Button color="secondary" variant="contained" onClick={onAddAddress} style={{display:isEditing ? 'block' : 'none'}}>Add Address</Button>
+            </Grid2>                
         </>
     );
 
