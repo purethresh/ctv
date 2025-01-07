@@ -28,6 +28,16 @@ export default function SAllMemberSelect(props:SAllMemberSelectProp) {
         for(var i=0; i<rs.length; i++) {
             mList.push(new MinMemberInfo(rs[i]));
         }
+
+        // Sort the list
+        console.log(mList[0]);
+        mList.sort((a, b) => {
+            var result = a.first.localeCompare(b.first);
+            if (result === 0) {
+                result = a.last.localeCompare(b.last);
+            }
+            return result;
+        });
         setMemberList(mList);
     }
 

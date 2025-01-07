@@ -59,6 +59,7 @@ export async function PUT(req: NextRequest) {
     var result = {error: 'nothing happened'};
     var resultStatus = {status: 500};
 
+
     try {
         const data = await req.json();
         const mInfo = new MemberAddressInfo(data);

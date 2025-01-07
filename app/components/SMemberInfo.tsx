@@ -1,4 +1,4 @@
-import { Box, Typography, TextField, Button, IconButton, Paper, Grid2 } from "@mui/material";
+import { Box, Typography, TextField, Button, IconButton, Paper, Grid2, FormLabel, RadioGroup, FormControlLabel, Radio } from "@mui/material";
 import { SMemberInfoProp } from "../props/SMemberInfoProp";
 import { useEffect, useState } from "react";
 import { MinMemberInfo } from "../lib/MinMemberInfo";
@@ -12,7 +12,7 @@ import { v4 } from 'uuid';
 import { API_CALLS, APIHandler } from "../lib/APIHanlder";
 
 export default function SMemberInfo(props:SMemberInfoProp) {
-    let [memberId, setMemberId] = useState<string>('');
+    let [memberId, setMemberId] = useState<string>('');    
     let [userId, setUserId] = useState<string>('');
     let [churchId, setChurchId] = useState<string>('');
     let [memberInfo, setMemberInfo] = useState<MinMemberInfo>(new MinMemberInfo({}));
@@ -36,12 +36,22 @@ export default function SMemberInfo(props:SMemberInfoProp) {
     const onSave = async () => {
         if (needsSave) {
             const api = new APIHandler();
+            const mInfo = memberInfo;
+            const params = {
+                member_id: memberId,
+                first: mInfo.first,
+                last: mInfo.last,
+                notes: mInfo.notes,
+                gender: mInfo.gender
+            }
 
             if (isCreating) {
-                await api.createData(API_CALLS.member, {church_id: churchId});
+                // @ts-ignore
+                params.church_id = churchId;
+                await api.createData(API_CALLS.member, params);
             }   
             else {
-                await api.createData(API_CALLS.member, {member_id: memberId});
+                await api.postData(API_CALLS.member, params);
             }
 
             // fetch without cache to update
@@ -96,7 +106,14 @@ export default function SMemberInfo(props:SMemberInfoProp) {
         mInfo.notes = notes;
         setMemberInfo(mInfo);
         setNeedsSave(true);
-    }    
+    }
+
+    const updateGender = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const mInfo = memberInfo;
+        mInfo.gender = (event.target as HTMLInputElement).value;
+        setMemberInfo(mInfo);
+        setNeedsSave(true);
+    };    
 
     const updateMemberInfo = async(useCache:boolean) => {
         setUserId(props.userId || '');
@@ -157,6 +174,19 @@ export default function SMemberInfo(props:SMemberInfoProp) {
                     </Box>
                     <Box style={{display:isEditing ? 'block' : 'none'}}>
                         <TextField sx={{margin: '5px', padding: '10px'}} label="Notes" defaultValue={memberInfo.notes} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { updateNotes(event.target.value); }}/>
+                    </Box>
+                    <Box style={{display:isEditing ? 'block' : 'none'}}>
+                        <FormLabel id="gender_label">Gender</FormLabel>
+                        <RadioGroup
+                            row
+                            aria-labelledby="gender_label"
+                            defaultValue={memberInfo.gender}
+                            onChange={updateGender}
+                            name="radio-buttons-group"
+                        >
+                            <FormControlLabel value="female" control={<Radio color="secondary" />} label="Female" />
+                            <FormControlLabel value="male" control={<Radio color="secondary" />} label="Male" />
+                        </RadioGroup>
                     </Box>
                 </Grid2>
                 <SMemberPhoneList memberId={memberId} isAdmin={isAdmin} isEditing={isEditing} isCreating={isCreating} needsSave={phoneNeedsSave} onSaveComplete={onPhoneSave} />

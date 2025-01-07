@@ -62,8 +62,6 @@ export default function SScheduledLabel(props:SLabelGroupProps) {
             
             setScheduledMemberList(sMemList);
             setNonScheduledMemberList(nsMemList);
-
-            console.log(sMemList);
         }
     }
 

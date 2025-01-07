@@ -23,9 +23,10 @@ export class APIHandler {
         }
 
         // Add directive to use cache
-        if (useCache) {
-            req.cache = 'force-cache';
-        }
+        // TODO JLS - This is not working
+        // if (useCache) {
+        //     req.cache = 'force-cache';
+        // }
 
         // Get the data
         result = await fetch(this.createFullURL(api, params), req);

@@ -5,7 +5,6 @@ import SMemberList from "./SMemberList";
 import SCreateLabel from "./SCreateLabel";
 import { LabelInfo } from "../lib/LabelInfo";
 import SAllMemberSelect from "./SAllMemberSelect";
-import { text } from "stream/consumers";
 
 export default function SLabelInfo(props:SLabelInfoProps) {
     let [labelName, setLabelName] = useState<string>('');
@@ -27,7 +26,7 @@ export default function SLabelInfo(props:SLabelInfoProps) {
     const userSelected = async (memberId:string) => {
         setSelectedMember(memberId);
 
-        // Update the add buttons
+        // Update the add buttons        
         setCanAddMember(!labelInfo.isMember(memberId));
         setCanOwner(!labelInfo.isOwner(memberId));
     }
@@ -53,6 +52,11 @@ export default function SLabelInfo(props:SLabelInfoProps) {
             setUserId(userId);
             setChurchId(props.churchId || '');
 
+            if (selectedMember === '') {
+                setSelectedMember(userId);
+                await userSelected(userId);
+            }
+
             const lbl = props.labelInfo || new LabelInfo({});
             setLabelInfo(lbl);
 
@@ -61,7 +65,7 @@ export default function SLabelInfo(props:SLabelInfoProps) {
             }
         }
         
-        calcValues();
+        calcValues();        
     }, [props.labelInfo, props.memberList, props.ownerList, props.userId]);    
 
     return (

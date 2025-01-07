@@ -23,13 +23,13 @@ export async function GET(req: NextRequest) {
         queryParams = [params.get(USER_SUB_ID)];
     }
     else if (params.has(LABEL_ID)) {
-        // Get all tne members for a label
-        query = 'SELECT members.member_id, members.first, members.last FROM dbname.members JOIN dbname.label_member ON dbname.members.member_id = dbname.label_member.member_id where dbname.label_member.label_id=?';
+        // Get all the members for a label
+        query = 'SELECT members.member_id, members.first, members.last, members.gender FROM dbname.members JOIN dbname.label_member ON dbname.members.member_id = dbname.label_member.member_id where dbname.label_member.label_id=?';
         queryParams = [params.get(LABEL_ID), params.get(CHURCH_ID)];
     }
     else if (params.has(CHURCH_ID)) {
         // Get all tne members for a church
-        query = 'SELECT members.member_id, members.first, members.last FROM dbname.members JOIN dbname.church_member ON dbname.members.member_id = dbname.church_member.member_id where dbname.church_member.church_id=?';
+        query = 'SELECT members.member_id, members.first, members.last, members.gender FROM dbname.members JOIN dbname.church_member ON dbname.members.member_id = dbname.church_member.member_id where dbname.church_member.church_id=?';
         queryParams = [params.get(CHURCH_ID)];
     }
     else if (params.has(MEMBER_ID)) {
@@ -67,8 +67,8 @@ export async function POST(req: NextRequest) {
 
         // Only update if we have a member_id
         if (mInfo.member_id.length > 0) {
-            const query = 'UPDATE members SET first=?, last=?, notes=? WHERE member_id=?';
-            const queryParams = [mInfo.first, mInfo.last, mInfo.notes, mInfo.member_id];
+            const query = 'UPDATE members SET first=?, last=?, notes=?, gender=? WHERE member_id=?';
+            const queryParams = [mInfo.first, mInfo.last, mInfo.notes, mInfo.gender, mInfo.member_id];
             const [dbResults] = await runQuery(query, queryParams);
             result = dbResults;
             resultStatus = {status: 200};
@@ -84,18 +84,17 @@ export async function POST(req: NextRequest) {
 export async function PUT(req: NextRequest) {
     var result = {error: 'nothing happened'};
     var resultStatus = {status: 500};
-    const params = req.nextUrl.searchParams;
 
     try {
         const data = await req.json();
         const mInfo = new MinMemberInfo(data);
-        const cId:string = params.get(CHURCH_ID) || '';
+        const cId:string = data[CHURCH_ID] || '';
 
         // Only update if we have a member_id
         if (mInfo.member_id.length > 0 && cId.length > 0) {
             // Insert user
-            var query = 'INSERT INTO members (member_id, first, last, notes) VALUES (?, ?, ?, ?)';
-            var queryParams = [mInfo.member_id, mInfo.first, mInfo.last, mInfo.notes];
+            var query = 'INSERT INTO members (member_id, first, last, notes, gender) VALUES (?, ?, ?, ?, ?)';
+            var queryParams = [mInfo.member_id, mInfo.first, mInfo.last, mInfo.notes, mInfo.gender];
             var [dbResults] = await runQuery(query, queryParams);
             result = dbResults;
 
