@@ -64,10 +64,6 @@ export default function SchedulePage() {
     getUserInfo();
   }, []);
 
-  // TODO JLS - Style this
-  // Fix colors of people in schedualable labels
-  // Also include buttons to add / remove people to the service
-
   return (
     <Grid2 container spacing={2}>
       <SChurchCalendar defaultDate={curentDate} onDateChanged={onDateChange} churchId={userInfo.church_id} updateNumber={updateScheduleNum} onMonthChanged={onMonthChange} />
@@ -75,7 +71,7 @@ export default function SchedulePage() {
         <SServiceAdd defaultDate={currentTime} onCreateService={onServiceCreated} church_id={userInfo.church_id} />
       </Grid2>
       {serviceList.map((item, index) => (
-        <Grid2 size={12}>
+        <Grid2 size={12} key={item.service_id + '_grid'}>
           <SServiceInfo key={item.service_id} serviceInfo={item}  />
         </Grid2>
       ))}

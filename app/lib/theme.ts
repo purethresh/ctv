@@ -1,5 +1,4 @@
 // https://bareynol.github.io/mui-theme-creator/
-// TODO JLS, working on theme
 
 import { createTheme } from '@mui/material/styles';
 

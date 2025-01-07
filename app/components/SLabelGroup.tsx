@@ -11,6 +11,8 @@ export default function SLabelGroup(props:SLabelGroupProps) {
     let [labelName, setLabelName] = useState<string>(props.groupInfo?.labelName || '');
     let [childLabels, setChildLabels] = useState<LabelInfo[]>([]);
     let [updateNumber, setUpdateNumber] = useState<number>(props.updateNumber || 0);
+    let [showAddMember, setShowAddMember] = useState<boolean>(props.showAddMember || false);
+    let [showRemoveMember, setShowRemoveMember] = useState<boolean>(props.showRemoveMember || false);
 
     const addMember = (memberInfo:MinMemberInfo, labelInfo:LabelInfo) => {
         if (props.onAddMember) {
@@ -30,6 +32,9 @@ export default function SLabelGroup(props:SLabelGroupProps) {
 
     const getInitialInfo = async() => {        
         if (props.groupInfo !== undefined) {
+            setShowAddMember(props.showAddMember || false);
+            setShowRemoveMember(props.showRemoveMember || false);
+
             setLabelName(props.groupInfo.labelName);
             setChildLabels(props.groupInfo.childLabels);
         }        
@@ -49,7 +54,7 @@ export default function SLabelGroup(props:SLabelGroupProps) {
                 <Typography variant="h6" color="primary.contrastText">{labelName}</Typography>
             </Box>            
             {childLabels.map((item, index) => (                
-                <SScheduledLabel key={item.label_id} groupInfo={item} updateNumber={updateNumber} onAddMember={addMember} onRemoveMember={removeMember} />
+                <SScheduledLabel key={item.label_id} groupInfo={item} updateNumber={updateNumber} onAddMember={addMember} onRemoveMember={removeMember} showAddMember={showAddMember} showRemoveMember={showRemoveMember} />
             ))}            
         </Box>
     );

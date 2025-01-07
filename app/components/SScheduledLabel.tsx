@@ -30,6 +30,9 @@ export default function SScheduledLabel(props:SLabelGroupProps) {
 
     const getInitialInfo = async() => {
         if (props.groupInfo !== undefined) {
+            setShowAddMember(props.showAddMember || false);
+            setShowRemoveMember(props.showRemoveMember || false);
+
             const lbl = props.groupInfo;
             setLabelName(lbl.labelName);
             setLabelInfo(lbl);
@@ -59,6 +62,8 @@ export default function SScheduledLabel(props:SLabelGroupProps) {
             
             setScheduledMemberList(sMemList);
             setNonScheduledMemberList(nsMemList);
+
+            console.log(sMemList);
         }
     }
 
@@ -72,10 +77,10 @@ export default function SScheduledLabel(props:SLabelGroupProps) {
                 <Typography variant="subtitle2" color="primary.contrastText">{labelName}</Typography>
             </Box>            
             { scheduledMemberList.map((item, index) => (
-                <SLabelMember key={item.member_id + props.groupInfo?.label_id + "scheduled"} memberInfo={item} removeMember={onRemove} updateNumber={updateNumber} showAdd={false} showRemove={showRemoveMember}/>
+                <SLabelMember key={item.member_id + props.groupInfo?.label_id + "scheduled"} label_id={props.groupInfo?.label_id} memberInfo={item} removeMember={onRemove} updateNumber={updateNumber} showAdd={false} showRemove={showRemoveMember}/>
             ))}
             { nonScheduledMemberList.map((item, index) => (
-                <SLabelMember key={item.member_id + props.groupInfo?.label_id + "not-scheduled"} memberInfo={item} addMember={onAdd} updateNumber={updateNumber} showAdd={showAddMember} showRemove={false}/>
+                <SLabelMember key={item.member_id + props.groupInfo?.label_id + "not-scheduled"} label_id={props.groupInfo?.label_id} memberInfo={item} addMember={onAdd} updateNumber={updateNumber} showAdd={showAddMember} showRemove={false}/>
             ))}
         </Box>
     )
