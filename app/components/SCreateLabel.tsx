@@ -48,7 +48,7 @@ export default function SCreateLabel(props: SCreateLabelProp) {
 
         const api = new APIHandler();
         const result = await api.postData(API_CALLS.labels, { label_id: lblId, labelName: lName, labelDescription: lDescription, church_id: cId, forSchedule: fSchedule, owner_id: oId });
-        var rs = await result.json();
+        var rs = await result.json();        
         
         if (props.onReload) {
             props.onReload();

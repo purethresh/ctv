@@ -8,6 +8,8 @@ import { ScheduleStatus } from "../lib/ScheduleStatus";
 import { Typography } from "@mui/material";
 
 export default function SScheduledLabel(props:SLabelGroupProps) {
+
+    let [labelMargin, setLabelMargin] = useState<number>(2);
     let [labelName, setLabelName] = useState<string>(props.groupInfo?.labelName || '');
     let [labelInfo, setLabelInfo] = useState<LabelInfo>(props.groupInfo || new LabelInfo({}));
     let [scheduledMemberList, setScheduledMemberList] = useState<MinMemberInfo[]>([]);
@@ -34,9 +36,16 @@ export default function SScheduledLabel(props:SLabelGroupProps) {
             setShowRemoveMember(props.showRemoveMember || false);
 
             const lbl = props.groupInfo;
-            setLabelName(lbl.labelName);
+            setLabelName(decodeURIComponent(lbl.labelName));
             setLabelInfo(lbl);
             setUpdateNumber(props.updateNumber || 0);
+
+            if (lbl.scheduleGroup) {
+                setLabelMargin(2);
+            }
+            else {
+                setLabelMargin(4);
+            }
 
             // Get the members
             const sMemList:MinMemberInfo[] = [];
@@ -71,15 +80,18 @@ export default function SScheduledLabel(props:SLabelGroupProps) {
     
     return (
         <Box>
-            <Box sx={{textAlign:'left', marginLeft:2}}>
-                <Typography variant="subtitle2" color="primary.contrastText">{labelName}</Typography>
-            </Box>            
-            { scheduledMemberList.map((item, index) => (
-                <SLabelMember key={item.member_id + props.groupInfo?.label_id + "scheduled"} label_id={props.groupInfo?.label_id} memberInfo={item} removeMember={onRemove} updateNumber={updateNumber} showAdd={false} showRemove={showRemoveMember}/>
-            ))}
-            { nonScheduledMemberList.map((item, index) => (
-                <SLabelMember key={item.member_id + props.groupInfo?.label_id + "not-scheduled"} label_id={props.groupInfo?.label_id} memberInfo={item} addMember={onAdd} updateNumber={updateNumber} showAdd={showAddMember} showRemove={false}/>
-            ))}
+            <Box sx={{textAlign:'left', marginLeft:labelMargin}}>
+                {props.groupInfo?.scheduleGroup && <Typography variant="h6" color="primary.contrastText">{labelName}</Typography>}
+                {!props.groupInfo?.scheduleGroup && <Typography variant="subtitle1" color="primary.contrastText">{labelName}</Typography>}                
+            </Box>
+            <Box sx={{textAlign:'left', marginLeft:labelMargin}}>
+                { scheduledMemberList.map((item, index) => (
+                    <SLabelMember key={item.member_id + props.groupInfo?.label_id + "scheduled"} label_id={props.groupInfo?.label_id} memberInfo={item} removeMember={onRemove} updateNumber={updateNumber} showAdd={false} showRemove={showRemoveMember}/>
+                ))}
+                { nonScheduledMemberList.map((item, index) => (
+                    <SLabelMember key={item.member_id + props.groupInfo?.label_id + "not-scheduled"} label_id={props.groupInfo?.label_id} memberInfo={item} addMember={onAdd} updateNumber={updateNumber} showAdd={showAddMember} showRemove={false}/>
+                ))}
+            </Box>
         </Box>
     )
 

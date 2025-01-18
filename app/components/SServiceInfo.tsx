@@ -31,7 +31,8 @@ export default function SServiceInfo(props: SServiceInfoProps) {
 
     // Refetch the schedule without cache
     churchSchedule.useCache = false;
-    const sTime = new Date(sInfo.serviceTime);
+    
+    const sTime = sInfo.serviceAsDate();
     await churchSchedule.fetchScheduleWithBufferMonths(sTime);
     churchSchedule.useCache = true;
 
@@ -51,7 +52,7 @@ export default function SServiceInfo(props: SServiceInfoProps) {
 
     // Refetch the schedule without cache
     churchSchedule.useCache = false;
-    const sTime = new Date(sInfo.serviceTime);
+    const sTime = sInfo.serviceAsDate();
     await churchSchedule.fetchScheduleWithBufferMonths(sTime);
     churchSchedule.useCache = true;
 
@@ -73,14 +74,15 @@ export default function SServiceInfo(props: SServiceInfoProps) {
       await allLabels.fetchAllLabels(cId);
 
       // Get the time
-      const tString = new Date(sInfo.serviceTime).toLocaleTimeString();
-      setServiceTime(tString);
+      const sTime = sInfo.serviceAsDate();
+      const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
+      const str = new Intl.DateTimeFormat('en-US', options).format(sTime);
+      setServiceTime(str);
 
       // Get the members for each scheduled label
       await allLabels.fetchMembersForScheduledLabels();
 
       // Get all the scheduled services for the month (before, current, and after)
-      const sTime = new Date(sInfo.serviceTime);
       await churchSchedule.fetchScheduleWithBufferMonths(sTime);
 
       // Get all the blocked out days
@@ -109,7 +111,7 @@ export default function SServiceInfo(props: SServiceInfoProps) {
 
   return (
     <Box>
-      <Box bgcolor='secondary.main'><Typography variant="h6" color='secondary.contrastText' sx={{padding: '5px'}}>{sInfo.name} {serviceTime}</Typography></Box>
+      <Box bgcolor='secondary.main'><Typography variant="h6" color='secondary.contrastText' sx={{padding: '5px'}}>{serviceTime} - {sInfo.name}</Typography></Box>
       <Box bgcolor='secondary.dark'><Typography variant="subtitle1" color='secondary.contrastText' sx={{padding: '5px'}}>{sInfo.info}</Typography></Box>      
       {labelGroupList.map((item, index) => (
         <SLabelGroup key={item.label_id} groupInfo={item} updateNumber={updateNum} onAddMember={addMember} onRemoveMember={removeMember} showAddMember={true} showRemoveMember={true} />

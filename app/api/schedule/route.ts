@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
 import { getStartOfPreviousMonth, getEndOfNextMonth } from '@/app/lib/dateUtils';
 import { v4 } from 'uuid';
+import { RParams } from '@/app/lib/RParams';
 
 const CHURCH_ID = 'church_id';
 const MEMBER_ID = 'member_id';
@@ -80,7 +81,9 @@ export async function DELETE(req:NextRequest) {
     var result = {error: 'nothing happened'};
     var resultStatus = {status: 500};
 
-    const params = req.nextUrl.searchParams;
+    const params = new RParams();
+    await params.useRequest(req);
+
     // Only process if we have an availability_id
     if (params.has(SERVICE_ID) && params.has(LABEL_ID) && params.has(MEMBER_ID)) {
         const query = 'DELETE FROM dbname.schedule WHERE service_id = ? AND label_id = ? AND member_id = ?';

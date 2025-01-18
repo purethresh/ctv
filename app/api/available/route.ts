@@ -1,18 +1,20 @@
 import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
 import { runQuery } from '../../lib/db';
+import { RParams } from '@/app/lib/RParams';
 
 const MEMBER_ID:string = 'member_id';
 const CHURCH_ID:string = 'church_id';
 const MIN_DATE:string = 'min';
 const MAX_DATE:string = 'max';
 const AVAILABLE_ID:string = 'availability_id';
+const BLOCK_OUT_DAY:string = 'blockOutDay';
 
 export async function GET(req:NextRequest) {
     var result = {error: 'nothing happened'};
     var resultStatus = {status: 500};
 
-    const params = req.nextUrl.searchParams;
+    const params = req.nextUrl.searchParams;    
 
     // Look for member based on sub info
     if (params.has(MEMBER_ID) && params.has(MIN_DATE) && params.has(MAX_DATE)) {
@@ -49,7 +51,8 @@ export async function DELETE(req:NextRequest) {
     var result = {error: 'nothing happened'};
     var resultStatus = {status: 500};
 
-    const params = req.nextUrl.searchParams;
+    const params = new RParams();
+    await params.useRequest(req);
 
     // Only process if we have an availability_id
     if (params.has(AVAILABLE_ID)) {
@@ -69,10 +72,12 @@ export async function POST(req: NextRequest) {
     var result = {error: 'nothing happened'};
     var resultStatus = {status: 500};
 
-    const data = await req.json();
-    if (data.availability_id !== undefined && data.member_id !== undefined && data.blockOutDay !== undefined) {
+    const params = new RParams();
+    await params.useRequest(req);
+
+    if (params.has(AVAILABLE_ID) && params.has(MEMBER_ID) && params.has(BLOCK_OUT_DAY)) {
         const query = 'INSERT INTO availability (availability_id, member_id, blockOutDay) VALUES (?, ?, ?)';
-        const queryParams = [data.availability_id, data.member_id, data.blockOutDay];
+        const queryParams = [params.get(AVAILABLE_ID), params.get(MEMBER_ID), params.get(BLOCK_OUT_DAY)];
 
         try {
             await runQuery(query, queryParams);

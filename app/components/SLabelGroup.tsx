@@ -4,11 +4,9 @@ import { useEffect, useState } from 'react';
 import { LabelInfo } from "../lib/LabelInfo";
 import SScheduledLabel from "./SScheduledLabel";
 import { MinMemberInfo } from "../lib/MinMemberInfo";
-import { Console } from "console";
-import { Typography } from "@mui/material";
 
 export default function SLabelGroup(props:SLabelGroupProps) {
-    let [labelName, setLabelName] = useState<string>(props.groupInfo?.labelName || '');
+    let [groupLabels, setGroupLabels] = useState<LabelInfo>();
     let [childLabels, setChildLabels] = useState<LabelInfo[]>([]);
     let [updateNumber, setUpdateNumber] = useState<number>(props.updateNumber || 0);
     let [showAddMember, setShowAddMember] = useState<boolean>(props.showAddMember || false);
@@ -34,9 +32,18 @@ export default function SLabelGroup(props:SLabelGroupProps) {
         if (props.groupInfo !== undefined) {
             setShowAddMember(props.showAddMember || false);
             setShowRemoveMember(props.showRemoveMember || false);
+            
+            // If this is a group, then use the children
+            var lst:LabelInfo[] = [];
+            if (props.groupInfo.scheduleGroup) {
+                setGroupLabels(props.groupInfo);
+                lst = props.groupInfo.childLabels;
+            }
+            else {
+                lst.push(props.groupInfo);
+            }
 
-            setLabelName(props.groupInfo.labelName);
-            setChildLabels(props.groupInfo.childLabels);
+            setChildLabels(lst);
         }        
     }
 
@@ -50,13 +57,10 @@ export default function SLabelGroup(props:SLabelGroupProps) {
 
     return (
         <Box>
-            <Box sx={{textAlign:'left', marginLeft:4}}>
-                <Typography variant="h6" color="primary.contrastText">{labelName}</Typography>
-            </Box>            
-            {childLabels.map((item, index) => (                
-                <SScheduledLabel key={item.label_id} groupInfo={item} updateNumber={updateNumber} onAddMember={addMember} onRemoveMember={removeMember} showAddMember={showAddMember} showRemoveMember={showRemoveMember} />
-            ))}            
+            <SScheduledLabel key={groupLabels?.label_id + "_label"} groupInfo={groupLabels} updateNumber={updateNumber} showAddMember={false} showRemoveMember={false} />
+            {childLabels.map((item, index) => ( 
+                <SScheduledLabel key={item.label_id + "_label"} groupInfo={item} updateNumber={updateNumber} onAddMember={addMember} onRemoveMember={removeMember} showAddMember={showAddMember} showRemoveMember={showRemoveMember} />
+            ))}
         </Box>
     );
-
 }

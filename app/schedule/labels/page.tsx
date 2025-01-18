@@ -149,6 +149,12 @@ export default function LabelPage() {
     updateUserInfo();
   }, []);  
 
+// TODO JLS - need to be able to edit labels
+// - Remove label (like doubled youth)
+// - Change the name of the label
+// - Show label decoded
+// - Change a label as schedualable or not
+
   return (
     <Grid2 container spacing={2}>
       <Grid2 size={12}>

@@ -17,6 +17,7 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import { Grid2, Paper, Stack } from "@mui/material";
+import {getDayString} from "./lib/dateUtils";
 
 
 Amplify.configure(outputs);
@@ -27,7 +28,8 @@ export default function App() {
   let [userInfo, setUserInfo] = useState<UserInfo>(new UserInfo());
 
   const onDateChange = (date:Date) => {
-    setSelectedDay(`${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`);
+    const dateStr = getDayString(date);
+    setSelectedDay(dateStr);
   }
 
   const onSignout = () => {

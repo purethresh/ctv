@@ -9,6 +9,7 @@ export interface ILabelInfo {
     labelName?:string;
     labelDescription?:string;
     forSchedule?:string;
+    scheduleGroup?:string;
     owner_id?:string;
     church_id?:string;
 }
@@ -20,6 +21,7 @@ export class LabelInfo {
     labelName:string;
     labelDescription:string;
     forSchedule:boolean;
+    scheduleGroup:boolean;
     owner_id:string;
 
     // Labels can have both a parent and children
@@ -36,8 +38,6 @@ export class LabelInfo {
     scheduled:MinMemberInfo[];
 
     constructor(info:ILabelInfo = {}) {
-        // const lInfo = info as LabelInfoProps;
-
         this.label_id = info.label_id || '';
         this.labelName = info.labelName || '';
         this.labelDescription = info.labelDescription || '';
@@ -49,6 +49,13 @@ export class LabelInfo {
         }
         else {
             this.forSchedule = info.forSchedule !== 'false';
+        }
+
+        if (info.scheduleGroup == undefined) {
+            this.scheduleGroup = false;
+        }
+        else {
+            this.scheduleGroup = info.scheduleGroup !== 'false';
         }
 
         this.parentLabel = null;

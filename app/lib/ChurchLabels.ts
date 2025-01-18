@@ -178,22 +178,30 @@ export default class ChurchLabels {
     getLabelGroups() : LabelInfo[] {
         var resultMap:Map<string, LabelInfo> = new Map<string, LabelInfo>();
 
-        // Loop through the labels and add parents of scheduled labels
-        this.labelMap.forEach((value:any, key:string) => {
+        // Only process labels that are for scheduling
+        // If the parent is a group, then add it to the list
+        // Otherwise add the label to the list
+        this.labelMap.forEach((value:LabelInfo, key:string) => {
             if (value.forSchedule) {
-                var parent = value.parentLabel;
-                if (parent) {
+                var parent = value.parentLabel as LabelInfo;
+                // Check if the parent is a group
+                if (parent && parent.scheduleGroup) {            
                     resultMap.set(parent.label_id, parent);
+                }
+                else {
+                    // Otherwise we are adding it to the list
+                    resultMap.set(value.label_id, value);
                 }
             }
         });
 
+        // Now convert the map to an array
         var result:LabelInfo[] = [];
         resultMap.forEach((value:any, key:string) => {
             result.push(value);
         });
 
-        // Now sort the result
+        // Sort the results
         result.sort((a, b) => {
             if (a.labelName < b.labelName) {
                 return -1;
@@ -246,7 +254,5 @@ export default class ChurchLabels {
     shouldUseCache(useCache:boolean) {
         this.useCache = useCache;
     }
-
-
 
 }
