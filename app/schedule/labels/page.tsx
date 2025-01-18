@@ -98,7 +98,18 @@ export default function LabelPage() {
 
     // Reload
     await onLabelClick(labelId);
+  }
 
+  const removeLabel = async (labelId:string) => {
+    const api = new APIHandler();
+    const result = await api.removeData(API_CALLS.labels, {label_id: labelId});
+    var rs = await result.json();
+
+    // Refresh the data
+    await updateUserInfo();
+
+    // Reload
+    await onLabelClick('');
   }
 
   const getAllMembers = async (churchId:string) => {
@@ -139,6 +150,17 @@ export default function LabelPage() {
       setChurchLabels(churchLabels);
 
       const lst = churchLabels.getMemberAndOwner(uInfo.member_id);
+      
+      // Sort the labels
+      lst.sort((a:LabelInfo, b:LabelInfo) => {
+        if (a.labelName < b.labelName) {
+          return -1;
+        }
+        if (a.labelName > b.labelName) {
+          return 1;
+        }
+        return 0;
+      });
       setMemberLabels(lst);
 
       // Turn caching back on
@@ -150,9 +172,7 @@ export default function LabelPage() {
   }, []);  
 
 // TODO JLS - need to be able to edit labels
-// - Remove label (like doubled youth)
 // - Change the name of the label
-// - Show label decoded
 // - Change a label as schedualable or not
 
   return (
@@ -168,7 +188,7 @@ export default function LabelPage() {
         </Paper>
       </Grid2>
       <Grid2 size={12}>
-        <SLabelInfo labelInfo={selectedInfo} memberList={memberList} ownerList={ownerList} userId={userId} churchId={churchId} onReload={reloadLabelInfo} onAddMember={addMemberToLabel} onRemoveMember={removeMemberFromLabel}/>
+        <SLabelInfo labelInfo={selectedInfo} memberList={memberList} ownerList={ownerList} userId={userId} churchId={churchId} onReload={reloadLabelInfo} onAddMember={addMemberToLabel} onRemoveMember={removeMemberFromLabel} onDeleteLabel={removeLabel}/>
       </Grid2>
     </Grid2>
   );

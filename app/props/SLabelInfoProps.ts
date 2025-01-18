@@ -10,4 +10,5 @@ export interface SLabelInfoProps {
     onReload?:() => void;
     onAddMember?: (memberId:string, labelId:string, owner:boolean) => void;
     onRemoveMember?: (memberId:string, labelId:string) => void;
+    onDeleteLabel?: (labelId:string) => void;
 }

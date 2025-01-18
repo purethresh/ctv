@@ -43,9 +43,17 @@ export default function SLabelInfo(props:SLabelInfoProps) {
         }
     }
 
+    const deleteLabel = async () => { 
+        if (isAdmin && props.onDeleteLabel ) {
+            props.onDeleteLabel(labelInfo.label_id);
+        }
+    }
+
     useEffect(() => {
         const calcValues = async () => {
-            setLabelName(props.labelInfo?.labelName || '');
+            var lblName = props.labelInfo?.labelName || '';
+            lblName = lblName;
+            setLabelName(lblName);
             setLabelDescription(props.labelInfo?.labelDescription || '');
 
             const userId = props.userId || '';
@@ -94,6 +102,11 @@ export default function SLabelInfo(props:SLabelInfoProps) {
                 <SAllMemberSelect churchId={props.labelInfo?.church_id} defaultMemberId={userId} onClick={userSelected} isVisible={isAdmin} />
                 <Button onClick={addAsMember} style={{display:isAdmin && canAddMember ? 'block' : 'none'}} variant='contained' color='secondary'>Add As Member</Button>
                 <Button onClick={addAsOwner} style={{display:isAdmin && canAddOwner ? 'block' : 'none'}} variant='contained' color='secondary'>Add As Owner</Button>
+            </Paper>
+            <Paper>
+                <Box sx={{ display:isAdmin ? 'block' : 'none', paddingTop: '4px', paddingBottom: '4px', marginBottom: '5px', marginTop: '10px'}}>
+                    <Button onClick={deleteLabel} style={{display:isAdmin && canAddOwner ? 'block' : 'none'}} variant='contained' color='secondary'>Delete Label</Button>
+                </Box>
             </Paper>
         </Box>
     );

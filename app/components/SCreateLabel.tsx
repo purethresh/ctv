@@ -14,6 +14,7 @@ export default function SCreateLabel(props: SCreateLabelProp) {
     let [labelDescription, setLabelDescription] = useState<string>('');
     let [churchId, setChurchId] = useState<string>('');
     let [forSchedule, setForSchedule] = useState<boolean>(false);
+    let [forGroup, setForGroup] = useState<boolean>(false);
 
     const labelNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setLabelName(event.target.value);
@@ -25,6 +26,10 @@ export default function SCreateLabel(props: SCreateLabelProp) {
 
     const checkForSchedule = (event: React.ChangeEvent<HTMLInputElement>) => {
         setForSchedule(event.target.checked);
+    }
+
+    const checkForGroup = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setForGroup(event.target.checked);
     }
 
     const createLabel = async () => {
@@ -47,7 +52,7 @@ export default function SCreateLabel(props: SCreateLabelProp) {
         const oId = encodeURIComponent(parentLabel?.label_id || '');
 
         const api = new APIHandler();
-        const result = await api.postData(API_CALLS.labels, { label_id: lblId, labelName: lName, labelDescription: lDescription, church_id: cId, forSchedule: fSchedule, owner_id: oId });
+        const result = await api.postData(API_CALLS.labels, { label_id: lblId, labelName: lName, labelDescription: lDescription, church_id: cId, forSchedule: fSchedule, scheduleGroup: forGroup, owner_id: oId });
         var rs = await result.json();        
         
         if (props.onReload) {
@@ -72,12 +77,13 @@ export default function SCreateLabel(props: SCreateLabelProp) {
     return (
         <Box>
             <Box bgcolor='secondary.main' sx={{ paddingLeft: '10px', paddingTop: '5px', paddingBottom: '5px'}}>
-                <Typography variant="h6" color='secondary.contrastText'>Create a child label for {parentLabel?.labelName}</Typography>
+                <Typography variant="h6" color='secondary.contrastText'>Create a child label for {parentLabel?.labelName || ''}</Typography>
             </Box>
             <Box>
                 <TextField required label="Label Name" onChange={labelNameChange} sx={{ paddingLeft: '10px', paddingRight:'5px', paddingTop:'8px'}}/>
                 <TextField label="Label Information" onChange={labelInfoChange} sx={{ paddingLeft: '5px', paddingRight:'5px', paddingTop:'8px'}}/>
                 <FormControlLabel control={<Checkbox checked={forSchedule} onChange={checkForSchedule} />} label="For Schedule" sx={{marginTop: '14px'}}/>            
+                <FormControlLabel control={<Checkbox checked={forGroup} onChange={checkForGroup} />} label="Schedule Group" sx={{marginTop: '14px'}}/>            
                 <Button variant='contained' color='secondary' endIcon={<CreateIcon />} onClick={createLabel} sx={{ marginTop:'16px'}}>Create Label</Button>
             </Box>
         </Box>

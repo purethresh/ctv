@@ -39,7 +39,7 @@ export class LabelInfo {
 
     constructor(info:ILabelInfo = {}) {
         this.label_id = info.label_id || '';
-        this.labelName = info.labelName || '';
+        this.labelName = decodeURIComponent(info.labelName || '');
         this.labelDescription = info.labelDescription || '';
         this.owner_id = info.owner_id || '';
         this.church_id = info.church_id || '';

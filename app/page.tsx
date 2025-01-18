@@ -46,8 +46,12 @@ export default function App() {
     }    
 
     getUserInfo();
-  }, []);  
+  }, []);
 
+  // TODO JLS: load all label for service for once, so it is quicker
+
+  // TODO JLS - add workflow for adding a new person
+  
   return (
     <main>
       <SNavbar userInfo={userInfo} onSignout={onSignout} />

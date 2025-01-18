@@ -36,7 +36,7 @@ export default function SScheduledLabel(props:SLabelGroupProps) {
             setShowRemoveMember(props.showRemoveMember || false);
 
             const lbl = props.groupInfo;
-            setLabelName(decodeURIComponent(lbl.labelName));
+            setLabelName(lbl.labelName);
             setLabelInfo(lbl);
             setUpdateNumber(props.updateNumber || 0);
 
