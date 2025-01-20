@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(result, resultStatus);
 }
 
-export async function POST(req: NextRequest) {
+export async function PUT(req: NextRequest) {
     var result = {error: 'nothing happened'};
     var resultStatus = {status: 500};
 
@@ -66,6 +66,38 @@ export async function POST(req: NextRequest) {
             result = { error: e.message  };
         }
     }    
+
+    return NextResponse.json(result, resultStatus);
+}
+
+export async function POST(req: NextRequest) {
+    var result = {error: 'nothing happened'};
+    var resultStatus = {status: 500};
+
+    const params = new RParams();
+    await params.useRequest(req);
+    var queryParams:any[] = [];
+    if (params.has(LABEL_ID) && params.has(LABEL_NAME) && params.has(CHURCH_ID) && params.has(FOR_SCHEDULE) && params.has(SCHEDULE_GROUP)) {
+        const lblId = params.get(LABEL_ID);
+        const lbl = params.get(LABEL_NAME);
+        const schedule = params.get(FOR_SCHEDULE) ? 'true' : 'false';
+        const scheduleGroup = params.get(SCHEDULE_GROUP) ? 'true' : 'false';
+        const desc = params.has(LABEL_DESCRIPTION) ? params.get(LABEL_DESCRIPTION) : '';
+
+        const query = 'UPDATE dbname.labels SET labelName=?, labelDescription=?, forSchedule=?, scheduleGroup=? WHERE label_id=?';        
+        queryParams = [lbl, desc, schedule, scheduleGroup, lblId];
+
+        try {
+            const [dbResults] = await runQuery(query, queryParams);
+            // @ts-ignore
+            result = {response: 'label updated'};;
+            resultStatus = {status: 200};
+        }
+        catch (e:any) {
+            result = { error: e.message  };
+        }
+
+    }
 
     return NextResponse.json(result, resultStatus);
 }

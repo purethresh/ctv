@@ -65,6 +65,20 @@ export class LabelInfo {
         this.scheduled = [];
     }
 
+    clone() : LabelInfo {
+        var result = new LabelInfo({
+            label_id: this.label_id,
+            labelName: this.labelName,
+            labelDescription: this.labelDescription,
+            forSchedule: this.forSchedule ? 'true' : 'false',
+            scheduleGroup: this.scheduleGroup ? 'true' : 'false',
+            owner_id: this.owner_id,
+            church_id: this.church_id
+        });
+
+        return result;
+    }
+
     addChildLabel(label:LabelInfo) {
         // First add it to the child list
         this.childLabels.push(label);

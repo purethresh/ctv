@@ -2,7 +2,7 @@ import { Box, Button, Paper, Typography } from "@mui/material";
 import { SLabelInfoProps } from "../props/SLabelInfoProps";
 import { useEffect, useState } from 'react';
 import SMemberList from "./SMemberList";
-import SCreateLabel from "./SCreateLabel";
+import SLabelData from "./SLabelData";
 import { LabelInfo } from "../lib/LabelInfo";
 import SAllMemberSelect from "./SAllMemberSelect";
 
@@ -92,7 +92,12 @@ export default function SLabelInfo(props:SLabelInfoProps) {
             <SMemberList labelInfo={props.labelInfo} memberList={props.ownerList} title="Administrators of" userId={userId} onRemoveMember={removeUser}/>
             <Paper>
                 <Box sx={{marginTop: '10px', marginBottom: '10px', paddingBottom: '10px'}}>
-                    <SCreateLabel parentLabel={props.labelInfo} userId={userId} churchId={churchId} onReload={props.onReload} />
+                    <SLabelData label={props.labelInfo} userId={userId} churchId={churchId} onReload={props.onReload} isCreate={false} />
+                </Box>                
+            </Paper>
+            <Paper>
+                <Box sx={{marginTop: '10px', marginBottom: '10px', paddingBottom: '10px'}}>
+                    <SLabelData parent={props.labelInfo} userId={userId} churchId={churchId} onReload={props.onReload} isCreate={true} />
                 </Box>
             </Paper>
             <Paper>

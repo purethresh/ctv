@@ -171,10 +171,6 @@ export default function LabelPage() {
     updateUserInfo();
   }, []);  
 
-// TODO JLS - need to be able to edit labels
-// - Change the name of the label
-// - Change a label as schedualable or not
-
   return (
     <Grid2 container spacing={2}>
       <Grid2 size={12}>
