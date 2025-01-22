@@ -6,7 +6,7 @@ import outputs from "@/amplify_outputs.json";
 import "@aws-amplify/ui-react/styles.css";
 import SNavbar from "./components/SNavbar";
 import SChurchCalendar from "./components/SChurchCalendar";
-import { getDefaultSunday } from "./lib/dateUtils";
+import { getDefaultSunday } from "./lib/DateUtils";
 import { useState } from "react";
 import { useEffect } from "react";
 import SAllServices from "./components/SAllServices";
@@ -17,7 +17,7 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import { Grid2, Paper, Stack } from "@mui/material";
-import {getDayString} from "./lib/dateUtils";
+import {getDayString} from "./lib/DateUtils";
 
 
 Amplify.configure(outputs);
@@ -49,8 +49,6 @@ export default function App() {
   }, []);
 
   // TODO JLS: load all label for service for once, so it is quicker
-
-  // TODO JLS - HERE - add workflow for adding a new person
   
   return (
     <main>

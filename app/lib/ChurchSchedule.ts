@@ -1,6 +1,6 @@
 import { MinMemberInfo } from "./MinMemberInfo";
 import { ScheduleInfo } from "./ScheduleInfo";
-import { getStartOfPreviousMonth, getEndOfNextMonth, getMinTimeForDay, getMaxTimeForDay } from "@/app/lib/dateUtils";
+import { getStartOfPreviousMonth, getEndOfNextMonth, getMinTimeForDay, getMaxTimeForDay } from "@/app/lib/DateUtils";
 import { AvailabilityInfo } from "./AvailabilityInfo";
 import { ScheduleStatus } from "./ScheduleStatus";
 import { API_CALLS, APIHandler } from "./APIHanlder";

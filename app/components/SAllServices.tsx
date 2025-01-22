@@ -40,7 +40,7 @@ export default function SAllServices(props:SAllServicesProp) {
   return (
     <>
       {serviceIdList.map((item, index) => (
-        <Grid2 size={{ xs: 12, sm: 6}}>
+        <Grid2 key={index+'_schedule_grid'} size={{ xs: 12, sm: 6}}>
           <SServiceSchedule key={index+'_schedule'} serviceInfo={item} />
         </Grid2>        
       ))}

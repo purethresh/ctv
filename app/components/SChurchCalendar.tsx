@@ -5,7 +5,7 @@ import {AdapterMoment} from '@mui/x-date-pickers/AdapterMoment';
 import moment, { Moment } from 'moment';
 import { useState, useEffect } from 'react';
 import SCalendarDayComponent from './SCalendarDayComponent';
-import { getDefaultSunday } from '../lib/dateUtils';
+import { getDefaultSunday } from '../lib/DateUtils';
 import { API_CALLS, APIHandler } from '../lib/APIHanlder';
 import { Grid2, Paper } from '@mui/material';
 

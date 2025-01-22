@@ -2,7 +2,7 @@
 
 import SServiceInfo from "../components/SServiceInfo";
 import { useState, useEffect } from 'react';
-import { getDayString, getDefaultSunday } from "../lib/dateUtils";
+import { getDayString, getDefaultSunday } from "../lib/DateUtils";
 import SServiceAdd from "../components/SServiceAdd";
 import SChurchCalendar from "../components/SChurchCalendar";
 import UserInfo from "../lib/UserInfo";

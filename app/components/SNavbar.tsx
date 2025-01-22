@@ -18,6 +18,8 @@ export default function SNavbar(props: SNavBarProps) {
   let [userInitials, setUserInitials] = useState<string>('');
   let [userInfo, setUserInfo] = useState<UserInfo>(new UserInfo());
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
+  const [memberAnchor, setMemberAnchor] = useState<null | HTMLElement>(null);
+  const [isLinkedMember, setIsLinkedMember] = useState<boolean>(false);
 
   const router = useRouter();
 
@@ -40,6 +42,8 @@ export default function SNavbar(props: SNavBarProps) {
   useEffect(() => {
     const updatedInfo = props.userInfo || new UserInfo();
     setUserInfo(updatedInfo);
+    const lm = updatedInfo.isLinkedMember();
+    setIsLinkedMember(lm);
 
     const isAuth:boolean = updatedInfo.sub.length > 0;
     setIsAuthenticated(isAuth);
@@ -53,6 +57,14 @@ export default function SNavbar(props: SNavBarProps) {
 
   const onMenuClose = () => {
     setMenuAnchor(null);
+  }
+
+  const onMemberOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setMemberAnchor(event.currentTarget);
+  }
+
+  const onMemberClose = () => {
+    setMemberAnchor(null);
   }
 
   return (
@@ -103,10 +115,27 @@ export default function SNavbar(props: SNavBarProps) {
             aria-label="avatar"
             sx={{ mr: 2 }}
             style={{display:isAuthenticated ? 'block' : 'none'}}
-            onClick={signOutFromApp}
+            onClick={onMemberOpen}
           >
             <Avatar>{userInitials}</Avatar>
           </IconButton>
+          <Menu
+            id="member-menu"
+            open={Boolean(memberAnchor)}
+            anchorEl={memberAnchor}
+            anchorOrigin={{vertical: 'top', horizontal: 'left'}}
+            transformOrigin={{vertical: 'top', horizontal: 'left'}}
+            onClose={onMemberClose}
+            onClick={onMemberClose}            
+            keepMounted
+            >
+            <MenuItem style={{display:isLinkedMember ? 'none' : 'block'}}>
+              <Link href="/guest/link" underline="none" color={txtColor}>Link Member</Link>
+            </MenuItem>                
+            <MenuItem>
+              <Link href="#" onClick={signOutFromApp} underline="none" color={txtColor}>Signout</Link>
+            </MenuItem>          
+          </Menu>          
         </Toolbar>
       </AppBar>
     </Box>

@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import UserInfo from "@/app/lib/UserInfo";
 import SAllMemberSelect from "@/app/components/SAllMemberSelect";
 import SAvailabilityList from "@/app/components/SAvailabilityList";
-import { getDefaultSunday } from "@/app/lib/dateUtils";
+import { getDefaultSunday } from "@/app/lib/DateUtils";
 import { v4 } from 'uuid';
 import { IAvailabilityInfo, AvailabilityInfo } from "@/app/lib/AvailabilityInfo";
 import { API_CALLS, APIHandler } from "@/app/lib/APIHanlder";

@@ -5,7 +5,7 @@ import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { useState, useEffect } from 'react';
-import { getDefaultSunday } from '../lib/dateUtils';
+import { getDefaultSunday } from '../lib/DateUtils';
 import moment, { Moment } from 'moment';
 import SCalendarDayComponent from './SCalendarDayComponent';
 import { Grid2, Paper } from '@mui/material';

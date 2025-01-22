@@ -1,7 +1,7 @@
 import { fetchUserAttributes } from "aws-amplify/auth";
 import { API_CALLS, APIHandler } from "./APIHanlder";
 
-const DEFAULT_CHURCH_ID = 'asdf';
+const DEFAULT_CHURCH_ID = 'b0f94dd4-20bc-4f0c-b7da-ab99e45349ae';
 const DEFAULT_CHURCH_NAME = 'Calvary Tri Valley';
 
 export default class UserInfo {
@@ -57,6 +57,10 @@ export default class UserInfo {
             result += this.last[0];
         }
         return result;
+    }
+
+    isLinkedMember() {
+        return this.member_id !== undefined && this.member_id.length > 0;
     }
 
     private async getMemberInfo(subId:string) {
