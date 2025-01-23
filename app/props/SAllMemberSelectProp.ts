@@ -4,4 +4,6 @@ interface SAllMemberSelectProp {
     onClick?: (memberId:string) => void;
     isVisible?: boolean;
     defaultMemberId?: string;
+    useFilter?: boolean;
+    phoneFilter?: string;
 }

@@ -3,7 +3,6 @@ import { MinMemberInfo } from '../lib/MinMemberInfo';
 import { InputLabel, Select, MenuItem, IconButton, Box, Typography, Stack } from '@mui/material';
 import { SelectChangeEvent } from '@mui/material/Select';
 import { API_CALLS, APIHandler } from '../lib/APIHanlder';
-import { Paper } from '@mui/material';
 
 export default function SAllMemberSelect(props:SAllMemberSelectProp) {
     let [memberList, setMemberList] = useState<MinMemberInfo[]>([]);
@@ -13,6 +12,7 @@ export default function SAllMemberSelect(props:SAllMemberSelectProp) {
 
     const handleChange = (event: SelectChangeEvent) => {
         const memberId = event.target.value as string;
+
         setSelectedMember(memberId);
         if (props.onClick) {
             props.onClick(memberId);
@@ -21,16 +21,26 @@ export default function SAllMemberSelect(props:SAllMemberSelectProp) {
     
     const getAllMembers = async () => {
         const apiHandler = new APIHandler();
-        const result = await apiHandler.getData(API_CALLS.member, { church_id: props.churchId }, true);
-        var rs = await result.json();
-
+        const useFilter = props.useFilter ? props.phoneFilter : false;
+        const phoneFilter = props.phoneFilter || '';
+        const params = { church_id: props.churchId, useFilter:useFilter ? "true" : "false", phoneFilter:phoneFilter };
+        if (useFilter) {
+            // @ts-ignore
+            params.phoneFilter = props.phoneFilter;
+        }
+        var rs = [];
+        
+        if (!useFilter || (useFilter && phoneFilter.length > 0) ) {
+            const result = await apiHandler.getData(API_CALLS.member, params, true);
+            rs = await result.json();
+        }
+        
         const mList = [];
         for(var i=0; i<rs.length; i++) {
             mList.push(new MinMemberInfo(rs[i]));
         }
 
         // Sort the list
-        console.log(mList[0]);
         mList.sort((a, b) => {
             var result = a.first.localeCompare(b.first);
             if (result === 0) {
@@ -43,7 +53,6 @@ export default function SAllMemberSelect(props:SAllMemberSelectProp) {
 
     useEffect(() => {
         const originalSetup = async () => {
-
             setSelectedMember(props.defaultMemberId || '');
 
             if (props.churchId) {
@@ -56,7 +65,7 @@ export default function SAllMemberSelect(props:SAllMemberSelectProp) {
         }
         
         originalSetup();
-    }, [props.churchId, props.isVisible, props.updateNumber]);    
+    }, [props.churchId, props.isVisible, props.updateNumber, props.phoneFilter]);    
 
     return (
       <Box style={{display:isVisible ? 'block' : 'none', textAlign:'center'}}>

@@ -189,7 +189,7 @@ export default function SMemberPhoneList(props:SMemberInfoProp) {
     return (
         <>
             {phoneList.map((pInfo, index) => (
-                <Grid2 size={{xs: 12, sm: 6}}>
+                <Grid2 key={pInfo.phone_id + "_grid"} size={{xs: 12, sm: 6}}>
                     <Box key={pInfo.phone_id}>
                         <Typography style={{display:isEditing ? 'none' : 'block'}}>{pInfo.pNumber}</Typography>
                         <TextField style={{display:isEditing ? 'block' : 'none'}} label="Phone Number" defaultValue={pInfo.pNumber} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { updatePhoneNumber(pInfo.phone_id, event.target.value); }} />

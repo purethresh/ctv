@@ -104,7 +104,7 @@ export default function SLabelInfo(props:SLabelInfoProps) {
                 <Box bgcolor={'secondary.main'} sx={{ display:isAdmin ? 'block' : 'none', paddingLeft: '10px', paddingTop: '4px', paddingBottom: '4px', marginBottom: '5px'}}>
                     <Typography variant="h6" color='secondary.contrastText'>Add Member To Label</Typography>
                 </Box> 
-                <SAllMemberSelect churchId={props.labelInfo?.church_id} defaultMemberId={userId} onClick={userSelected} isVisible={isAdmin} />
+                <SAllMemberSelect churchId={props.labelInfo?.church_id} defaultMemberId={userId} onClick={userSelected} isVisible={isAdmin} useFilter={false} />
                 <Button onClick={addAsMember} style={{display:isAdmin && canAddMember ? 'block' : 'none'}} variant='contained' color='secondary'>Add As Member</Button>
                 <Button onClick={addAsOwner} style={{display:isAdmin && canAddOwner ? 'block' : 'none'}} variant='contained' color='secondary'>Add As Owner</Button>
             </Paper>

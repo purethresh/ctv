@@ -7,6 +7,7 @@ export enum API_CALLS {
     member = '/api/member',
     address = '/api/member/address',
     memberAdmin = '/api/member/admin',
+    memberLink = '/api/member/link',
     email = '/api/member/email',
     schedule = '/api/schedule',
     services = '/api/services',

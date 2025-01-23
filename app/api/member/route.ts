@@ -2,18 +2,22 @@ import { runQuery } from '../../lib/db';
 import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
 import { MinMemberInfo } from '../../lib/MinMemberInfo';
+import {cleanPhoneNumber} from '../../lib/PhoneUtils';
 import { v4 } from 'uuid';
 
 const USER_SUB_ID = 'sub';
 const CHURCH_ID = 'church_id';
 const LABEL_ID = 'label_id';
 const MEMBER_ID = 'member_id';
+const USE_FILTER = 'useFilter';
+const PHONE_FILTER = 'phoneFilter';
 
 export async function GET(req: NextRequest) {
     var result = {error: 'nothing happened'};
     var resultStatus = {status: 500};
 
     const params = req.nextUrl.searchParams;
+    const useFilter = params.get(USE_FILTER) === 'true';
     var query = '';
     var queryParams:any[] = [];
 
@@ -27,7 +31,13 @@ export async function GET(req: NextRequest) {
         query = 'SELECT members.member_id, members.first, members.last, members.gender FROM dbname.members JOIN dbname.label_member ON dbname.members.member_id = dbname.label_member.member_id where dbname.label_member.label_id=?';
         queryParams = [params.get(LABEL_ID), params.get(CHURCH_ID)];
     }
-    else if (params.has(CHURCH_ID)) {
+    else if (params.has(CHURCH_ID) && useFilter && params.has(PHONE_FILTER)) {
+        const pNumber = cleanPhoneNumber(params.get(PHONE_FILTER) || '');
+        // Get all tne members for a church
+        query = "SELECT * FROM dbname.members JOIN dbname.church_member ON dbname.members.member_id = dbname.church_member.member_id JOIN dbname.phones ON dbname.members.member_id = dbname.phones.member_id WHERE dbname.members.sub = '' AND dbname.church_member.church_id=? AND dbname.phones.pNumber=?";
+        queryParams = [params.get(CHURCH_ID), pNumber];
+    }
+    else if (params.has(CHURCH_ID) && !useFilter) {
         // Get all tne members for a church
         query = 'SELECT members.member_id, members.first, members.last, members.gender FROM dbname.members JOIN dbname.church_member ON dbname.members.member_id = dbname.church_member.member_id where dbname.church_member.church_id=?';
         queryParams = [params.get(CHURCH_ID)];

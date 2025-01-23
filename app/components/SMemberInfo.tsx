@@ -7,6 +7,7 @@ import SMemberAddressList from "./SMemberAddressList";
 import SMemberEmailList from "./SMemberEmailList";
 import DoneIcon from '@mui/icons-material/Done';
 import CancelIcon from '@mui/icons-material/Cancel';
+import LinkIcon from '@mui/icons-material/Link';
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import { v4 } from 'uuid';
 import { API_CALLS, APIHandler } from "../lib/APIHanlder";
@@ -19,6 +20,7 @@ export default function SMemberInfo(props:SMemberInfoProp) {
     let [isAdmin, setIsAdmin] = useState<boolean>(false);
     let [isEditing, setIsEditing] = useState<boolean>(false);
     let [isCreating, setIsCreating] = useState<boolean>(props.isCreating || false);
+    let [isLinked, setIsLinked] = useState<boolean>(false);
     let [needsSave, setNeedsSave] = useState<boolean>(false);
 
     let [phoneNeedsSave, setPhoneNeedsSave] = useState<boolean>(false);
@@ -31,6 +33,13 @@ export default function SMemberInfo(props:SMemberInfoProp) {
 
     const onCancel = async () => {
         setIsEditing(false);
+    }
+
+    const onRemoveLink = async () => {
+        const api = new APIHandler();
+        const params = { member_id: memberId };
+        await api.removeData(API_CALLS.memberLink, params);
+        setIsLinked(false);
     }
 
     const onSave = async () => {
@@ -128,22 +137,25 @@ export default function SMemberInfo(props:SMemberInfoProp) {
 
         // Get the member info
         const create = props.isCreating || false;
+        var mInfo = new MinMemberInfo({ member_id: v4() });
+        var hasLink = false;
         setIsCreating(create);
         if (!create) {
             const api = new APIHandler();
             const result = await api.getData(API_CALLS.member, { member_id: mId }, useCache);
             var rs = await result.json();
+            const mData = rs[0];
             if (rs.length > 0) { 
-                const mInfo = new MinMemberInfo(rs[0]);
-                setMemberInfo(mInfo);
+                const mInfo = new MinMemberInfo(mData);
+                hasLink = mData?.sub?.length > 0;
             }
         }
         else {
-            const mInfo = new MinMemberInfo({ member_id: v4() });
             setMemberId(mInfo.member_id);
-            setMemberInfo(mInfo);
             setIsEditing(true);
         }
+        setMemberInfo(mInfo);
+        setIsLinked(hasLink);
     }
 
     useEffect(() => {
@@ -196,6 +208,9 @@ export default function SMemberInfo(props:SMemberInfoProp) {
                     <Button variant="contained" color='secondary' endIcon={<CancelIcon />} onClick={onCancel}>Cancel</Button>
                     <Button variant="contained" color='secondary' endIcon={<DoneIcon />} onClick={onSave}>Save</Button>
                 </Box>
+                <Box style={{display:isEditing && isAdmin && isLinked ? 'block' : 'none'}}>
+                    <Button variant="contained" color='secondary' endIcon={<LinkIcon />} onClick={onRemoveLink}>Remove User Link</Button>
+                </Box>                
             </Grid2>
             </Paper>
         </Box>

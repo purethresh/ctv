@@ -60,7 +60,7 @@ export default function MemberPage() {
   return (
     <Box sx={{textAlign:'center'}}>
       <Paper>
-        <SAllMemberSelect churchId={churchId} isVisible={isMemberAdmin} defaultMemberId={userId} onClick={onMemberSelected} updateNumber={updateNumber}  />
+        <SAllMemberSelect churchId={churchId} isVisible={isMemberAdmin} defaultMemberId={userId} onClick={onMemberSelected} updateNumber={updateNumber} useFilter={false}  />
         <Button color="secondary" endIcon={<PersonAddIcon />} onClick={onCreateMember} style={{display:isMemberAdmin ? 'block' : 'none'}}>Create Member</Button>
       </Paper>
       <SMemberInfo isAdmin={isMemberAdmin} userId={userId} memberId={memberId} isCreating={shouldCreateMember} onMemberCreated={onMemberCreated} churchId={churchId} updateNumber={updateNumber}  />

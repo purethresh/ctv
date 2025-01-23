@@ -158,7 +158,7 @@ export default function AvailabilityPage() {
     <Grid2 container spacing={2}>
       <Grid2 size={12}>
         <Paper>
-          <SAllMemberSelect churchId={churchId} isVisible={true} defaultMemberId={currentUserId} onClick={onMemberChanged} />
+          <SAllMemberSelect churchId={churchId} isVisible={true} defaultMemberId={currentUserId} onClick={onMemberChanged} useFilter={false} />
         </Paper>
       </Grid2>      
       <SPersonCalendar memberId={currentUserId} restrictedDays={blockOutList} onDateChanged={onDateChanged} onMonthChanged={onMonthYearChanged} />      
