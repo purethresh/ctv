@@ -11,7 +11,6 @@ export default class ChurchLabels {
     churchId:string = '';
     labelMap:Map<string, LabelInfo> = new Map<string, LabelInfo>();
     labelRoot:LabelInfo | null = null;
-    useCache:boolean = true;
     memberMap:Map<string, MinMemberInfo> = new Map<string, MinMemberInfo>();
 
     async fetchAllLabels(churchId:string) {
@@ -27,7 +26,7 @@ export default class ChurchLabels {
 
         // Get all the labels for the church
         const api = new APIHandler();
-        const res = await api.getData(API_CALLS.labels, {church_id: churchId}, this.useCache);
+        const res = await api.getData(API_CALLS.labels, {church_id: churchId});
         const data = await res.json();
 
         if (data) {
@@ -66,7 +65,7 @@ export default class ChurchLabels {
 
         // Get the scheduled labels for a specific service
         const api = new APIHandler();
-        const res = await api.getData(API_CALLS.labelScheduled, {service_id: serviceId}, this.useCache);
+        const res = await api.getData(API_CALLS.labelScheduled, {service_id: serviceId});
         const data = await res.json();
 
         if (data) {
@@ -86,7 +85,7 @@ export default class ChurchLabels {
     async fetchMemberLabels(memberId:string) {
         // Get the scheduled labels for a specific service
         const api = new APIHandler();
-        const res = await api.getData(API_CALLS.labelMember, {member_id: memberId}, this.useCache);
+        const res = await api.getData(API_CALLS.labelMember, {member_id: memberId});
         const data = await res.json();
 
         // Loop through the data and add member to each label
@@ -112,7 +111,7 @@ export default class ChurchLabels {
     async fetchMembersForLabel(labelId:string) {
         // Get the scheduled labels for a specific service
         const api = new APIHandler();
-        const res = await api.getData(API_CALLS.labelMember, {label_id: labelId}, this.useCache);
+        const res = await api.getData(API_CALLS.labelMember, {label_id: labelId});
         const data = await res.json();
 
         for(var i=0; i<data.length; i++) {
@@ -156,7 +155,7 @@ export default class ChurchLabels {
     async fetchOwnersForLabel(labelId:string) {
         // Get the scheduled labels for a specific service
         const api = new APIHandler();
-        const res = await api.getData(API_CALLS.labelMember, {label_id: labelId}, this.useCache);
+        const res = await api.getData(API_CALLS.labelMember, {label_id: labelId});
         const data = await res.json();
 
         for(var i=0; i<data.length; i++) {
@@ -249,10 +248,6 @@ export default class ChurchLabels {
         });
 
         return result;
-    }
-
-    shouldUseCache(useCache:boolean) {
-        this.useCache = useCache;
     }
 
 }

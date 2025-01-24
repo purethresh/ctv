@@ -31,7 +31,7 @@ export class ServiceInfo {
 
     async fetchScheduledMembers(lblInfo:ChurchLabels) {
         const api = new APIHandler();
-        const res = await api.getData(API_CALLS.schedule, { service_id: this.service_id}, true);
+        const res = await api.getData(API_CALLS.schedule, { service_id: this.service_id});
         const data = await res.json();
 
         // First loop through and add the members, and add them to the label

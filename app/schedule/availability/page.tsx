@@ -38,7 +38,7 @@ export default function AvailabilityPage() {
   const getBlockOutDays = async(memberId:string, min:number, max:number) => {
     // Don't use cache for this one
     const api = new APIHandler();
-    const res = await api.getData(API_CALLS.availability, { member_id: memberId, min: min.toString(), max: max.toString() }, true);
+    const res = await api.getData(API_CALLS.availability, { member_id: memberId, min: min.toString(), max: max.toString() });
     const data = await res.json();
 
     // Loop through the datat and track the days blocked out.

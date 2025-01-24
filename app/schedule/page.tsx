@@ -39,7 +39,7 @@ export default function SchedulePage() {
 
   const loadServiceInfo = async(dt:Date, useCache:boolean = true) => {
     const api = new APIHandler();
-    const res = await api.getData(API_CALLS.services, {church_id: userInfo.church_id, year: dt.getFullYear(), month: dt.getMonth()+1, day: dt.getDate().toString()}, useCache);
+    const res = await api.getData(API_CALLS.services, {church_id: userInfo.church_id, year: dt.getFullYear(), month: dt.getMonth()+1, day: dt.getDate().toString()});
     const result = await res.json();
 
     const lst = [];

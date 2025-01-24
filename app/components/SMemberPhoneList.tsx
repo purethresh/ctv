@@ -118,10 +118,6 @@ export default function SMemberPhoneList(props:SMemberInfoProp) {
             // Clear the map
             updateMap.clear();
 
-            // Get the member info (without cache)
-            const api = new APIHandler();
-            await api.getData(API_CALLS.phone, {member_id: memberId}, false);
-
             // Now clear the dirty flag
             setIsDirty(false);
 
@@ -160,7 +156,7 @@ export default function SMemberPhoneList(props:SMemberInfoProp) {
 
         // Get the member info
         const api = new APIHandler();
-        const result = await api.getData(API_CALLS.phone, {member_id: mId}, true);
+        const result = await api.getData(API_CALLS.phone, {member_id: mId});
         var rs = await result.json();
 
         var mp = new Map<string, MemberPhoneInfo>();

@@ -63,9 +63,6 @@ export default function SMemberInfo(props:SMemberInfoProp) {
                 await api.postData(API_CALLS.member, params);
             }
 
-            // fetch without cache to update
-            await api.getData(API_CALLS.member, {member_id: memberId}, false);
-
             // Inform parent if it was created
             if (isCreating) {
                 if (props.onMemberCreated) {
@@ -124,7 +121,7 @@ export default function SMemberInfo(props:SMemberInfoProp) {
         setNeedsSave(true);
     };    
 
-    const updateMemberInfo = async(useCache:boolean) => {
+    const updateMemberInfo = async() => {
         setUserId(props.userId || '');
         const mId = props.memberId || '';
         setMemberId(mId);
@@ -142,7 +139,7 @@ export default function SMemberInfo(props:SMemberInfoProp) {
         setIsCreating(create);
         if (!create) {
             const api = new APIHandler();
-            const result = await api.getData(API_CALLS.member, { member_id: mId }, useCache);
+            const result = await api.getData(API_CALLS.member, { member_id: mId });
             var rs = await result.json();
             const mData = rs[0];
             if (rs.length > 0) { 
@@ -159,7 +156,7 @@ export default function SMemberInfo(props:SMemberInfoProp) {
     }
 
     useEffect(() => {
-        updateMemberInfo(true);
+        updateMemberInfo();
     }, [props.memberId, props.isAdmin, props.isCreating, props.churchId, props.updateNumber]);  
 
     return (

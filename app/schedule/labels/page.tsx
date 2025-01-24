@@ -71,9 +71,7 @@ export default function LabelPage() {
         await api.postData(API_CALLS.labelMember, params);
 
         // Force updated data
-        churchLabels.shouldUseCache(false);
         await churchLabels.fetchMembersForLabel(labelId);
-        churchLabels.shouldUseCache(true);
 
         // Reload
         await onLabelClick(labelId);
@@ -92,9 +90,7 @@ export default function LabelPage() {
     l?.removeOwner(memberId);
 
     // Force updated data
-    churchLabels.shouldUseCache(false);
     await churchLabels.fetchMembersForLabel(labelId);
-    churchLabels.shouldUseCache(true);
 
     // Reload
     await onLabelClick(labelId);
@@ -114,7 +110,7 @@ export default function LabelPage() {
 
   const getAllMembers = async (churchId:string) => {
       const api = new APIHandler();
-      const result = await api.getData(API_CALLS.member, {church_id: churchId}, true);
+      const result = await api.getData(API_CALLS.member, {church_id: churchId});
       var rs = await result.json();
 
       const mMap = new Map<string, MinMemberInfo>();
@@ -133,9 +129,6 @@ export default function LabelPage() {
 
       // Load all members
       await getAllMembers(uInfo.church_id);
-
-      // Turn off caching
-      churchLabels.shouldUseCache(false);
 
       // Now load all the labels for the church
       await churchLabels.fetchAllLabels(uInfo.church_id);
@@ -162,9 +155,6 @@ export default function LabelPage() {
         return 0;
       });
       setMemberLabels(lst);
-
-      // Turn caching back on
-      churchLabels.shouldUseCache(true);
   }
 
   useEffect(() => {

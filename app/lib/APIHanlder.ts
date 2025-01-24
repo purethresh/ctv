@@ -15,22 +15,32 @@ export enum API_CALLS {
 }
 
 export class APIHandler {
+    // This is a set of all the get requests. So we can use cache for all the items in this set
+    static cacheMap:Map<API_CALLS, Set<string>> = new Map<API_CALLS, Set<string>>();
     
-    async getData(api: API_CALLS, params: any, useCache: boolean) : Promise<Response> {
+    async getData(api: API_CALLS, params: any) : Promise<Response> {
         var result:any = null;
 
         const req:RequestInit = {
             method: 'GET',
         }
 
-        // Add directive to use cache
-        // TODO JLS - This is not working
-        // if (useCache) {
-        //     req.cache = 'force-cache';
-        // }
+        // Get the url we are going to use
+        const url = this.createFullURL(api, params);
 
+        // If we have gotten this data before, then we can use the cache
+        const hasCache = this.hasCache(api, url);
+        if (hasCache) {
+            req.cache = 'force-cache';
+        }
+
+        // Add the API to the cached set. So we get cache in the next call
+        if (!hasCache) {            
+            this.trackCache(api, url);
+        }
+        
         // Get the data
-        result = await fetch(this.createFullURL(api, params), req);
+        result = await fetch(url, req);
 
         return result;
     }
@@ -47,6 +57,9 @@ export class APIHandler {
         // Get the data
         result = await fetch(this.createFullURL(api, {}), req);
 
+        // Clear the cache for this API
+        this.clearCache(api);
+
         return result;
     }
 
@@ -61,6 +74,9 @@ export class APIHandler {
 
         // Get the data
         result = await fetch(this.createFullURL(api, {}), req);
+
+        // Clear the cache for this API
+        this.clearCache(api);
 
         return result;
     }
@@ -77,7 +93,43 @@ export class APIHandler {
         // Get the data
         result = await fetch(this.createFullURL(api, {}), req);
 
+        // Clear the cache for this API
+        this.clearCache(api);
+
         return result;
+    }
+
+    resetCache() {
+        // This forcefully resets all the cache so we get new data on the next get request
+        APIHandler.cacheMap.clear();
+    }
+
+    private hasCache(api: API_CALLS, url:string) : boolean {
+        // First check if there is a cache for the API
+        if (!APIHandler.cacheMap.has(api)) {
+            return false;
+        }
+
+        const cacheSet = APIHandler.cacheMap.get(api);
+        return cacheSet !== undefined && cacheSet.has(url);
+    }
+
+    private clearCache(api: API_CALLS) {
+        APIHandler.cacheMap.delete(api);
+    }
+
+    private trackCache(api:API_CALLS, url:string) {
+        if (APIHandler.cacheMap.has(api)) {
+            const cacheSet = APIHandler.cacheMap.get(api);
+            if (cacheSet !== undefined) {
+                cacheSet.add(url);
+            }
+        }
+        else {
+            const cacheSet = new Set<string>();
+            cacheSet.add(url);
+            APIHandler.cacheMap.set(api, cacheSet);
+        }
     }
 
     private createFullURL(api: API_CALLS, params: any) : string {

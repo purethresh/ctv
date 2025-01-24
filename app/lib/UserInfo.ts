@@ -39,7 +39,7 @@ export default class UserInfo {
 
         // Finding out if the member belongs to the church-member-admin label
         const api = new APIHandler();
-        const res = await api.getData(API_CALLS.memberAdmin, { root_id: rootLabelId, member_id: this.member_id }, true);
+        const res = await api.getData(API_CALLS.memberAdmin, { root_id: rootLabelId, member_id: this.member_id });
         const data = await res.json();
 
         if (data && data.isAdmin === true) {
@@ -67,7 +67,7 @@ export default class UserInfo {
         if (subId && subId.length > 0) {
             // Get the member info by looking for the sub
             const api = new APIHandler();
-            const res = await api.getData(API_CALLS.member, { sub: subId }, true);
+            const res = await api.getData(API_CALLS.member, { sub: subId });
             const data = await res.json();
             if (data) {
                 this.first = data.first;
@@ -82,7 +82,7 @@ export default class UserInfo {
         if (memberId && memberId.length > 0) {
             // Get the church info by looking for the member_id
             const api = new APIHandler();
-            const res = await api.getData(API_CALLS.church, { member_id: memberId }, true);
+            const res = await api.getData(API_CALLS.church, { member_id: memberId });
             const data = await res.json();
             if (data) {
                 this.church_id = data.church_id;

@@ -21,7 +21,7 @@ export default function SAllServices(props:SAllServicesProp) {
     const dy = serviceDate.getDate() + 1;
 
     const api = new APIHandler();
-    const result = await api.getData(API_CALLS.services, { church_id: props.churchId, year: yr, month: mo, day: dy }, true);
+    const result = await api.getData(API_CALLS.services, { church_id: props.churchId, year: yr, month: mo, day: dy });
     var rs = await result.json();
 
     const serviceList:ServiceInfo[] = [];

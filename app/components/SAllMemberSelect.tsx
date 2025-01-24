@@ -31,7 +31,7 @@ export default function SAllMemberSelect(props:SAllMemberSelectProp) {
         var rs = [];
         
         if (!useFilter || (useFilter && phoneFilter.length > 0) ) {
-            const result = await apiHandler.getData(API_CALLS.member, params, true);
+            const result = await apiHandler.getData(API_CALLS.member, params);
             rs = await result.json();
         }
         

@@ -28,7 +28,7 @@ export default function SChurchCalendar(props: SCalendarProps) {
     if (props.churchId.length === 0) return [];
 
     const api = new APIHandler();
-    const res = await api.getData(API_CALLS.services, { church_id: props.churchId, year: dt.getFullYear(), month: dt.getMonth()+1 }, true);
+    const res = await api.getData(API_CALLS.services, { church_id: props.churchId, year: dt.getFullYear(), month: dt.getMonth()+1 });
     const result = await res.json();
 
     return result;

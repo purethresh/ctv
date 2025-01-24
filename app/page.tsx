@@ -47,8 +47,6 @@ export default function App() {
 
     getUserInfo();
   }, []);
-
-  // TODO JLS: load all label for service for once, so it is quicker
   
   return (
     <main>

@@ -8,7 +8,6 @@ import { API_CALLS, APIHandler } from "./APIHanlder";
 
 export class ChurchSchedule {
     church_id:string;
-    useCache:boolean = true;
     scheduleList: ScheduleInfo[];
     blockedOutList:AvailabilityInfo[];
 
@@ -25,7 +24,7 @@ export class ChurchSchedule {
         const year = dt.getFullYear().toString();
 
         const api = new APIHandler();
-        const res = await api.getData(API_CALLS.schedule, { church_id: this.church_id, year: year, month: month }, this.useCache);
+        const res = await api.getData(API_CALLS.schedule, { church_id: this.church_id, year: year, month: month });
         const data = await res.json();
 
         this.scheduleList = [];
@@ -42,7 +41,7 @@ export class ChurchSchedule {
         const max = getEndOfNextMonth(dt);
 
         const api = new APIHandler();
-        const res = await api.getData(API_CALLS.availability, { church_id: this.church_id, min: min.getTime().toString(), max: max.getTime().toString() }, this.useCache);
+        const res = await api.getData(API_CALLS.availability, { church_id: this.church_id, min: min.getTime().toString(), max: max.getTime().toString() });
         const data = await res.json();
 
         this.blockedOutList = [];
