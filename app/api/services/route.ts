@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
             }
 
             // Now do the query
-            const dbQuery = 'SELECT * FROM dbname.service WHERE church_id=? AND serviceTime>=? AND serviceTime<?';
+            const dbQuery = 'SELECT * FROM service WHERE church_id=? AND serviceTime>=? AND serviceTime<?';
             const [dbResults] = await runQuery(dbQuery, [params.get(CHURCH_ID), currentTime.getTime(), endTime.getTime()]);
 
             result = dbResults;

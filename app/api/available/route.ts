@@ -32,7 +32,7 @@ export async function GET(req:NextRequest) {
     }
     else if (params.has(CHURCH_ID) && params.has(MIN_DATE) && params.has(MAX_DATE)) {
         try {
-            const query = 'SELECT * FROM dbname.availability JOIN dbname.church_member ON dbname.availability.member_id = dbname.church_member.member_id WHERE dbname.church_member.church_id=? AND availability.blockOutDay>=? AND dbname.availability.blockOutDay<?'
+            const query = 'SELECT * FROM availability JOIN church_member ON availability.member_id = church_member.member_id WHERE church_member.church_id=? AND availability.blockOutDay>=? AND availability.blockOutDay<?'
             const queryParams = [params.get(CHURCH_ID), Number(params.get(MIN_DATE)), Number(params.get(MAX_DATE))];
 
             const [dbResults] = await runQuery(query, queryParams);

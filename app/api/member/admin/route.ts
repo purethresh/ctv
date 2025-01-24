@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
     try {
 
         if (params.has(ROOT_ID) && params.has(MEMBER_ID)) {
-            query = "SELECT * FROM dbname.labels JOIN dbname.label_member ON dbname.labels.label_id = dbname.label_member.label_id WHERE dbname.labels.owner_id=? AND dbname.labels.labelName=? AND dbname.label_member.member_id=?";
+            query = "SELECT * FROM labels JOIN label_member ON labels.label_id = label_member.label_id WHERE labels.owner_id=? AND labels.labelName=? AND label_member.member_id=?";
             queryParams = [params.get(ROOT_ID), 'church-member-admin', params.get(MEMBER_ID)];
 
             const [dbResults] = await runQuery(query, queryParams);

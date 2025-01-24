@@ -18,15 +18,15 @@ export async function GET(req: NextRequest) {
 
     // Get all the labels for a church
     if (params.has(MEMBER_ID)) {
-        query = 'SELECT * FROM dbname.label_member JOIN dbname.labels ON dbname.label_member.label_id = dbname.labels.label_id JOIN dbname.members ON dbname.label_member.member_id = dbname.members.member_id WHERE dbname.label_member.member_id=?';
+        query = 'SELECT * FROM label_member JOIN labels ON label_member.label_id = labels.label_id JOIN members ON label_member.member_id = members.member_id WHERE label_member.member_id=?';
         queryParams = [params.get(MEMBER_ID)];
     }
     else if (params.has(LABEL_ID)) {
-        query = 'SELECT * FROM dbname.label_member JOIN dbname.labels ON dbname.label_member.label_id = dbname.labels.label_id JOIN dbname.members ON dbname.label_member.member_id = dbname.members.member_id WHERE dbname.label_member.label_id=?';
+        query = 'SELECT * FROM label_member JOIN labels ON label_member.label_id = labels.label_id JOIN members ON label_member.member_id = members.member_id WHERE label_member.label_id=?';
         queryParams = [params.get(LABEL_ID)];
     }
     else if (params.has(OWNER_ID)) {
-        query = 'SELECT * FROM dbname.label_member JOIN dbname.labels ON dbname.label_member.label_id = dbname.labels.label_id JOIN dbname.members ON dbname.label_member.member_id = dbname.members.member_id WHERE dbname.label_member.isOwnerOfLabel=?';
+        query = 'SELECT * FROM label_member JOIN labels ON label_member.label_id = labels.label_id JOIN members ON label_member.member_id = members.member_id WHERE label_member.isOwnerOfLabel=?';
         queryParams = ['true'];
     }
 
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
         var isOwner:string = data[IS_OWNER] === 'true' ? 'true' : 'false';
         const lableMemberId = v4();
 
-        query = "INSERT INTO dbname.label_member (label_member_id, label_id, member_id, isOwnerOfLabel) VALUES (?, ?, ?, ?)";
+        query = "INSERT INTO label_member (label_member_id, label_id, member_id, isOwnerOfLabel) VALUES (?, ?, ?, ?)";
         queryParams = [lableMemberId, data[LABEL_ID], data[MEMBER_ID], isOwner];
     }
 

@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
     if (params.has(SERVICE_ID)) {
         try {
 
-            const query = 'SELECT * FROM dbname.schedule JOIN dbname.members on dbname.schedule.member_id = dbname.members.member_id WHERE dbname.schedule.service_id=?'
+            const query = 'SELECT * FROM schedule JOIN members on schedule.member_id = members.member_id WHERE schedule.service_id=?'
 
             const [dbResults] = await runQuery(query, [params.get(SERVICE_ID)]);
             result = dbResults;

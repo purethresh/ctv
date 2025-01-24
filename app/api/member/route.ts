@@ -28,18 +28,18 @@ export async function GET(req: NextRequest) {
     }
     else if (params.has(LABEL_ID)) {
         // Get all the members for a label
-        query = 'SELECT members.member_id, members.first, members.last, members.gender FROM dbname.members JOIN dbname.label_member ON dbname.members.member_id = dbname.label_member.member_id where dbname.label_member.label_id=?';
+        query = 'SELECT members.member_id, members.first, members.last, members.gender FROM members JOIN label_member ON members.member_id = label_member.member_id where label_member.label_id=?';
         queryParams = [params.get(LABEL_ID), params.get(CHURCH_ID)];
     }
     else if (params.has(CHURCH_ID) && useFilter && params.has(PHONE_FILTER)) {
         const pNumber = cleanPhoneNumber(params.get(PHONE_FILTER) || '');
         // Get all tne members for a church
-        query = "SELECT * FROM dbname.members JOIN dbname.church_member ON dbname.members.member_id = dbname.church_member.member_id JOIN dbname.phones ON dbname.members.member_id = dbname.phones.member_id WHERE dbname.members.sub = '' AND dbname.church_member.church_id=? AND dbname.phones.pNumber=?";
+        query = "SELECT * FROM members JOIN church_member ON members.member_id = church_member.member_id JOIN phones ON members.member_id = phones.member_id WHERE members.sub = '' AND church_member.church_id=? AND phones.pNumber=?";
         queryParams = [params.get(CHURCH_ID), pNumber];
     }
     else if (params.has(CHURCH_ID) && !useFilter) {
         // Get all tne members for a church
-        query = 'SELECT members.member_id, members.first, members.last, members.gender FROM dbname.members JOIN dbname.church_member ON dbname.members.member_id = dbname.church_member.member_id where dbname.church_member.church_id=?';
+        query = 'SELECT members.member_id, members.first, members.last, members.gender FROM members JOIN church_member ON members.member_id = church_member.member_id where church_member.church_id=?';
         queryParams = [params.get(CHURCH_ID)];
     }
     else if (params.has(MEMBER_ID)) {

@@ -51,7 +51,7 @@ export async function PUT(req: NextRequest) {
         const owner_id = params.get(OWNER_ID);
         const desc = params.has(LABEL_DESCRIPTION) ? params.get(LABEL_DESCRIPTION) : '';
 
-        query = "INSERT INTO dbname.labels (label_id, labelName, labelDescription, church_id, forSchedule, scheduleGroup, owner_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        query = "INSERT INTO labels (label_id, labelName, labelDescription, church_id, forSchedule, scheduleGroup, owner_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
         queryParams = [lblId, lbl, desc, church, schedule, scheduleGroup, owner_id];
     }
 
@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
         const scheduleGroup = params.get(SCHEDULE_GROUP) ? 'true' : 'false';
         const desc = params.has(LABEL_DESCRIPTION) ? params.get(LABEL_DESCRIPTION) : '';
 
-        const query = 'UPDATE dbname.labels SET labelName=?, labelDescription=?, forSchedule=?, scheduleGroup=? WHERE label_id=?';        
+        const query = 'UPDATE labels SET labelName=?, labelDescription=?, forSchedule=?, scheduleGroup=? WHERE label_id=?';        
         queryParams = [lbl, desc, schedule, scheduleGroup, lblId];
 
         try {
