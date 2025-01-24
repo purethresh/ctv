@@ -28,13 +28,9 @@ export default function SServiceInfo(props: SServiceInfoProps) {
     // Do the Schedule
     const api = new APIHandler();
     await api.postData(API_CALLS.schedule, {church_id: cId, service_id: sId, label_id: lId, member_id: mId});
-
-    // Refetch the schedule without cache
-    churchSchedule.useCache = false;
     
     const sTime = sInfo.serviceAsDate();
     await churchSchedule.fetchScheduleWithBufferMonths(sTime);
-    churchSchedule.useCache = true;
 
     await getInitialInfo();
     setUpdateNum(updateNum + 1);
@@ -50,12 +46,10 @@ export default function SServiceInfo(props: SServiceInfoProps) {
     const api = new APIHandler();
     await api.removeData(API_CALLS.schedule, {service_id: sId, label_id: lId, member_id: mId});
 
-    // Refetch the schedule without cache
-    churchSchedule.useCache = false;
+    // Refetch the schedule
     const sTime = sInfo.serviceAsDate();
     await churchSchedule.fetchScheduleWithBufferMonths(sTime);
-    churchSchedule.useCache = true;
-
+    
     await getInitialInfo();
     setUpdateNum(updateNum + 1);
   }
