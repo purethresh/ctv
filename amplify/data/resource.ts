@@ -1,8 +1,4 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
-import { schema as generatedSqlSchema } from './schema.sql';
-
-// Add a global authorization rule
-const sqlSchema = generatedSqlSchema.authorization(allow => allow.guest())
 
 /*== STEP 1 ===============================================================
 The section below creates a Todo database table with a "content" field. Try
@@ -16,15 +12,12 @@ const schema = a.schema({
       content: a.string(),
     })
     .authorization((allow) => [allow.publicApiKey()]),
-
 });
 
-const combinedSchema = a.combine([schema, sqlSchema]);
-export type Schema = ClientSchema<typeof combinedSchema>;
-// export type Schema = ClientSchema<typeof schema>;
+export type Schema = ClientSchema<typeof schema>;
 
 export const data = defineData({
-  schema: combinedSchema,
+  schema,
   authorizationModes: {
     defaultAuthorizationMode: "apiKey",
     apiKeyAuthorizationMode: {
@@ -32,7 +25,6 @@ export const data = defineData({
     },
   },
 });
-
 
 /*== STEP 2 ===============================================================
 Go to your frontend source code. From your client-side code, generate a
