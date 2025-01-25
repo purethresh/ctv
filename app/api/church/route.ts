@@ -13,14 +13,13 @@ export async function GET(req:NextRequest) {
     // Look for member based on sub info
     if (params.has(MEMBER_ID)) {
         try {
-            const [dbResults] = await runQuery('SELECT * FROM dbname.churches JOIN dbname.church_member ON dbname.churches.church_id = dbname.church_member.church_id where dbname.church_member.member_id = ?', [params.get(MEMBER_ID)]);
+            const [dbResults] = await runQuery('SELECT * FROM churches JOIN church_member ON churches.church_id = church_member.church_id where church_member.member_id = ?', [params.get(MEMBER_ID)]);
             if (dbResults.length > 0) {
                 result = dbResults[0];
                 resultStatus = {status: 200};
             }
         }
         catch (e:any) {
-            console.error(e);
             result = { error: e.message  };
         }
     }

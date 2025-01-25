@@ -1,30 +1,34 @@
 import mysql from 'mysql2/promise';
-import { NextResponse } from 'next/server';
 
-var connection: mysql.Connection | null = null;
+var pool = mysql.createPool({
+    host: process.env.CTV_SCHED_DB || '',
+    user: process.env.CTV_SCHED_DB_USER || '',
+    password: process.env.CTV_SCHED_DB_PASS || '',
+    database: process.env.CTV_SCHED_DB_NAME || '',
+    port: Number(process.env.CTV_SCHED_DB_PORT) || 3306,
+    waitForConnections: true,
+    connectionLimit: 10,
+});
 
- export const createConnection = async () => {
-    if (!connection) {
-        connection = await mysql.createConnection({
-            host: process.env.CTV_SCHED_DB || '',
-            user: process.env.CTV_SCHED_DB_USER || '',
-            password: process.env.CTV_SCHED_DB_PASS || '',
-            database: process.env.CTV_SCHED_DB_NAME || '',
-            port: Number(process.env.CTV_SCHED_DB_PORT) || 3306
-        });
-    }
-
+export const getConnection = async () => {
+    const connection = await pool.getConnection();
     return connection;
 }
 
 export const runQuery = async (query: string, params: any[]) : Promise<any> => {
+    var results:any = {error: 'nothing happened'};
+    const db = await getConnection();
+
     try {
-        const db = await createConnection();
-        const results = await db.query(query, params);
-        return results;
+        results = await db.query(query, params);        
     }
     catch (e:any) {
         console.error(e);
-        return { error: e.message  };
+        results = { error: e.message  };
     }
+    finally {
+        db.release();
+    }
+
+    return results;
 }
