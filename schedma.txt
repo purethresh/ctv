@@ -1,16 +1,94 @@
-addresses     CREATE TABLE dbname.addresses (\n  `address_id` char(40) NOT NULL,\n  `member_id` char(40) NOT NULL,\n  `address1` varchar(128) NOT NULL DEFAULT '',\n  `address2` varchar(128) NOT NULL DEFAULT '',\n  `city` varchar(128) NOT NULL DEFAULT '',\n  `state` varchar(128) NOT NULL DEFAULT '',\n  `zip` varchar(40) NOT NULL DEFAULT '',\n  PRIMARY KEY (`address_id`),\n  UNIQUE KEY `address_id_UNIQUE` (`address_id`)\n)
-availability  CREATE TABLE dbname.availability (\n  `availability_id` char(40) NOT NULL,\n  `member_id` char(40) NOT NULL,\n  `blockOutDay` varchar(45) NOT NULL DEFAULT '0',\n  PRIMARY KEY (`availability_id`),\n  UNIQUE KEY `availability_id_UNIQUE` (`availability_id`)\n)
-churches      CREATE TABLE dbname.churches (\n  `church_id` char(40) NOT NULL,\n  `churchName` varchar(255) NOT NULL DEFAULT '',\n  PRIMARY KEY (`church_id`),\n  UNIQUE KEY `church_id_UNIQUE` (`church_id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-church_member CREATE TABLE dbname.church_member (\n  `church_member_id` char(40) NOT NULL,\n  `church_id` char(40) NOT NULL,\n  `member_id` char(40) NOT NULL,\n  PRIMARY KEY (`church_member_id`),\n  UNIQUE KEY `church_member_id_UNIQUE` (`church_member_id`)\n)
-emails        CREATE TABLE dbname.emails (\n  `email_id` char(40) NOT NULL,\n  `member_id` char(40) NOT NULL,\n  `email` varchar(255) NOT NULL DEFAULT '',\n  `isPrimary` varchar(10) NOT NULL DEFAULT 'true',\n  PRIMARY KEY (`email_id`),\n  UNIQUE KEY `email_id_UNIQUE` (`email_id`)\n)
-label_member  CREATE TABLE dbname.label_member (\n  `label_member_id` char(40) NOT NULL,\n  `label_id` char(40) NOT NULL,\n  `member_id` char(40) NOT NULL,\n  `isOwnerOfLabel` varchar(40) NOT NULL DEFAULT 'false',\n  PRIMARY KEY (`label_member_id`),\n  UNIQUE KEY `label_member_id_UNIQUE` (`label_member_id`)\n)
-labels        CREATE TABLE dbname.labels (\n  `label_id` char(40) NOT NULL,\n  `labelName` varchar(255) NOT NULL DEFAULT '',\n  `labelDescription` varchar(255) NOT NULL DEFAULT '',\n  `church_id` char(40) NOT NULL DEFAULT '',\n  `forSchedule` varchar(45) NOT NULL DEFAULT 'false',\n  `scheduleGroup` varchar(45) NOT NULL DEFAULT 'false',\n  `owner_id` varchar(40) NOT NULL DEFAULT '',\n  PRIMARY KEY (`label_id`),\n  UNIQUE KEY `label_id_UNIQUE` (`label_id`)\n)
-members       CREATE TABLE dbname.members (\n  `member_id` char(40) NOT NULL,\n  `first` varchar(255) NOT NULL DEFAULT '',\n  `last` varchar(255) NOT NULL DEFAULT '',\n  `sub` varchar(255) NOT NULL DEFAULT '',\n  `notes` varchar(255) NOT NULL DEFAULT '',\n  `gender` varchar(45) NOT NULL DEFAULT '',\n  PRIMARY KEY (`member_id`),\n  UNIQUE KEY `member_id_UNIQUE` (`member_id`)\n)
-phones        CREATE TABLE dbname.phones (\n  `phone_id` char(40) NOT NULL,\n  `member_id` char(40) NOT NULL,\n  `pNumber` varchar(45) NOT NULL DEFAULT '',\n  `isPrimary` varchar(10) NOT NULL DEFAULT 'true',\n  PRIMARY KEY (`phone_id`),\n  UNIQUE KEY `phone_id_UNIQUE` (`phone_id`)\n)
-schedule      CREATE TABLE dbname.schedule (\n  `schedule_id` char(40) NOT NULL,\n  `church_id` char(40) NOT NULL DEFAULT '',\n  `service_id` char(40) NOT NULL,\n  `label_id` char(40) NOT NULL,\n  `member_id` char(40) NOT NULL,\n  PRIMARY KEY (`schedule_id`),\n  UNIQUE KEY `schedule_id_UNIQUE` (`schedule_id`)\n)
-service       CREATE TABLE dbname.service (\n  `service_id` char(40) NOT NULL,\n  `church_id` char(40) NOT NULL,\n  `serviceTime` bigint NOT NULL DEFAULT '0',\n  `name` varchar(255) NOT NULL DEFAULT '',\n  `info` varchar(255) NOT NULL DEFAULT '',\n  PRIMARY KEY (`service_id`),\n  UNIQUE KEY `service_id_UNIQUE` (`service_id`)\n)
-
-
-for labels
-church-member-admin
-church-admin
+CREATE TABLE ctv.addresses (
+  `address_id` char(40) NOT NULL,
+  `member_id` char(40) NOT NULL,
+  `address1` varchar(128) NOT NULL DEFAULT '',
+  `address2` varchar(128) NOT NULL DEFAULT '',
+  `city` varchar(128) NOT NULL DEFAULT '',
+  `state` varchar(128) NOT NULL DEFAULT '',
+  `zip` varchar(40) NOT NULL DEFAULT '',
+  PRIMARY KEY (`address_id`),
+  UNIQUE KEY `address_id_UNIQUE` (`address_id`)
+);
+CREATE TABLE ctv.availability (
+  `availability_id` char(40) NOT NULL,
+  `member_id` char(40) NOT NULL,
+  `blockOutDay` varchar(45) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`availability_id`),
+  UNIQUE KEY `availability_id_UNIQUE` (`availability_id`)
+);
+CREATE TABLE ctv.churches (
+  `church_id` char(40) NOT NULL,
+  `churchName` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`church_id`),
+  UNIQUE KEY `church_id_UNIQUE` (`church_id`)
+);
+CREATE TABLE ctv.church_member (
+  `church_member_id` char(40) NOT NULL,
+  `church_id` char(40) NOT NULL,
+  `member_id` char(40) NOT NULL,
+  PRIMARY KEY (`church_member_id`),
+  UNIQUE KEY `church_member_id_UNIQUE` (`church_member_id`)
+);
+CREATE TABLE ctv.emails (
+  `email_id` char(40) NOT NULL,
+  `member_id` char(40) NOT NULL,
+  `email` varchar(255) NOT NULL DEFAULT '',
+  `isPrimary` varchar(10) NOT NULL DEFAULT 'true',
+  PRIMARY KEY (`email_id`),
+  UNIQUE KEY `email_id_UNIQUE` (`email_id`)
+);
+CREATE TABLE ctv.label_member (
+  `label_member_id` char(40) NOT NULL,
+  `label_id` char(40) NOT NULL,
+  `member_id` char(40) NOT NULL,
+  `isOwnerOfLabel` varchar(40) NOT NULL DEFAULT 'false',
+  PRIMARY KEY (`label_member_id`),
+  UNIQUE KEY `label_member_id_UNIQUE` (`label_member_id`)
+);
+CREATE TABLE ctv.labels (
+  `label_id` char(40) NOT NULL,
+  `labelName` varchar(255) NOT NULL DEFAULT '',
+  `labelDescription` varchar(255) NOT NULL DEFAULT '',
+  `church_id` char(40) NOT NULL DEFAULT '',
+  `forSchedule` varchar(45) NOT NULL DEFAULT 'false',
+  `scheduleGroup` varchar(45) NOT NULL DEFAULT 'false',
+  `owner_id` varchar(40) NOT NULL DEFAULT '',
+  PRIMARY KEY (`label_id`),
+  UNIQUE KEY `label_id_UNIQUE` (`label_id`)
+);
+CREATE TABLE ctv.members (
+  `member_id` char(40) NOT NULL,
+  `first` varchar(255) NOT NULL DEFAULT '',
+  `last` varchar(255) NOT NULL DEFAULT '',
+  `sub` varchar(255) NOT NULL DEFAULT '',
+  `notes` varchar(255) NOT NULL DEFAULT '',
+  `gender` varchar(45) NOT NULL DEFAULT '',
+  PRIMARY KEY (`member_id`),
+  UNIQUE KEY `member_id_UNIQUE` (`member_id`)
+);
+CREATE TABLE ctv.phones (
+  `phone_id` char(40) NOT NULL,
+  `member_id` char(40) NOT NULL,
+  `pNumber` varchar(45) NOT NULL DEFAULT '',
+  `isPrimary` varchar(10) NOT NULL DEFAULT 'true',
+  PRIMARY KEY (`phone_id`),
+  UNIQUE KEY `phone_id_UNIQUE` (`phone_id`)
+);
+CREATE TABLE ctv.schedule (
+  `schedule_id` char(40) NOT NULL,
+  `church_id` char(40) NOT NULL DEFAULT '',
+  `service_id` char(40) NOT NULL,
+  `label_id` char(40) NOT NULL,
+  `member_id` char(40) NOT NULL,
+  PRIMARY KEY (`schedule_id`),
+  UNIQUE KEY `schedule_id_UNIQUE` (`schedule_id`)
+);
+CREATE TABLE ctv.service (
+  `service_id` char(40) NOT NULL,
+  `church_id` char(40) NOT NULL,
+  `serviceTime` bigint NOT NULL DEFAULT '0',
+  `name` varchar(255) NOT NULL DEFAULT '',
+  `info` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`service_id`),
+  UNIQUE KEY `service_id_UNIQUE` (`service_id`)
+);
