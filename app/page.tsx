@@ -25,6 +25,12 @@ export default function App() {
     listTodos();
   }, []);
 
+// TODO JLS HERE
+// * Add Authentication
+// * Add access to MySql DB
+// Then start migrating code over to the new project
+
+
   function createTodo() {
     client.models.Todo.create({
       content: window.prompt("Todo content"),
