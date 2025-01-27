@@ -37,14 +37,16 @@ export default class UserInfo {
     async loadMemberAdminInfo(rootLabelId:string) {
         this.isMemberAdmin = false;
 
-        // Finding out if the member belongs to the church-member-admin label
-        const api = new APIHandler();
-        const res = await api.getData(API_CALLS.memberAdmin, { root_id: rootLabelId, member_id: this.member_id });
-        const data = await res.json();
+        // TODO JLS connect with DB
 
-        if (data && data.isAdmin === true) {
-            this.isMemberAdmin = true;
-        }
+        // Finding out if the member belongs to the church-member-admin label
+        // const api = new APIHandler();
+        // const res = await api.getData(API_CALLS.memberAdmin, { root_id: rootLabelId, member_id: this.member_id });
+        // const data = await res.json();
+
+        // if (data && data.isAdmin === true) {
+        //     this.isMemberAdmin = true;
+        // }
     }
 
     getInitials() {
@@ -64,31 +66,34 @@ export default class UserInfo {
     }
 
     private async getMemberInfo(subId:string) {
-        if (subId && subId.length > 0) {
-            // Get the member info by looking for the sub
-            const api = new APIHandler();
-            const res = await api.getData(API_CALLS.member, { sub: subId });
-            const data = await res.json();
-            if (data) {
-                this.first = data.first;
-                this.last = data.last;
-                this.member_id = data.member_id;
-                await this.getChurchInfo(data.member_id);
-            }
-        }        
+        // TODO JLS - Fix
+        // if (subId && subId.length > 0) {
+        //     // Get the member info by looking for the sub
+        //     const api = new APIHandler();
+        //     const res = await api.getData(API_CALLS.member, { sub: subId });
+        //     const data = await res.json();
+        //     if (data) {
+        //         this.first = data.first;
+        //         this.last = data.last;
+        //         this.member_id = data.member_id;
+        //         await this.getChurchInfo(data.member_id);
+        //     }
+        // }        
     }
 
     private async getChurchInfo(memberId:string) {
-        if (memberId && memberId.length > 0) {
-            // Get the church info by looking for the member_id
-            const api = new APIHandler();
-            const res = await api.getData(API_CALLS.church, { member_id: memberId });
-            const data = await res.json();
-            if (data) {
-                this.church_id = data.church_id;
-                this.churchName = data.churchName;
-            }
-        }
+        // TODO JLS - Fix
+        
+        // if (memberId && memberId.length > 0) {
+        //     // Get the church info by looking for the member_id
+        //     const api = new APIHandler();
+        //     const res = await api.getData(API_CALLS.church, { member_id: memberId });
+        //     const data = await res.json();
+        //     if (data) {
+        //         this.church_id = data.church_id;
+        //         this.churchName = data.churchName;
+        //     }
+        // }
     }
 
     private setToNotAuthenticated() {

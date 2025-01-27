@@ -19,6 +19,9 @@ import '@fontsource/roboto/700.css';
 import { Grid2, Paper, Stack } from "@mui/material";
 import {getDayString} from "./lib/DateUtils";
 
+import { generateClient } from "aws-amplify/data";
+import type { Schema } from "@/amplify/data/resource";
+
 
 Amplify.configure(outputs);
 
@@ -39,8 +42,16 @@ export default function App() {
 
   useEffect(() => {
     const getUserInfo = async() => {
+
+      // TODO JLS, testing here
+      const client = generateClient<Schema>() // use this Data client for CRUDL requests
+      const tmp = await client.models.members.list();
+      console.log(tmp); // TODO JLS
+
+      // const { data: todos } = await client.models.Todo.list()
+
+
       const uInfo = new UserInfo();
-      console.log(uInfo); // TODO JLS
       await uInfo.loadMemberInfo();
       setUserInfo(uInfo);
     }    
@@ -50,12 +61,16 @@ export default function App() {
   
   return (
     <main>
-      <SNavbar userInfo={userInfo} onSignout={onSignout} />
-      <br />
-        <Grid2 container spacing={2}>
-          <SChurchCalendar selectedDate={selectedDay} defaultDate={defaultDate} onDateChanged={onDateChange} churchId={userInfo.church_id} />
-          <SAllServices serviceDate={selectedDay} churchId={userInfo.church_id} />
-        </Grid2>        
+      TODO JLS HERE
     </main>
   )
+
+
+  // <SNavbar userInfo={userInfo} onSignout={onSignout} />
+      // <br />
+      // <Grid2 container spacing={2}>
+      //   <SChurchCalendar selectedDate={selectedDay} defaultDate={defaultDate} onDateChanged={onDateChange} churchId={userInfo.church_id} />
+      //   <SAllServices serviceDate={selectedDay} churchId={userInfo.church_id} />
+      // </Grid2>        
+
 }
