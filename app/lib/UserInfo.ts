@@ -1,7 +1,7 @@
 import { fetchUserAttributes } from "aws-amplify/auth";
 import { API_CALLS, APIHandler } from "./APIHanlder";
 
-const DEFAULT_CHURCH_ID = 'b0f94dd4-20bc-4f0c-b7da-ab99e45349ae';
+const DEFAULT_CHURCH_ID = '13943128-2c3c-408a-ad0d-7500578acc54';
 const DEFAULT_CHURCH_NAME = 'Calvary Tri Valley';
 
 export default class UserInfo {

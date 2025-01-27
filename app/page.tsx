@@ -40,7 +40,7 @@ export default function App() {
   useEffect(() => {
     const getUserInfo = async() => {
       const uInfo = new UserInfo();
-
+      console.log(uInfo); // TODO JLS
       await uInfo.loadMemberInfo();
       setUserInfo(uInfo);
     }    
