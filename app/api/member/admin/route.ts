@@ -29,6 +29,7 @@ export async function GET(req: NextRequest) {
         }            
     }
     catch (e:any) {
+        console.log(e); // TODO JLS
         // @ts-ignore
         result = { error: e.message  };
     }
