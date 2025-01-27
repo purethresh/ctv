@@ -10,6 +10,7 @@ in BBEdit replace \\n with \n
 2. Create labels church-member-admin  church-admin
 3. Create Church Member (for admin)
 4. Add member to church
+5. Remove TODO dynamodb
 
 Then get this running online
 
