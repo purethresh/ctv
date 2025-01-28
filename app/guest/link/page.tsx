@@ -7,11 +7,12 @@ import SNavbar from "@/app/components/SNavbar";
 import { Paper, Stack, Box, TextField, Button } from "@mui/material";
 import LinkIcon from '@mui/icons-material/Link';
 import SAllMemberSelect from "@/app/components/SAllMemberSelect";
-import { API_CALLS, APIHandler } from "@/app/lib/APIHanlder";
 import { useRouter } from 'next/navigation';
+import { LinkPageData } from "@/app/db/LinkPageData";
 
 
 export default function LinkMember() {  
+  let [pageData, setPageData] = useState<LinkPageData>(new LinkPageData());
   let [userInfo, setUserInfo] = useState<UserInfo>(new UserInfo());
   let [isLinkedMember, setIsLinkedMember] = useState<boolean>(false);
   let [searchNumber, setSearchNumber] = useState<string>('');
@@ -22,7 +23,11 @@ export default function LinkMember() {
 
   const onSignout = () => {
     // Reset the user info
-    setUserInfo(new UserInfo());    
+    const pData = pageData;
+    pData.uInfo = new UserInfo();
+
+    setUserInfo(pData.uInfo);
+    setPageData(pData);
   }  
 
   const onMemberSelect = (memberId:string) => {
@@ -37,11 +42,8 @@ export default function LinkMember() {
   }
 
   const linkMember = async() => {
-
-    // Link the member with the current user
-    const apiHandler = new APIHandler();
-    const memberParams = { member_id: selectedMember, sub: userInfo.sub };
-    const mResult = await apiHandler.createData(API_CALLS.memberLink, memberParams);
+    const pData = new LinkPageData();
+    await pData.linkMember(selectedMember, userInfo.sub);
 
     // Jump to the calendar page
     router.replace('/');    
@@ -49,20 +51,19 @@ export default function LinkMember() {
 
   useEffect(() => {
     const getUserInfo = async() => {
-      const uInfo = new UserInfo();
+      const pData = pageData;;
+      await pData.loadMemberInfo();
 
-      await uInfo.loadMemberInfo();
-      setUserInfo(uInfo);
+      setUserInfo(pData.uInfo);
+      setPageData(pData);
 
       // See if it is already linked
-      const isLinked = uInfo.isLinkedMember();
+      const isLinked = pData.uInfo.isLinkedMember();
       setIsLinkedMember(isLinked);
     }    
 
     getUserInfo();
   }, []);
-
-  // TODO JLS - fix db calls for this page
   
   return (
     <main>
