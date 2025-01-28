@@ -1,5 +1,7 @@
+import { ServiceInfo } from "../lib/ServiceInfo";
+
 export interface SServiceAddProps {
     defaultDate?: Date;
-    onCreateService?: () => void;
+    onCreateService?: (sInfo:ServiceInfo) => void;
     church_id?: string;
 }

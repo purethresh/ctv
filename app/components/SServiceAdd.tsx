@@ -9,7 +9,6 @@ import moment from 'moment';
 import { Moment } from "moment";
 import { IServiceInfo, ServiceInfo } from "../lib/ServiceInfo";
 import { v4 } from "uuid";
-import { API_CALLS, APIHandler } from "../lib/APIHanlder";
 
 export default function SServiceAdd(props:SServiceAddProps) {
   let [isCreating, setIsCreating] = useState<Boolean>(false);
@@ -62,12 +61,8 @@ export default function SServiceAdd(props:SServiceAddProps) {
     const sObj: IServiceInfo = { service_id:v4(), church_id:props.church_id, serviceTime:sTime.getTime(), name:serviceName, info:serviceInfo };
     var sInfo = new ServiceInfo( sObj );
 
-    // Call the API
-    const api = new APIHandler();
-    await api.createData(API_CALLS.services, sInfo);
-
     if (props.onCreateService) {
-      props.onCreateService();
+      props.onCreateService(sInfo);
     }
   }
 

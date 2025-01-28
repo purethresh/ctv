@@ -161,6 +161,8 @@ export default function LabelPage() {
     updateUserInfo();
   }, []);  
 
+  // TODO JLS - fix db calls for this page
+
   return (
     <Grid2 container spacing={2}>
       <Grid2 size={12}>

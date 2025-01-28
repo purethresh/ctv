@@ -1,9 +1,7 @@
 import { MinMemberInfo } from "./MinMemberInfo";
 import { ScheduleInfo } from "./ScheduleInfo";
-import { getStartOfPreviousMonth, getEndOfNextMonth, getMinTimeForDay, getMaxTimeForDay } from "@/app/lib/DateUtils";
+import { getMinTimeForDay, getMaxTimeForDay } from "@/app/lib/DateUtils";
 import { AvailabilityInfo } from "./AvailabilityInfo";
-import { ScheduleStatus } from "./ScheduleStatus";
-import { API_CALLS, APIHandler } from "./APIHanlder";
 
 
 export class ChurchSchedule {
@@ -17,39 +15,12 @@ export class ChurchSchedule {
         this.blockedOutList = [];
     }
 
-    // This gets all the schedules for the month of the date, plus the month before and the month after
-    fetchScheduleWithBufferMonths = async(dt:Date) => {
-        // get month / year as a string
-        const month = (dt.getMonth() + 1).toString();
-        const year = dt.getFullYear().toString();
-
-        const api = new APIHandler();
-        const res = await api.getData(API_CALLS.schedule, { church_id: this.church_id, year: year, month: month });
-        const data = await res.json();
-
-        this.scheduleList = [];
-        if (data != null && data.length > 0) {            
-            for(var i=0; i<data.length; i++) {
-                this.scheduleList.push(new ScheduleInfo(data[i]));
-            }
-        }
+    setScheduleList(list:ScheduleInfo[]) {
+        this.scheduleList = list;
     }
 
-    fetchBlockedOutDaysWithBufferMonths = async(dt:Date) => {
-        // Get month / year as a string
-        const min = getStartOfPreviousMonth(dt);
-        const max = getEndOfNextMonth(dt);
-
-        const api = new APIHandler();
-        const res = await api.getData(API_CALLS.availability, { church_id: this.church_id, min: min.getTime().toString(), max: max.getTime().toString() });
-        const data = await res.json();
-
-        this.blockedOutList = [];
-        if (data != null && data.length > 0) {
-            for(var i=0; i<data.length; i++) {            
-                this.blockedOutList.push(new AvailabilityInfo(data[i]));
-            }
-        }
+    setBlockedOutList(list:AvailabilityInfo[]) {
+        this.blockedOutList = list;
     }
 
     updateMembersWithSchedule = (memberMap:Map<string, MinMemberInfo>, service_id:string) => {

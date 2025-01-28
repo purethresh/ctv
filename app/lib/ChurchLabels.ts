@@ -13,21 +13,9 @@ export default class ChurchLabels {
     labelRoot:LabelInfo | null = null;
     memberMap:Map<string, MinMemberInfo> = new Map<string, MinMemberInfo>();
 
-    async fetchAllLabels(churchId:string) {
-        this.churchId = churchId;
-
+    setAllLabels(data:any) {
         this.labelMap.clear();
         this.labelRoot = null;
-
-        // If no church ID, then return
-        if (churchId.length <= 0) {
-            return;
-        }
-
-        // Get all the labels for the church
-        const api = new APIHandler();
-        const res = await api.getData(API_CALLS.labels, {church_id: churchId});
-        const data = await res.json();
 
         if (data) {
             for (let i=0; i<data.length; i++) {
@@ -49,24 +37,14 @@ export default class ChurchLabels {
                     owner.addChildLabel(value);
                 }
             }
-        });
+        });        
     }
 
-    async fetchScheduledLabels(serviceId:string) {        
+    async setScheduledLabels(data:any) {     
         // Clear the list before loading
         if (this.labelRoot) {
             this.labelRoot.clearScheduled();
         }
-
-        // If no service id, then return
-        if (serviceId.length <= 0) {
-            return;
-        }
-
-        // Get the scheduled labels for a specific service
-        const api = new APIHandler();
-        const res = await api.getData(API_CALLS.labelScheduled, {service_id: serviceId});
-        const data = await res.json();
 
         if (data) {
             for (let i=0; i<data.length; i++) {
@@ -82,12 +60,7 @@ export default class ChurchLabels {
         }
     }
 
-    async fetchMemberLabels(memberId:string) {
-        // Get the scheduled labels for a specific service
-        const api = new APIHandler();
-        const res = await api.getData(API_CALLS.labelMember, {member_id: memberId});
-        const data = await res.json();
-
+    async setMemberLabels(data:any) {
         // Loop through the data and add member to each label
         for (var i=0; i<data.length; i++) {
             const d = data[i];
@@ -108,64 +81,41 @@ export default class ChurchLabels {
         }
     }
 
-    async fetchMembersForLabel(labelId:string) {
-        // Get the scheduled labels for a specific service
-        const api = new APIHandler();
-        const res = await api.getData(API_CALLS.labelMember, {label_id: labelId});
-        const data = await res.json();
+    async setMembersForLabel(data:any) {
+        if (data) {
+            for(var i=0; i<data.length; i++) {
+                const d = data[i];
+                const lblId = d.label_id;
+                const mId = d.member_id;
 
-        for(var i=0; i<data.length; i++) {
-            const d = data[i];
-            const lblId = d.label_id;
-            const mId = d.member_id;
+                // Get the proper member obj
+                var member = new MinMemberInfo(d);
+                if (this.memberMap.has(mId)) {
+                    member = this.memberMap.get(mId) as MinMemberInfo;
+                }
+                else {
+                    this.memberMap.set(mId, member);
+                }
 
-            // Get the proper member obj
-            var member = new MinMemberInfo(d);
-            if (this.memberMap.has(mId)) {
-                member = this.memberMap.get(mId) as MinMemberInfo;
-            }
-            else {
-                this.memberMap.set(mId, member);
-            }
-
-            const lbl = this.labelMap.get(lblId);
-            if (lbl) {
-                lbl.addMember(member);
+                const lbl = this.labelMap.get(lblId);
+                if (lbl) {
+                    lbl.addMember(member);
+                }
             }
         }
     }
 
-    // For every label that can be scheduled, get all the members
-    async fetchMembersForScheduledLabels() {
-        // Create a list of all the scheduled labels
-        var scheduledLabels:LabelInfo[] = [];
-        this.labelMap.forEach((value:any, key:string) => {
-            if (value.forSchedule) {
-                scheduledLabels.push(value);
-            }
-        });
+    async setOwnersForLabel(data:any) {
+        if (data) {
+            for(var i=0; i<data.length; i++) {
+                const d = data[i];
+                const lblId = d.label_id;
+                const member = new MinMemberInfo(d);
 
-        // Now loop through the scheduled labels and get the members
-        for(var i=0; i<scheduledLabels.length; i++) {
-            const lbl = scheduledLabels[i];
-            await this.fetchMembersForLabel(lbl.label_id);
-        }
-    }
-
-    async fetchOwnersForLabel(labelId:string) {
-        // Get the scheduled labels for a specific service
-        const api = new APIHandler();
-        const res = await api.getData(API_CALLS.labelMember, {label_id: labelId});
-        const data = await res.json();
-
-        for(var i=0; i<data.length; i++) {
-            const d = data[i];
-            const lblId = d.label_id;
-            const member = new MinMemberInfo(d);
-
-            const lbl = this.labelMap.get(lblId);
-            if (lbl) {
-                lbl.addOwner(member);
+                const lbl = this.labelMap.get(lblId);
+                if (lbl) {
+                    lbl.addOwner(member);
+                }
             }
         }
     }    

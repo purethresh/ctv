@@ -62,6 +62,8 @@ export default function LinkMember() {
     getUserInfo();
   }, []);
 
+  // TODO JLS - fix db calls for this page
+  
   return (
     <main>
         <Authenticator>
