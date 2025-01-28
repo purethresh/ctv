@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
 
     // Look for member based on sub info
     if (params.has(USER_SUB_ID)) {
-        query = 'SELECT * FROM members WHERE sub = ?';
+        query = 'Select * from ctv.members JOIN ctv.church_member ON members.member_id=church_member.member_id JOIN ctv.churches on church_member.church_id = churches.church_id WHERE members.sub=?';
         queryParams = [params.get(USER_SUB_ID)];
     }
     else if (params.has(LABEL_ID)) {

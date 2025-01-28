@@ -1,9 +1,64 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
 import { schema as generatedSqlSchema } from './schema.sql';
+import { subscribe } from "diagnostics_channel";
 
 
 // Add a global authorization rule
 const sqlSchema = generatedSqlSchema.authorization(allow => allow.publicApiKey());
+
+// Set relationships
+sqlSchema.setRelationships((models) => [
+  models.members.relationships( {
+      addresses: a.hasMany("addresses", "member_id"),
+      emails: a.hasMany("emails", "member_id"),
+      availability: a.hasMany("availability", "member_id"),
+      church_member: a.hasMany("church_member", "member_id"),
+      label_member: a.hasMany("label_member", "member_id"),
+      schedule: a.hasMany("schedule", "member_id"),
+    }),
+  models.churches.relationships({
+    church_member: a.hasMany("church_member", "church_id"),
+    labels: a.hasMany("labels", "church_id"),
+    schedule: a.hasMany("schedule", "church_id"),
+    service: a.hasMany("service", "church_id"),
+  }),
+  models.labels.relationships({
+    label_member: a.hasMany("label_member", "label_id"),
+    schedule: a.hasMany("schedule", "label_id"),
+  }),
+  models.service.relationships({
+    schedule: a.hasMany("schedule", "service_id"),
+  }),
+]);
+
+// Add custom query
+sqlSchema.addToSchema({
+    getUserWithChurchBySub: a.query()
+      // reference custom types added to the schema
+      .arguments( {sub: a.string().required()} )
+      .returns(a.ref("UserWithChurch").array())
+      .handler(a.handler.inlineSql(
+          `Select * from ctv.members JOIN ctv.church_member ON members.member_id=church_member.member_id JOIN ctv.churches on church_member.church_id = churches.church_id WHERE members.sub = :sub`
+      ))
+      .authorization(allow => [allow.guest()]),
+
+
+      // Define custom types to provide end-to-end typed results
+      // for custom queries / mutations
+      UserWithChurch: a.customType({
+        member_id: a.string(),
+        first: a.string(),
+        last: a.string(),
+        sub: a.string(),
+        notes: a.string(),
+        gender: a.string(),
+        church_member_id: a.string(),
+        church_id: a.string(),
+        church_name: a.string()
+      })
+  })
+
+
 // const sqlSchema = generatedSqlSchema.setAuthorization((models) => [
 //   models.members.authorization((allow) => [allow.publicApiKey(), allow.guest(), allow.authenticated()]),
 // ]);

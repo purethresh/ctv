@@ -1,4 +1,8 @@
-interface SAllServicesProp {
+import { ServiceInfo } from "../lib/ServiceInfo";
+
+
+export interface SAllServicesProp {
     serviceDate?: string;
-    churchId?: string;
+    serviceList: ServiceInfo[];
+    loadServiceList: (yr:number, mo:number, dy:number) => void;
 }

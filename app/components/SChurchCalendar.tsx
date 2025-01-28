@@ -6,13 +6,13 @@ import moment, { Moment } from 'moment';
 import { useState, useEffect } from 'react';
 import SCalendarDayComponent from './SCalendarDayComponent';
 import { getDefaultSunday } from '../lib/DateUtils';
-import { API_CALLS, APIHandler } from '../lib/APIHanlder';
 import { Grid2, Paper } from '@mui/material';
 
 export default function SChurchCalendar(props: SCalendarProps) {  
   let [selectedDate, setSelectedDate] = useState<string>(props.selectedDate || props.defaultDate || getDefaultSunday());
   let [defaultDay, setDefaultDay] = useState<string>(props.defaultDate || getDefaultSunday());
   let [scheduledDays, setScheduledDays] = useState<number[]>([]);
+  let [lastCheckedDate, setLastCheckedDate] = useState<Date>(new Date('01/01/2000'));
   
   // Set the selected day from a moment
   const setCalValue = (value:Moment) => {
@@ -22,56 +22,23 @@ export default function SChurchCalendar(props: SCalendarProps) {
     }
   }
 
-  const getServiceInfoFromApi = async(dt:Date) => {   
-    if (props == undefined) return [];
-    if (props.churchId == undefined) return [];
-    if (props.churchId.length === 0) return [];
-
-    const api = new APIHandler();
-    const res = await api.getData(API_CALLS.services, { church_id: props.churchId, year: dt.getFullYear(), month: dt.getMonth()+1 });
-    const result = await res.json();
-
-    return result;
-  }
-
-  const getServiceInfo = async(dt:any) => {
-    // If no props, then return
-    if (props == undefined) return;
-
-    // If no churchId, then return
-    if (props.churchId == undefined) return;
-
-    // If churchId is empty, then return
-    if (props.churchId.length === 0) return;
-
-    const data = await getServiceInfoFromApi(dt);
-
-    const scheduled = [];
-    for(var i=0; i<data.length; i++) {
-      const epoc = data[i].serviceTime;
-      const sDate = new Date(epoc);
-      scheduled.push(sDate.getDate());
-    }
-    setScheduledDays(scheduled);
-  }
-
   const onMonthYearChanged = (dChange:Moment) => {
     const dt = new Date(dChange.toDate());
+    if (lastCheckedDate.getDate() == dt.getDate()) return;
+    setLastCheckedDate(dt);
 
     // Notify that month year changed
     if (props.onMonthChanged) {
-      props.onMonthChanged((dt.getMonth()+1).toString(), dt.getFullYear().toString());
+      props.onMonthChanged(dt);
     }
-
-    getServiceInfo(dt);
   }
 
   useEffect(() => {
     const strDt = props.selectedDate || props.defaultDate || getDefaultSunday();
     setSelectedDate(strDt);
-
-    getServiceInfo(moment(strDt).toDate());
-  }, [props.churchId, props.defaultDate, props.updateNumber, props.selectedDate]);  
+    setScheduledDays(props.scheduledDays || []);
+    onMonthYearChanged(moment(strDt));
+  }, [props.defaultDate, props.updateNumber, props.selectedDate, props.scheduledDays]);  
 
   return (
     <Grid2 size={{ xs: 12, sm: 6 }}>

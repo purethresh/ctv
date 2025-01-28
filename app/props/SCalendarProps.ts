@@ -1,11 +1,15 @@
 interface SCalendarProps {
-    defaultDate?: string;
     selectedDate?: string;
+    defaultDate?: string;
     restrictedDays?: number[];
+    scheduledDays?: number[];
+    onDateChanged?: (date:Date) => void;
+    onMonthChanged?: (date:Date) => void;
+
+
+    // TODO JLS, I think I can get ride of these
     churchId?: string;
     memberId?: string;
-    onDateChanged?: (date:Date) => void;
-    onMonthChanged?: (month:string, year:string) => void;
     onDateClicked?: (date:Date) => void;
     updateNumber?: number;
 }

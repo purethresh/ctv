@@ -64,6 +64,10 @@ export default function SchedulePage() {
     getUserInfo();
   }, []);
 
+  // TODO JLS - HERE
+  // Move all data requests to the page
+  // Follow example of app page
+
   return (
     <Grid2 container spacing={2}>
       <SChurchCalendar defaultDate={curentDate} onDateChanged={onDateChange} churchId={userInfo.church_id} updateNumber={updateScheduleNum} onMonthChanged={onMonthChange} />

@@ -3,39 +3,37 @@
 import { useEffect, useState } from "react";
 import SServiceSchedule from "./SServiceSchedule";
 import { ServiceInfo } from "../lib/ServiceInfo";
-import { API_CALLS, APIHandler } from "../lib/APIHanlder";
-import { Grid2, Box } from "@mui/material";
+import { Grid2 } from "@mui/material";
+import { SAllServicesProp } from "../props/SAllServicesProp";
 
 export default function SAllServices(props:SAllServicesProp) {
-  let [serviceIdList, setServiceIdList] = useState<ServiceInfo[]>([]);
+  let [serviceDate, setServiceDate] = useState<string>(props.serviceDate || '');
+  let [serviceIdList, setServiceIdList] = useState<ServiceInfo[]>(props.serviceList);
+
 
   // Get the services for the selected day
   const getServicesForDay = async() => {
+    setServiceIdList(props.serviceList);
+
     if (props == undefined) return;
     if (props.serviceDate == undefined) return;
-    if (props.churchId == undefined) return;
-    
-    const serviceDate = new Date(props.serviceDate);
-    const yr = serviceDate.getFullYear();
-    const mo = serviceDate.getMonth() + 1;
-    const dy = serviceDate.getDate() + 1;
+    if (props.serviceDate.length == 0) return;
 
-    const api = new APIHandler();
-    const result = await api.getData(API_CALLS.services, { church_id: props.churchId, year: yr, month: mo, day: dy });
-    var rs = await result.json();
+    if ( props.serviceDate != serviceDate ) {
+      const sDate = new Date(serviceDate);
+      const yr = sDate.getFullYear();
+      const mo = sDate.getMonth() + 1;
+      const dy = sDate.getDate() + 1;
+      setServiceDate(props.serviceDate);
 
-    const serviceList:ServiceInfo[] = [];
-    for(var i=0; i<rs.length; i++) {
-      const sInfo = new ServiceInfo(rs[i]);
-      serviceList.push(sInfo);
+      // Now load the service list
+      props.loadServiceList(yr, mo, dy);
     }
-
-    setServiceIdList(serviceList);
   }
 
   useEffect(() => {
     getServicesForDay();
-  }, [props.serviceDate, props.churchId]);
+  }, [props.serviceDate, props.serviceList]);
 
   return (
     <>

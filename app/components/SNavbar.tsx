@@ -38,19 +38,7 @@ export default function SNavbar(props: SNavBarProps) {
       props.onSignout();
     }
   }
-  
-  useEffect(() => {
-    const updatedInfo = props.userInfo || new UserInfo();
-    setUserInfo(updatedInfo);
-    const lm = updatedInfo.isLinkedMember();
-    setIsLinkedMember(lm);
 
-    const isAuth:boolean = updatedInfo.sub.length > 0;
-    setIsAuthenticated(isAuth);
-    setUserInitials(updatedInfo.getInitials());
-    setChurchName(updatedInfo.churchName);
-  }, [props.userInfo]);
-  
   const onMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     setMenuAnchor(event.currentTarget);
   }
@@ -66,6 +54,18 @@ export default function SNavbar(props: SNavBarProps) {
   const onMemberClose = () => {
     setMemberAnchor(null);
   }
+  
+  useEffect(() => {
+    const updatedInfo = props.userInfo || new UserInfo();
+    setUserInfo(updatedInfo);
+    const lm = updatedInfo.isLinkedMember();
+    setIsLinkedMember(lm);
+
+    const isAuth:boolean = updatedInfo.sub.length > 0;
+    setIsAuthenticated(isAuth);
+    setUserInitials(updatedInfo.getInitials());
+    setChurchName(updatedInfo.churchName);
+  }, [props.userInfo]);
 
   return (
     <Box>
