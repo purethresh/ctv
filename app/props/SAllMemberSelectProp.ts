@@ -1,9 +1,9 @@
-interface SAllMemberSelectProp {
-    churchId?: string;
+import { MinMemberInfo } from "../lib/MinMemberInfo";
+
+export interface SAllMemberSelectProp {
     updateNumber?: number;
     onClick?: (memberId:string) => void;
     isVisible?: boolean;
     defaultMemberId?: string;
-    useFilter?: boolean;
-    phoneFilter?: string;
+    memberList: MinMemberInfo[];
 }

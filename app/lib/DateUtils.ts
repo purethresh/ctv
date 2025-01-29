@@ -81,3 +81,26 @@ export const getEndOfNextMonth = (dt:Date) : Date => {
 export const getDayString = (dt:Date) : string => {
   return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
 }
+
+export const getMonthStart = (dt:Date): number => {
+  const timeMill = dt.getTime() + (dt.getTimezoneOffset() * 60 * 1000);
+  const dUpdated = new Date(timeMill);
+
+  const dtStr = `${dUpdated.getFullYear()}-${dUpdated.getMonth() + 1}-01`;
+  const dtDate = new Date(dtStr);
+
+  return dtDate.getTime();    
+}
+
+export const getMonthEnd = (dt:Date): number => {
+  const timeMill = dt.getTime() + (dt.getTimezoneOffset() * 60 * 1000);
+  const dUpdated = new Date(timeMill);
+
+  // Get the start of the month
+  const dtStr = `${dUpdated.getFullYear()}-${dUpdated.getMonth() + 1}-01`;
+  const dtDate = new Date(dtStr);
+
+  // Now increment the month
+  dtDate.setMonth(dtDate.getMonth() + 1);
+  return dtDate.getTime();
+}

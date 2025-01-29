@@ -6,22 +6,29 @@ import { getMemberInfoBySub, getChurchForMember } from "./DBCalls";
 import { APIHandler, API_CALLS } from "../lib/APIHanlder";
 import ChurchLabels from "../lib/ChurchLabels";
 import { LabelInfo } from "../lib/LabelInfo";
+import { MinMemberInfo } from "../lib/MinMemberInfo";
 
 
 export class PageData {
     api:APIHandler;
     uInfo:UserInfo;
     churchLabels:ChurchLabels;
+    memberList:MinMemberInfo[];
 
     constructor() {
         this.uInfo = new UserInfo();
         this.api = new APIHandler();
         this.churchLabels = new ChurchLabels();
+        this.memberList = [];
     }
 
     signOut() {
       this.uInfo.setToNotAuthenticated();
     }
+
+    // ----------------------------------------------
+    // User / Member Info
+    // ----------------------------------------------
 
     async loadMemberInfo() {
       // Load the user info
@@ -40,6 +47,10 @@ export class PageData {
         this.uInfo.setToNotAuthenticated();
       }
     }
+
+    // ----------------------------------------------
+    // Label Info
+    // ----------------------------------------------
 
     async loadChurchLabels() {
       const res = await this.api.getData(API_CALLS.labels, {church_id: this.uInfo.church_id});
@@ -107,5 +118,48 @@ export class PageData {
         this.churchLabels.setMemberLabels(data);
     }
 
+    // ----------------------------------------------
+    // Member List
+    // ----------------------------------------------
+    async loadAllMembers() {
+      const params = { church_id: this.uInfo.church_id, useFilter:"false"};
+
+      const result = await this.api.getData(API_CALLS.member, params);
+      const rs = await result.json();
+
+      this.updateMemberList(rs);
+    }
+
+    async loadMembersWithPhoneFilter(filter:string) {
+      // If the filter is empty, use an empty list
+      if (filter.length <= 0) {
+        this.memberList = [];
+        return;
+      }
+
+      // Get the members with the phone filter
+      const params = { church_id: this.uInfo.church_id, useFilter:"true", phoneFilter:filter};
+      const result = await this.api.getData(API_CALLS.member, params);
+      const rs = await result.json();
+
+      this.updateMemberList(rs);
+    }
+
+    private updateMemberList(data:any) {
+      this.memberList = [];
+
+      for(var i=0; i<data.length; i++) {
+          this.memberList.push(new MinMemberInfo(data[i]));
+      }
+
+      // Sort the list
+      this.memberList.sort((a, b) => {
+          var result = a.first.localeCompare(b.first);
+          if (result === 0) {
+              result = a.last.localeCompare(b.last);
+          }
+          return result;
+      });
+    }
 
 }

@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 import { MinMemberInfo } from '../lib/MinMemberInfo';
 import { InputLabel, Select, MenuItem, IconButton, Box, Typography, Stack } from '@mui/material';
 import { SelectChangeEvent } from '@mui/material/Select';
-import { API_CALLS, APIHandler } from '../lib/APIHanlder';
+import { SAllMemberSelectProp } from '../props/SAllMemberSelectProp';
 
 export default function SAllMemberSelect(props:SAllMemberSelectProp) {
-    let [memberList, setMemberList] = useState<MinMemberInfo[]>([]);
+    let [memberList, setMemberList] = useState<MinMemberInfo[]>(props.memberList);
     let [selectedMember, setSelectedMember] = useState<string>('');
     let [isVisible, setIsVisible] = useState<boolean>(false);
     let [defaultMemberId, setDefaultMemberId] = useState<string>('');
@@ -17,47 +17,12 @@ export default function SAllMemberSelect(props:SAllMemberSelectProp) {
         if (props.onClick) {
             props.onClick(memberId);
         }
-    };   
-    
-    const getAllMembers = async () => {
-        const apiHandler = new APIHandler();
-        const useFilter = props.useFilter ? props.phoneFilter : false;
-        const phoneFilter = props.phoneFilter || '';
-        const params = { church_id: props.churchId, useFilter:useFilter ? "true" : "false", phoneFilter:phoneFilter };
-        if (useFilter) {
-            // @ts-ignore
-            params.phoneFilter = props.phoneFilter;
-        }
-        var rs = [];
-        
-        if (!useFilter || (useFilter && phoneFilter.length > 0) ) {
-            const result = await apiHandler.getData(API_CALLS.member, params);
-            rs = await result.json();
-        }
-        
-        const mList = [];
-        for(var i=0; i<rs.length; i++) {
-            mList.push(new MinMemberInfo(rs[i]));
-        }
-
-        // Sort the list
-        mList.sort((a, b) => {
-            var result = a.first.localeCompare(b.first);
-            if (result === 0) {
-                result = a.last.localeCompare(b.last);
-            }
-            return result;
-        });
-        setMemberList(mList);
-    }
+    };
 
     useEffect(() => {
         const originalSetup = async () => {
             setSelectedMember(props.defaultMemberId || '');
-
-            if (props.churchId) {
-                await getAllMembers();
-            }
+            setMemberList(props.memberList);
 
             if (props.isVisible) {
                 setIsVisible(true);
@@ -65,7 +30,7 @@ export default function SAllMemberSelect(props:SAllMemberSelectProp) {
         }
         
         originalSetup();
-    }, [props.churchId, props.isVisible, props.updateNumber, props.phoneFilter]);    
+    }, [props.isVisible, props.updateNumber, props.memberList]);
 
     return (
       <Box style={{display:isVisible ? 'block' : 'none', textAlign:'center'}}>

@@ -22,19 +22,17 @@ export default function SPersonCalendar(props: SCalendarProps) {
     }
 
     const onMonthYearChanged = (dChange:Moment) => {
-        const yStr = dChange.year().toString();
-        const mStr = (dChange.month() + 1).toString().padStart(2, '0');
-
         if (props.onMonthChanged) {
-            props.onMonthChanged(mStr, yStr);
+            props.onMonthChanged(dChange.toDate());
         }
     }
 
-    const onClickedDate = (dt:Moment) => {
-        if (props.onDateClicked) {
-            props.onDateClicked(dt.toDate());
-        }
-    }
+    // TODO JLS
+    // const onClickedDate = (dt:Moment) => {
+    //     if (props.onDateClicked) {
+    //         props.onDateClicked(dt.toDate());
+    //     }
+    // }
 
 
     useEffect(() => {    
