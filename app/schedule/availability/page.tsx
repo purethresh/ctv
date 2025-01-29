@@ -10,15 +10,18 @@ import { v4 } from 'uuid';
 import { IAvailabilityInfo, AvailabilityInfo } from "@/app/lib/AvailabilityInfo";
 import { API_CALLS, APIHandler } from "@/app/lib/APIHanlder";
 import { Grid2, Paper } from "@mui/material";
+import { AvailabilityPageData } from "@/app/db/AvailabilityPageData";
 
 export default function AvailabilityPage() {
-  let [userInfo, setUserInfo] = useState<UserInfo>(new UserInfo());
-  let [churchId, setChurchId] = useState<string>('');
+  let [pageData, setPageData] = useState<AvailabilityPageData>(new AvailabilityPageData());
+
+  // let [userInfo, setUserInfo] = useState<UserInfo>(new UserInfo());
+  // let [churchId, setChurchId] = useState<string>('');
   let [currentUserId, setCurrentUserId] = useState<string>('');
   let [blockOutList, setBlockOutList] = useState<number[]>([]);
   let [blockOutMap, setBlockOutMap] = useState<Map<number, AvailabilityInfo>>(new Map<number, AvailabilityInfo>());
   let [blockFullList, setBlockFullList] = useState<AvailabilityInfo[]>([]);
-  let [currentViewedDate, setCurrentViewedDate] = useState<Date>(new Date());
+  let [currentViewedDate, setCurrentViewedDate] = useState<Date>(new Date(getDefaultSunday()));
 
   const onMemberChanged = async (memberId:string) => {
     setCurrentUserId(memberId);
@@ -139,16 +142,13 @@ export default function AvailabilityPage() {
 
   useEffect(() => {    
     const getUserInfo = async() => {
-        const uInfo = new UserInfo();
+      const pData = pageData;
+      await pData.loadMemberInfo();
 
-        await uInfo.loadMemberInfo();
-        setUserInfo(uInfo);
-        setChurchId(uInfo.church_id);
-        setCurrentUserId(uInfo.member_id);
+      setPageData(pData);
+      setCurrentUserId(pData.uInfo.member_id);
 
-        const dt = new Date(getDefaultSunday());
-        setCurrentViewedDate(dt);
-        await getBlockOutDays(uInfo.member_id, getMonthStart(dt), getMonthEnd(dt));
+      await getBlockOutDays(pData.uInfo.member_id, getMonthStart(currentViewedDate), getMonthEnd(currentViewedDate));
     }    
 
     getUserInfo();        
@@ -160,7 +160,7 @@ export default function AvailabilityPage() {
     <Grid2 container spacing={2}>
       <Grid2 size={12}>
         <Paper>
-          <SAllMemberSelect churchId={churchId} isVisible={true} defaultMemberId={currentUserId} onClick={onMemberChanged} useFilter={false} />
+          <SAllMemberSelect churchId={pageData.uInfo.church_id} isVisible={true} defaultMemberId={currentUserId} onClick={onMemberChanged} useFilter={false} />
         </Paper>
       </Grid2>      
       <SPersonCalendar memberId={currentUserId} restrictedDays={blockOutList} onDateChanged={onDateChanged} onMonthChanged={onMonthYearChanged} />      
