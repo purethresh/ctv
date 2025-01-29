@@ -15,7 +15,6 @@ import { API_CALLS, APIHandler } from "../lib/APIHanlder";
 export default function SMemberInfo(props:SMemberInfoProp) {
     let [memberId, setMemberId] = useState<string>('');    
     let [userId, setUserId] = useState<string>('');
-    let [churchId, setChurchId] = useState<string>('');
     let [memberInfo, setMemberInfo] = useState<MinMemberInfo>(new MinMemberInfo({}));
     let [isAdmin, setIsAdmin] = useState<boolean>(false);
     let [isEditing, setIsEditing] = useState<boolean>(false);

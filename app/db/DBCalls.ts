@@ -3,7 +3,7 @@ import { generateClient } from "aws-amplify/data";
 import type { Schema } from "@/amplify/data/resource";
 
 // TODO JLS, probably need to get rid of this
-
+// https://docs.amplify.aws/nextjs/build-a-backend/data/connect-to-existing-data-sources/connect-postgres-mysql-database/
 // TODO JLS, these are examples of getting the data through Lambda functions
 // But it is slow. So we need to move this to the API Gateway
 

@@ -1,56 +1,83 @@
 "use client";
 
 import SAllMemberSelect from "@/app/components/SAllMemberSelect";
-import ChurchLabels from "@/app/lib/ChurchLabels";
-import UserInfo from "@/app/lib/UserInfo";
 import { useEffect, useState } from "react";
 import { Button, Box, Paper } from "@mui/material";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import SMemberInfo from "@/app/components/SMemberInfo";
+import { MemberPageData } from "@/app/db/MemberPageData";
+import { MinMemberInfo } from "@/app/lib/MinMemberInfo";
 
 export default function MemberPage() {
-  let [shouldCreateMember, setShouldCreateMember] = useState<boolean>(false);
-  let [userId, setUserId] = useState<string>('');
-  let [churchId, setChurchId] = useState<string>('');
+  let [pageData, setPageData] = useState<MemberPageData>(new MemberPageData());
+  let [memberList, setMemberList] = useState<MinMemberInfo[]>([]);
+  let [defaultMemberId, setDefaultMemberId] = useState<string>('');
   let [isMemberAdmin, setIsMemberAdmin] = useState<boolean>(false);
+  let [memberInfo, setMemberInfo] = useState<MinMemberInfo>(new MinMemberInfo({}));
   let [memberId, setMemberId] = useState<string>('');
-  let [updateNumber, setUpdateNumber] = useState<number>(0);
+  let [isEditing, setIsEditing] = useState<boolean>(false);
+
+  let [updateNumber, setUpdateNumber] = useState<number>(0);  // TODO JLS, remove?
 
   const onCreateMember = () => {
-    setShouldCreateMember(true);
+    const pData = pageData;
+    pData.currentMemberInfo = new MinMemberInfo({});
+    
+    setMemberInfo(pData.currentMemberInfo);
+    setIsEditing(true);
+    setPageData(pData);
+  }    
+
+  const saveMemberInfo = () => {
+    // TODO JLS
+
+    setIsEditing(false);
+
+  //   setShouldCreateMember(false);
+  //   // Reset back to the current user
+  //   // setMemberId(userId);
+  //   setUpdateNumber(updateNumber + 1);
+  //   setShouldCreateMember(false);
   }
 
-  const onMemberCreated = () => {
-    setShouldCreateMember(false);
-    // Reset back to the current user
-    setMemberId(userId);
-    setUpdateNumber(updateNumber + 1);
-    setShouldCreateMember(false);
-  }
+  const onMemberSelected = async (memberId:string) => {
+    setIsEditing(false);
 
-  const onMemberSelected = (memberId:string) => {
+    // Load the member
+    const pData = pageData;
+    await pData.loadCurrentMember(memberId);
+
+    // Set the member Id and member info
     setMemberId(memberId);
+    setMemberInfo(pData.currentMemberInfo);
+
+    setPageData(pData);
   }
 
   const updateUserInfo = async() => {
-    // Get the basic User Info
-    const uInfo = new UserInfo();
-    await uInfo.loadMemberInfo();
-    setUserId(uInfo.member_id);
-    setChurchId(uInfo.church_id);
-    setMemberId(uInfo.member_id);
+    const pData = pageData;
+    await pData.loadMemberInfo();
+    setMemberId(pData.uInfo.member_id);
+    setDefaultMemberId(pData.uInfo.member_id);
 
-    // We need the root label ID
-    const cLabels = new ChurchLabels();
-    await cLabels.fetchAllLabels(uInfo.church_id);
+    // Load data for the current member
+    await pData.loadCurrentMember(pData.uInfo.member_id);
+    setMemberInfo(pData.currentMemberInfo);
 
-    if (cLabels.labelRoot) {
-      const rootId = cLabels.labelRoot.label_id;
+    // Find out if admin
+    await pData.loadChurchLabels();
+    await pData.loadAdminInfo();
+    
+    const isAdmin = pData.churchLabels.labelRoot?.isOwner(pData.uInfo.member_id) || false;
+    setIsMemberAdmin(isAdmin);
 
-      // Find out if the user is a member admin
-      await uInfo.loadMemberAdminInfo(rootId);
-      setIsMemberAdmin(uInfo.isMemberAdmin);
+    // If admin, load the list of members
+    if (isAdmin) {
+      await pData.loadAllMembers();
+      setMemberList(pData.memberList);
     }
+
+    setPageData(pData);
   }
 
   useEffect(() => {
@@ -62,10 +89,10 @@ export default function MemberPage() {
   return (
     <Box sx={{textAlign:'center'}}>
       <Paper>
-        <SAllMemberSelect churchId={churchId} isVisible={isMemberAdmin} defaultMemberId={userId} onClick={onMemberSelected} updateNumber={updateNumber} useFilter={false}  />
+        <SAllMemberSelect isVisible={isMemberAdmin} defaultMemberId={defaultMemberId} onClick={onMemberSelected} updateNumber={updateNumber} memberList={memberList}  />
         <Button color="secondary" endIcon={<PersonAddIcon />} onClick={onCreateMember} style={{display:isMemberAdmin ? 'block' : 'none'}}>Create Member</Button>
       </Paper>
-      <SMemberInfo isAdmin={isMemberAdmin} userId={userId} memberId={memberId} isCreating={shouldCreateMember} onMemberCreated={onMemberCreated} churchId={churchId} updateNumber={updateNumber}  />
+      <SMemberInfo isAdmin={isMemberAdmin} memberInfo={memberInfo} isEditing={isEditing} onMemberCreated={saveMemberInfo} updateNumber={updateNumber}  />
     </Box>
   );
 }

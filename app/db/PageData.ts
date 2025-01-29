@@ -48,6 +48,17 @@ export class PageData {
       }
     }
 
+    async loadAdminInfo() {
+      // Get the root id
+      if (this.churchLabels.labelRoot) {
+        // Get the root id
+        const rootId = this.churchLabels.labelRoot.label_id;
+
+        // Load the admin info
+        await this.loadOwnersForLabel(rootId);
+      }      
+    }
+
     // ----------------------------------------------
     // Label Info
     // ----------------------------------------------
