@@ -1,3 +1,5 @@
+import { UpdateType } from './UpdateType';
+
 export interface IMemberAddressInfo {
     address_id?:string;
     member_id?:string;
@@ -16,6 +18,7 @@ export class MemberAddressInfo {
     city:string = '';
     state:string = '';
     zip:string = '';
+    updateType:UpdateType;
 
     constructor(obj:IMemberAddressInfo = {}) {
         this.address_id = obj.address_id || '';
@@ -25,5 +28,6 @@ export class MemberAddressInfo {
         this.city = obj.city || '';
         this.state = obj.state || '';
         this.zip = obj.zip || '';    
+        this.updateType = UpdateType.none;
     }
 }

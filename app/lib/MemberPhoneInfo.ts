@@ -1,3 +1,5 @@
+import { UpdateType } from "./UpdateType";
+
 export interface IMemberPhoneInfo {
     phone_id?:string;
     member_id?:string;
@@ -10,11 +12,13 @@ export class MemberPhoneInfo {
     member_id: string = '';
     pNumber: string = '';
     isPrimary: string = 'false';
+    updateType: UpdateType;
 
     constructor(obj:IMemberPhoneInfo = {}) {
         this.phone_id = obj.phone_id || '';
         this.member_id = obj.member_id || '';
         this.pNumber = obj.pNumber || '';
         this.isPrimary = obj.isPrimary || 'false';
+        this.updateType = UpdateType.none;
     }
 }

@@ -6,6 +6,7 @@ export interface IMinMemberInfo {
     last?:string;
     notes?:string;
     gender?:string;
+    sub?:string;
 };
 
 export class MinMemberInfo {
@@ -14,6 +15,7 @@ export class MinMemberInfo {
     last: string = '';
     notes: string = '';
     gender: string = '';
+    sub: string = '';
 
     scheduledStatus:ScheduleStatus;
     scheduledLabels:Set<string>;
@@ -25,11 +27,16 @@ export class MinMemberInfo {
         this.last = obj.last || '';
         this.notes = obj.notes || '';
         this.gender = obj.gender || 'male';
+        this.sub = obj.sub || '';
 
         // By default we just mark this user as a member
         this.scheduledStatus = ScheduleStatus.member;
         this.scheduledLabels = new Set<string>();
         this.numberOfTimesScheduled = 0;
+    }
+
+    isLinked() {
+        return this.sub.length > 0;
     }
 
     incrementNumberScheduled() {

@@ -9,154 +9,105 @@ import DoneIcon from '@mui/icons-material/Done';
 import CancelIcon from '@mui/icons-material/Cancel';
 import LinkIcon from '@mui/icons-material/Link';
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
-import { v4 } from 'uuid';
-import { API_CALLS, APIHandler } from "../lib/APIHanlder";
+import { MemberPhoneInfo } from "../lib/MemberPhoneInfo";
+import { MemberEmailInfo } from "../lib/MemberEmailInfo";
+import { MemberAddressInfo } from "../lib/MemberAddressInfo";
 
 export default function SMemberInfo(props:SMemberInfoProp) {
-    let [memberId, setMemberId] = useState<string>('');    
-    let [userId, setUserId] = useState<string>('');
-    let [memberInfo, setMemberInfo] = useState<MinMemberInfo>(new MinMemberInfo({}));
-    let [isAdmin, setIsAdmin] = useState<boolean>(false);
-    let [isEditing, setIsEditing] = useState<boolean>(false);
-    let [isCreating, setIsCreating] = useState<boolean>(props.isCreating || false);
-    let [isLinked, setIsLinked] = useState<boolean>(false);
-    let [needsSave, setNeedsSave] = useState<boolean>(false);
+    let [memberInfo, setMemberInfo] = useState<MinMemberInfo>(props.memberInfo || new MinMemberInfo({}));
+    let [isAdmin, setIsAdmin] = useState<boolean>(props.isAdmin || false);
+    let [isEditing, setIsEditing] = useState<boolean>(props.isEditing || false);
 
-    let [phoneNeedsSave, setPhoneNeedsSave] = useState<boolean>(false);
-    let [emailNeedsSave, setEmailNeedsSave] = useState<boolean>(false);
-    let [addressNeedsSave, setAddressNeedsSave] = useState<boolean>(false);
+    let [phoneList, setPhoneList] = useState<MemberPhoneInfo[]>([]);
+    let [emailList, setEmailList] = useState<MemberEmailInfo[]>([]);
+    let [addressList, setAddressList] = useState<MemberAddressInfo[]>([]);
+
+    let [updatedPhoneList, setUpdatedPhoneList] = useState<MemberPhoneInfo[]>([]);
+    let [updatedEmailList, setUpdatedEmailList] = useState<MemberEmailInfo[]>([]);
+    let [updatedAddressList, setUpdatedAddressList] = useState<MemberAddressInfo[]>([]);
+
+    let [isLinked, setIsLinked] = useState<boolean>(false);
 
     const onSetEditMode = () => {
         setIsEditing(true);
     }
 
     const onCancel = async () => {
-        setIsEditing(false);
-    }
-
-    const onRemoveLink = async () => {
-        const api = new APIHandler();
-        const params = { member_id: memberId };
-        await api.removeData(API_CALLS.memberLink, params);
-        setIsLinked(false);
+        if (props.onCancel) {
+            props.onCancel();
+        }
     }
 
     const onSave = async () => {
-        if (needsSave) {
-            const api = new APIHandler();
-            const mInfo = memberInfo;
-            const params = {
-                member_id: memberId,
-                first: mInfo.first,
-                last: mInfo.last,
-                notes: mInfo.notes,
-                gender: mInfo.gender
-            }
-
-            if (isCreating) {
-                // @ts-ignore
-                params.church_id = churchId;
-                await api.createData(API_CALLS.member, params);
-            }   
-            else {
-                await api.postData(API_CALLS.member, params);
-            }
-
-            // Inform parent if it was created
-            if (isCreating) {
-                if (props.onMemberCreated) {
-                    props.onMemberCreated();
-                }
-                setIsCreating(false);
-            }
+        if (props.saveMemberInfo) {
+            props.saveMemberInfo(memberInfo, updatedPhoneList, updatedAddressList, updatedEmailList);
         }
-        
-        // Flag children that they need to be saved
-        setPhoneNeedsSave(true);
-        setEmailNeedsSave(true);
-        setAddressNeedsSave(true);
-        
-        setIsEditing(false);
-        setNeedsSave(false);
     }
 
-    const onPhoneSave = () => {
-        setPhoneNeedsSave(false);
+    const onRemoveLink = async () => {
+        if (props.onRemoveLink) {
+            props.onRemoveLink(memberInfo.member_id);
+        }
+        memberInfo.sub = '';
+        setMemberInfo(memberInfo);
     }
 
-    const onEmailSave = () => {
-        setEmailNeedsSave(false);
+    // -----------------------------------------------------
+    // Get updated lists 
+    // -----------------------------------------------------
+    const onUpdatePhoneList = (list:MemberPhoneInfo[]) => {
+        setUpdatedPhoneList(list);
     }
 
-    const onAddressSave = () => {
-        setAddressNeedsSave(false);
+    const onUpdateEmailList = (list:MemberEmailInfo[]) => {
+        setUpdatedEmailList(list);
     }
+
+    const onUpdateAddressList = (list:MemberAddressInfo[]) => {
+        setUpdatedAddressList(list);
+    }
+
+    // -----------------------------------------------------
+    // Update member info
+    // -----------------------------------------------------
 
     const updateFirstName = (name:string) => {
         const mInfo = memberInfo;
         mInfo.first = name;
         setMemberInfo(mInfo);
-        setNeedsSave(true);
     }
 
     const updateLastName = (name:string) => {
         const mInfo = memberInfo;
         mInfo.last = name;
         setMemberInfo(mInfo);
-        setNeedsSave(true);
     }
 
     const updateNotes = (notes:string) => {
         const mInfo = memberInfo;
         mInfo.notes = notes;
         setMemberInfo(mInfo);
-        setNeedsSave(true);
     }
 
     const updateGender = (event: React.ChangeEvent<HTMLInputElement>) => {
         const mInfo = memberInfo;
         mInfo.gender = (event.target as HTMLInputElement).value;
         setMemberInfo(mInfo);
-        setNeedsSave(true);
-    };    
+    };
 
-    const updateMemberInfo = async() => {
-        setUserId(props.userId || '');
-        const mId = props.memberId || '';
-        setMemberId(mId);
-        if (props.isAdmin !== undefined) {
-            setIsAdmin(props.isAdmin);
-        }
-
-        // Set the church id
-        setChurchId(props.churchId || '');
-
-        // Get the member info
-        const create = props.isCreating || false;
-        var mInfo = new MinMemberInfo({ member_id: v4() });
-        var hasLink = false;
-        setIsCreating(create);
-        if (!create) {
-            const api = new APIHandler();
-            const result = await api.getData(API_CALLS.member, { member_id: mId });
-            var rs = await result.json();
-            const mData = rs[0];
-            if (rs.length > 0) { 
-                const mInfo = new MinMemberInfo(mData);
-                hasLink = mData?.sub?.length > 0;
-            }
-        }
-        else {
-            setMemberId(mInfo.member_id);
-            setIsEditing(true);
-        }
-        setMemberInfo(mInfo);
-        setIsLinked(hasLink);
+    const resetState = () => {
+        setMemberInfo(props.memberInfo || new MinMemberInfo({}));
+        setIsAdmin(props.isAdmin || false);
+        setIsEditing(props.isEditing || false);
+        setPhoneList(props.phoneList || []);
+        setEmailList(props.emailList || []);
+        setAddressList(props.addressList || []);
+        setIsLinked(props.memberInfo?.isLinked() || false);
     }
 
     useEffect(() => {
-        updateMemberInfo();
-    }, [props.memberId, props.isAdmin, props.isCreating, props.churchId, props.updateNumber]);  
+        resetState();
+    }, [props.memberInfo, props.isAdmin, props.isEditing]);  
 
     return (
         <Box sx={{paddingTop:'5px'}}>
@@ -197,9 +148,9 @@ export default function SMemberInfo(props:SMemberInfoProp) {
                         </RadioGroup>
                     </Box>
                 </Grid2>
-                <SMemberPhoneList memberId={memberId} isAdmin={isAdmin} isEditing={isEditing} isCreating={isCreating} needsSave={phoneNeedsSave} onSaveComplete={onPhoneSave} />
-                <SMemberEmailList memberId={memberId} isAdmin={isAdmin} isEditing={isEditing} isCreating={isCreating} needsSave={emailNeedsSave} onSaveComplete={onEmailSave}/>
-                <SMemberAddressList memberId={memberId} isAdmin={isAdmin} isEditing={isEditing} isCreating={isCreating} needsSave={addressNeedsSave} onSaveComplete={onAddressSave}/>
+                <SMemberPhoneList phoneList={phoneList} onUpdatePhoneList={onUpdatePhoneList} isAdmin={isAdmin} isEditing={isEditing} />
+                <SMemberEmailList emailList={emailList} onUpdateEmailList={onUpdateEmailList} isAdmin={isAdmin} isEditing={isEditing} />
+                <SMemberAddressList addressList={addressList} onUpdateAddressList={onUpdateAddressList} isAdmin={isAdmin} isEditing={isEditing}/>
                 <Box style={{display:isEditing ? 'block' : 'none'}}>
                     <Button variant="contained" color='secondary' endIcon={<CancelIcon />} onClick={onCancel}>Cancel</Button>
                     <Button variant="contained" color='secondary' endIcon={<DoneIcon />} onClick={onSave}>Save</Button>

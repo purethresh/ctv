@@ -7,6 +7,10 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import SMemberInfo from "@/app/components/SMemberInfo";
 import { MemberPageData } from "@/app/db/MemberPageData";
 import { MinMemberInfo } from "@/app/lib/MinMemberInfo";
+import { MemberPhoneInfo } from "@/app/lib/MemberPhoneInfo";
+import { MemberEmailInfo } from "@/app/lib/MemberEmailInfo";
+import { MemberAddressInfo } from "@/app/lib/MemberAddressInfo";
+import { v4 } from 'uuid';
 
 export default function MemberPage() {
   let [pageData, setPageData] = useState<MemberPageData>(new MemberPageData());
@@ -14,30 +18,56 @@ export default function MemberPage() {
   let [defaultMemberId, setDefaultMemberId] = useState<string>('');
   let [isMemberAdmin, setIsMemberAdmin] = useState<boolean>(false);
   let [memberInfo, setMemberInfo] = useState<MinMemberInfo>(new MinMemberInfo({}));
-  let [memberId, setMemberId] = useState<string>('');
+  let [phoneList, setPhoneList] = useState<MemberPhoneInfo[]>([]);
+  let [emailList, setEmailList] = useState<MemberEmailInfo[]>([]);
+  let [addressList, setAddressList] = useState<MemberAddressInfo[]>([]);
   let [isEditing, setIsEditing] = useState<boolean>(false);
 
-  let [updateNumber, setUpdateNumber] = useState<number>(0);  // TODO JLS, remove?
-
-  const onCreateMember = () => {
+  // Sets everything to edit, and creates a new member info object
+  const onViewCreateMember = () => {
     const pData = pageData;
     pData.currentMemberInfo = new MinMemberInfo({});
     
     setMemberInfo(pData.currentMemberInfo);
     setIsEditing(true);
     setPageData(pData);
-  }    
+  }
 
-  const saveMemberInfo = () => {
-    // TODO JLS
+  const onCancel = async () => {
+    const pData = pageData;
+    setIsEditing(false);   
+    setMemberInfo(pData.currentMemberInfo); 
+  }
 
-    setIsEditing(false);
+  const onSave = async (mInfo:MinMemberInfo, phoneList:MemberPhoneInfo[], addressList:MemberAddressInfo[], emailList:MemberEmailInfo[]) => {
+    const pData = pageData;
 
-  //   setShouldCreateMember(false);
-  //   // Reset back to the current user
-  //   // setMemberId(userId);
-  //   setUpdateNumber(updateNumber + 1);
-  //   setShouldCreateMember(false);
+    // Create or save the member
+    if (mInfo.member_id === '') {
+      mInfo.member_id = v4();
+      await pData.createMember(mInfo);
+    } else {
+      await pData.updateMember(mInfo);
+    }
+
+    // Save the phone list
+    await pData.updatePhoneList(phoneList, mInfo.member_id);
+
+    // Save the email list
+    await pData.updateEmailList(emailList, mInfo.member_id);
+
+    // Save the address list
+    await pData.updateAddressList(addressList, mInfo.member_id);
+
+    // Reload everything
+    const memberId = pData.currentMemberInfo.member_id;
+    await onMemberSelected(memberId);
+  }
+
+  const onRemoveLink = async (memberId:string) => {
+    const pData = pageData;
+    await pData.unlinkMember(memberId);    
+    setPageData(pData);
   }
 
   const onMemberSelected = async (memberId:string) => {
@@ -47,8 +77,15 @@ export default function MemberPage() {
     const pData = pageData;
     await pData.loadCurrentMember(memberId);
 
+    await pData.loadPhoneList(pData.currentMemberInfo.member_id);
+    await pData.loadEmailList(pData.currentMemberInfo.member_id);
+    await pData.loadAddressList(pData.currentMemberInfo.member_id);
+
+    setPhoneList(pData.currentPhoneList);
+    setAddressList(pData.currentAddressList);
+    setEmailList(pData.currentEmailList);
+
     // Set the member Id and member info
-    setMemberId(memberId);
     setMemberInfo(pData.currentMemberInfo);
 
     setPageData(pData);
@@ -57,11 +94,18 @@ export default function MemberPage() {
   const updateUserInfo = async() => {
     const pData = pageData;
     await pData.loadMemberInfo();
-    setMemberId(pData.uInfo.member_id);
     setDefaultMemberId(pData.uInfo.member_id);
 
     // Load data for the current member
     await pData.loadCurrentMember(pData.uInfo.member_id);
+
+    await pData.loadPhoneList(pData.currentMemberInfo.member_id);
+    await pData.loadEmailList(pData.currentMemberInfo.member_id);
+    await pData.loadAddressList(pData.currentMemberInfo.member_id);
+
+    setPhoneList(pData.currentPhoneList);
+    setAddressList(pData.currentAddressList);
+    setEmailList(pData.currentEmailList);
     setMemberInfo(pData.currentMemberInfo);
 
     // Find out if admin
@@ -89,10 +133,10 @@ export default function MemberPage() {
   return (
     <Box sx={{textAlign:'center'}}>
       <Paper>
-        <SAllMemberSelect isVisible={isMemberAdmin} defaultMemberId={defaultMemberId} onClick={onMemberSelected} updateNumber={updateNumber} memberList={memberList}  />
-        <Button color="secondary" endIcon={<PersonAddIcon />} onClick={onCreateMember} style={{display:isMemberAdmin ? 'block' : 'none'}}>Create Member</Button>
+        <SAllMemberSelect isVisible={isMemberAdmin} defaultMemberId={defaultMemberId} onClick={onMemberSelected} memberList={memberList}  />
+        <Button color="secondary" endIcon={<PersonAddIcon />} onClick={onViewCreateMember} style={{display:isMemberAdmin ? 'block' : 'none'}}>Create Member</Button>
       </Paper>
-      <SMemberInfo isAdmin={isMemberAdmin} memberInfo={memberInfo} isEditing={isEditing} onMemberCreated={saveMemberInfo} updateNumber={updateNumber}  />
+      <SMemberInfo phoneList={phoneList} emailList={emailList} addressList={addressList} isAdmin={isMemberAdmin} memberInfo={memberInfo} isEditing={isEditing} onCancel={onCancel} onRemoveLink={onRemoveLink} saveMemberInfo={onSave} />
     </Box>
   );
 }

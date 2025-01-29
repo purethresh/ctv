@@ -4,35 +4,43 @@ import { useEffect, useState } from "react";
 import { MemberAddressInfo } from "../lib/MemberAddressInfo";
 import { UpdateType } from "../lib/UpdateType";
 import { v4 } from 'uuid';
-import { API_CALLS, APIHandler } from "../lib/APIHanlder";
 
 export default function SMemberAddressList(props:SMemberInfoProp) {
-    let [memberId, setMemberId] = useState<string>('');
-    let [addressMap, setAddressMap] = useState<Map<string, MemberAddressInfo>>(new Map<string, MemberAddressInfo>());
     let [addressList, setAddressList] = useState<MemberAddressInfo[]>([]);
-    let [isDirty, setIsDirty] = useState<boolean>(false);
+    let [addressMap, setAddressMap] = useState<Map<string, MemberAddressInfo>>(new Map<string, MemberAddressInfo>());
     let [isEditing, setIsEditing] = useState<boolean>(props.isEditing ? true : false);
-    let [isCreating, setIsCreating] = useState<boolean>(props.isCreating ? true : false);
-    let [updateMap, setUpdateMap] = useState<Map<string, UpdateType>>(new Map<string, UpdateType>());
 
     const onAddAddress = () => {
         const aInfo = new MemberAddressInfo({});
         aInfo.address_id = v4();
-        aInfo.member_id = memberId;
+        aInfo.updateType = UpdateType.create;
 
-        // Add to the list
+        // Add to the map
         const mp = addressMap;
-        mp.set(aInfo.address_id, aInfo);       
+        mp.set(aInfo.address_id, aInfo);
 
-        // Track the operation
-        if (updateMap.has(aInfo.address_id) === false) {
-            updateMap.set(aInfo.address_id, UpdateType.create);
-        }
-
-        setAddressMap(mp);
-        setAddressList(Array.from(mp.values()));
-        setIsDirty(true);
+        sendChanges(mp);
     }
+
+    const sendChanges = (aMap:Map<string, MemberAddressInfo>) => {
+        const aList:MemberAddressInfo[] = [];
+
+        // Update the list based on the map
+        aMap.forEach((value, key) => {
+            aList.push(value);
+        });
+
+        // Set the Map
+        setAddressMap(aMap);
+
+        // Set the list
+        setAddressList(aList);
+
+        // Inform parent of the change
+        if (props.onUpdateAddressList) {
+            props.onUpdateAddressList(aList);
+        }
+    }    
 
     const updateAddress1 = (aId:string, address:string) =>{
         // Get the Address info
@@ -41,14 +49,14 @@ export default function SMemberAddressList(props:SMemberInfoProp) {
         if (aInfo) {
             aInfo.address1 = address;
 
-            // Track the operation
-            if (!updateMap.has(aId)) {
-                updateMap.set(aId, UpdateType.update);
+            const aMap = addressMap;
+            if (aInfo.updateType === UpdateType.none) {
+                aInfo.updateType = UpdateType.update;
             }
+            aMap.set(aId, aInfo);
 
-            // Update is needed!
-            setIsDirty(true);
-        }
+            sendChanges(aMap);
+        }      
     }
 
     const updateAddress2 = (aId:string, address:string) =>{
@@ -58,181 +66,87 @@ export default function SMemberAddressList(props:SMemberInfoProp) {
         if (aInfo) {
             aInfo.address2 = address;
 
-            // Track the operation
-            if (!updateMap.has(aId)) {
-                updateMap.set(aId, UpdateType.update);
+            const aMap = addressMap;
+            if (aInfo.updateType === UpdateType.none) {
+                aInfo.updateType = UpdateType.update;
             }
+            aMap.set(aId, aInfo);
 
-            // Update is needed!
-            setIsDirty(true);
-        }
+            sendChanges(aMap);
+        }    
     }    
 
     const updateCity = (aId:string, city:string) =>{
-        // Get the Address info
         const aInfo = addressMap.get(aId);
 
         if (aInfo) {
             aInfo.city = city;
 
-            // Track the operation
-            if (!updateMap.has(aId)) {
-                updateMap.set(aId, UpdateType.update);
+            const aMap = addressMap;
+            if (aInfo.updateType === UpdateType.none) {
+                aInfo.updateType = UpdateType.update;
             }
+            aMap.set(aId, aInfo);
 
-            // Update is needed!
-            setIsDirty(true);
+            sendChanges(aMap);
         }
     }    
 
     const updateState = (aId:string, state:string) =>{
-        // Get the Address info
         const aInfo = addressMap.get(aId);
 
         if (aInfo) {
             aInfo.state = state;
 
-            // Track the operation
-            if (!updateMap.has(aId)) {
-                updateMap.set(aId, UpdateType.update);
+            const aMap = addressMap;
+            if (aInfo.updateType === UpdateType.none) {
+                aInfo.updateType = UpdateType.update;
             }
+            aMap.set(aId, aInfo);
 
-            // Update is needed!
-            setIsDirty(true);
+            sendChanges(aMap);
         }
     }   
     
     const updateZipcode = (aId:string, zip:string) =>{
-        // Get the Address info
         const aInfo = addressMap.get(aId);
 
         if (aInfo) {
             aInfo.zip = zip;
 
-            // Track the operation
-            if (!updateMap.has(aId)) {
-                updateMap.set(aId, UpdateType.update);
+            const aMap = addressMap;
+            if (aInfo.updateType === UpdateType.none) {
+                aInfo.updateType = UpdateType.update;
             }
+            aMap.set(aId, aInfo);
 
-            // Update is needed!
-            setIsDirty(true);
+            sendChanges(aMap);
         }
+    }
+
+    const resetState = () => {
+        // Reset isEditing
+        setIsEditing(props.isEditing ? true : false);
+
+        // Reset the phone list
+        var aList:MemberAddressInfo[] = [];
+        if (props.addressList) {
+            aList = props.addressList;
+        }
+
+        // Create a map of the phone list
+        var aMap = new Map<string, MemberAddressInfo>();
+        for(var i=0; i<aList.length; i++) {
+            aMap.set(aList[i].address_id, aList[i]);
+        }
+
+        setAddressList(aList);
+        setAddressMap(aMap);
     }      
-    
-
-    const saveElement = async(addressId:string, updateType:UpdateType) => {
-        // Get the phone info
-        const aInfo = addressMap.get(addressId);
-        
-        // If it is not found, then we can't do anything
-        if (aInfo === undefined) {
-            return;
-        }
-
-        const api = new APIHandler();
-
-        switch (updateType) {
-            case UpdateType.create:                
-                await api.createData(API_CALLS.address, aInfo);
-                break;
-            case UpdateType.update:
-                await api.postData(API_CALLS.address, aInfo);
-                break;
-            default:
-                // Nothing else is currently implemented
-        }
-    }
-    
-    const onSave = async() => {        
-        // Ignore if we are not editing
-        if (props.needsSave === false) {
-            return;
-        }
-
-        if (!isDirty) {
-            // No need to save, so inform parent that save is done
-            if (props.onSaveComplete) {
-                props.onSaveComplete();
-            }
-            return;
-        }
-        else {
-            // Convert the map to an array (so we can use await)
-            const ray = Array.from(updateMap.entries());
-            
-            for (var i=0; i<ray.length; i++) {
-                const pId = ray[i][0];
-                const uType = ray[i][1];
-                await saveElement(pId, uType);
-            }
-            
-            // Clear the map
-            updateMap.clear();
-
-            // Now clear the dirty flag
-            setIsDirty(false);
-
-            // Inform that save is done
-            if (props.onSaveComplete) {
-                props.onSaveComplete();
-            }
-        }        
-    }
-
-    const updateIsEditing = () => {
-        const editing = props.isEditing ? true : false;
-        const creating = props.isCreating ? true : false;
-        setIsCreating(creating);
-
-        if (editing !== isEditing) {
-            setIsEditing(editing);
-
-            if (creating) {                
-                const mp = addressMap;
-                mp.clear();
-                setAddressMap(mp);
-                setAddressList([]);
-            }
-        }
-    }    
-
-    const updateMemberInfo = async() => {
-        
-        // If no member Id, then we can't do anything
-        if (props.memberId === undefined || props.memberId.length <= 0) {
-            return
-        }
-
-        const mId = props.memberId;
-        setMemberId(mId);
-
-        // Get the member info
-        const api = new APIHandler();
-        const result = await api.getData(API_CALLS.address, { member_id: mId });
-        var rs = await result.json();
-
-        var mp = new Map<string, MemberAddressInfo>();
-        if (rs.length > 0) {
-            for(var i=0; i<rs.length; i++) {
-                const aInfo = new MemberAddressInfo(rs[i]);
-                mp.set(aInfo.address_id, aInfo);
-            }
-        }
-        setAddressMap(mp);
-        setAddressList(Array.from(mp.values()));                
-    }
 
     useEffect(() => {
-        updateMemberInfo();
-    }, [props.memberId, props.isAdmin]);
-
-    useEffect(() => {
-        updateIsEditing();
-    }, [props.isEditing, props.isCreating]);
-
-    useEffect(() => {
-        onSave();
-    }, [props.needsSave]);      
+        resetState();        
+    }, [props.addressList, props.isEditing]); 
 
     return (
         <>

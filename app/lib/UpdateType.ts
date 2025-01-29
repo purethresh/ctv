@@ -1,5 +1,6 @@
 export enum UpdateType {
     create = 'create',
     update = 'update',
-    delete = 'delete'
+    delete = 'delete',
+    none = 'none'
 }

@@ -4,34 +4,22 @@ import { useEffect, useState } from "react";
 import { MemberEmailInfo } from "../lib/MemberEmailInfo";
 import { UpdateType } from "../lib/UpdateType";
 import { v4 } from 'uuid';
-import { API_CALLS, APIHandler } from "../lib/APIHanlder";
 
 export default function SMemberEmailList(props:SMemberInfoProp) {
-    let [memberId, setMemberId] = useState<string>('');
-    let [emailMap, setEmailMap] = useState<Map<string, MemberEmailInfo>>(new Map<string, MemberEmailInfo>());
     let [emailList, setEmailList] = useState<MemberEmailInfo[]>([]);
-    let [isDirty, setIsDirty] = useState<boolean>(false);
+    let [emailMap, setEmailMap] = useState<Map<string, MemberEmailInfo>>(new Map<string, MemberEmailInfo>());
     let [isEditing, setIsEditing] = useState<boolean>(props.isEditing ? true : false);
-    let [isCreating, setIsCreating] = useState<boolean>(props.isCreating ? true : false);
-    let [updateMap, setUpdateMap] = useState<Map<string, UpdateType>>(new Map<string, UpdateType>());
 
     const onAddEmail = () => {
         const eInfo = new MemberEmailInfo({});
         eInfo.email_id = v4();
-        eInfo.member_id = memberId;
+        eInfo.updateType = UpdateType.create;
 
-        // Add to the list
+        // Add to the map
         const mp = emailMap;
-        mp.set(eInfo.email_id, eInfo);       
+        mp.set(eInfo.email_id, eInfo);
 
-        // Track the operation
-        if (updateMap.has(eInfo.email_id) === false) {
-            updateMap.set(eInfo.email_id, UpdateType.create);
-        }
-
-        setEmailMap(mp);
-        setEmailList(Array.from(mp.values()));
-        setIsDirty(true);
+        sendChanges(mp);
     }
 
     const updateEmail = (eId:string, email:string) =>{
@@ -41,13 +29,14 @@ export default function SMemberEmailList(props:SMemberInfoProp) {
         if (eInfo) {
             eInfo.email = email;
 
-            // Track the operation
-            if (!updateMap.has(eId)) {
-                updateMap.set(eId, UpdateType.update);
+            const eMap = emailMap;
+            if (eInfo.updateType === UpdateType.none) {
+                eInfo.updateType = UpdateType.update;
             }
+            eMap.set(eId, eInfo);
 
             // Update is needed!
-            setIsDirty(true);
+            sendChanges(eMap);
         }
     }   
     
@@ -58,129 +47,60 @@ export default function SMemberEmailList(props:SMemberInfoProp) {
         if (eInfo) {
             eInfo.isPrimary = isPrimary ? 'true' : 'false';
 
-            // Track the operation
-            if (!updateMap.has(eId)) {
-                updateMap.set(eId, UpdateType.update);
+            const eMap = emailMap;
+            if (eInfo.updateType === UpdateType.none) {
+                eInfo.updateType = UpdateType.update;
             }
+            eMap.set(eId, eInfo);
 
             // Update is needed!
-            setIsDirty(true);
-        }
-    }    
-
-    const saveElement = async(emailId:string, updateType:UpdateType) => {
-        // Get the phone info
-        const eInfo = emailMap.get(emailId);
-        
-        // If it is not found, then we can't do anything
-        if (eInfo === undefined) {
-            return;
-        }
-
-        const api = new APIHandler();
-        switch (updateType) {
-            case UpdateType.create:
-                await api.createData(API_CALLS.email, eInfo);
-                break;
-            case UpdateType.update:
-                await api.postData(API_CALLS.email, eInfo);
-                break;
-            default:
-                // Nothing else is currently implemented
-        }
-    }    
-
-    const onSave = async() => {
-        // Ignore if we are not editing
-        if (props.needsSave === false) {
-            return;
-        }
-
-        if (!isDirty) {
-            // No need to save, so inform parent that save is done
-            if (props.onSaveComplete) {
-                props.onSaveComplete();
-            }
-            return;
-        }
-        else {
-            // Convert the map to an array (so we can use await)
-            const ray = Array.from(updateMap.entries());
-            
-            for (var i=0; i<ray.length; i++) {
-                const pId = ray[i][0];
-                const uType = ray[i][1];
-                await saveElement(pId, uType);
-            }
-            
-            // Clear the map
-            updateMap.clear();
-
-            // Now clear the dirty flag
-            setIsDirty(false);
-
-            // Inform that save is done
-            if (props.onSaveComplete) {
-                props.onSaveComplete();
-            }
-        }        
-    }    
-
-    const updateIsEditing = () => {
-        const editing = props.isEditing ? true : false;
-        const creating = props.isCreating ? true : false;
-        setIsCreating(creating);
-
-        if (editing !== isEditing) {
-            setIsEditing(editing);
-
-            if (creating) {                
-                const mp = emailMap;
-                mp.clear();
-                setEmailMap(mp);
-                setEmailList([]);
-            }            
+            sendChanges(eMap);
         }
     }
-    
 
-    const updateMemberInfo = async() => {
-        
-        // If no member Id, then we can't do anything
-        if (props.memberId === undefined || props.memberId.length <= 0) {
-            return
+    const sendChanges = (eMap:Map<string, MemberEmailInfo>) => {
+        const eList:MemberEmailInfo[] = [];
+
+        // Update the list based on the map
+        eMap.forEach((value, key) => {
+            eList.push(value);
+        });
+
+        // Set the Map
+        setEmailMap(eMap);
+
+        // Set the list
+        setEmailList(eList);
+
+        // Inform parent of the change
+        if (props.onUpdateEmailList) {
+            props.onUpdateEmailList(eList);
         }
-
-        const mId = props.memberId;
-        setMemberId(mId);
-
-        // Get the member info
-        const api = new APIHandler();
-        const result = await api.getData(API_CALLS.email, { member_id: mId });
-        var rs = await result.json();
-
-        var mp = new Map<string, MemberEmailInfo>();
-        if (rs.length > 0) {
-            for(var i=0; i<rs.length; i++) {
-                const eInfo = new MemberEmailInfo(rs[i]);
-                mp.set(eInfo.email_id, eInfo);
-            }
-        }
-        setEmailMap(mp);
-        setEmailList(Array.from(mp.values()));            
     }
 
-    useEffect(() => {
-        updateIsEditing();
-    }, [props.isEditing, props.isCreating]);
+    const resetState = () => {
+        // Reset isEditing
+        setIsEditing(props.isEditing ? true : false);
+
+        // Reset the phone list
+        var eList:MemberEmailInfo[] = [];
+        if (props.emailList) {
+            eList = props.emailList;
+        }
+
+        // Create a map of the phone list
+        var eMap = new Map<string, MemberEmailInfo>();
+        for(var i=0; i<eList.length; i++) {
+            eMap.set(eList[i].email_id, eList[i]);
+        }
+
+        setEmailList(eList);
+        setEmailMap(eMap);
+    }    
 
     useEffect(() => {
-        onSave();
-    }, [props.needsSave]);     
-
-    useEffect(() => {
-        updateMemberInfo();
-    }, [props.memberId, props.isAdmin]); 
+        resetState();        
+    }, [props.emailList, props.isEditing]);       
 
     return (
         <>

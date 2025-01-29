@@ -4,35 +4,22 @@ import { useEffect, useState } from "react";
 import { MemberPhoneInfo } from "../lib/MemberPhoneInfo";
 import { v4 } from 'uuid';
 import { UpdateType } from "../lib/UpdateType";
-import { API_CALLS, APIHandler } from "../lib/APIHanlder";
-import { Grid } from "@aws-amplify/ui-react";
 
 export default function SMemberPhoneList(props:SMemberInfoProp) {
-    let [memberId, setMemberId] = useState<string>('');
-    let [phoneMap, setPhoneMap] = useState<Map<string, MemberPhoneInfo>>(new Map<string, MemberPhoneInfo>());
     let [phoneList, setPhoneList] = useState<MemberPhoneInfo[]>([]);
-    let [isDirty, setIsDirty] = useState<boolean>(false);
+    let [phoneMap, setPhoneMap] = useState<Map<string, MemberPhoneInfo>>(new Map<string, MemberPhoneInfo>());
     let [isEditing, setIsEditing] = useState<boolean>(props.isEditing ? true : false);
-    let [isCreating, setIsCreating] = useState<boolean>(props.isCreating ? true : false);
-    let [updateMap, setUpdateMap] = useState<Map<string, UpdateType>>(new Map<string, UpdateType>());    
 
     const onAddPhone = () => {
         const pInfo = new MemberPhoneInfo({});
         pInfo.phone_id = v4();
-        pInfo.member_id = memberId;
+        pInfo.updateType = UpdateType.create;
 
-        // Add to the list
+        // Add to the map
         const mp = phoneMap;
-        mp.set(pInfo.phone_id, pInfo);       
+        mp.set(pInfo.phone_id, pInfo);
 
-        // Track the operation
-        if (updateMap.has(pInfo.phone_id) === false) {
-            updateMap.set(pInfo.phone_id, UpdateType.create);
-        }
-
-        setPhoneMap(mp);
-        setPhoneList(Array.from(mp.values()));
-        setIsDirty(true);
+        sendChanges(mp);
     }
 
     const updatePhoneNumber = (pId:string, pNumber:string) =>{
@@ -42,13 +29,13 @@ export default function SMemberPhoneList(props:SMemberInfoProp) {
         if (pInfo) {
             pInfo.pNumber = pNumber;
 
-            // Track the operation
-            if (!updateMap.has(pId)) {
-                updateMap.set(pId, UpdateType.update);
+            const pMap = phoneMap;
+            if (pInfo.updateType === UpdateType.none) {
+                pInfo.updateType = UpdateType.update;                
             }
+            pMap.set(pId, pInfo);
 
-            // Update is needed!
-            setIsDirty(true);
+            sendChanges(pMap);
         }
     }
 
@@ -59,128 +46,60 @@ export default function SMemberPhoneList(props:SMemberInfoProp) {
         if (pInfo) {
             pInfo.isPrimary = isPrimary ? 'true' : 'false';
 
-            // Track the operation
-            if (!updateMap.has(pId)) {
-                updateMap.set(pId, UpdateType.update);
+            const pMap = phoneMap;
+            if (pInfo.updateType === UpdateType.none) {
+                pInfo.updateType = UpdateType.update;                
             }
+            pMap.set(pId, pInfo);
 
-            // Update is needed!
-            setIsDirty(true);
+            sendChanges(pMap);
         }
     }
 
-    const saveElement = async(phoneId:string, updateType:UpdateType) => {
-        // Get the phone info
-        const pInfo = phoneMap.get(phoneId);
-        
-        // If it is not found, then we can't do anything
-        if (pInfo === undefined) {
-            return;
-        }
+    const sendChanges = (pMap:Map<string, MemberPhoneInfo>) => {
+        const pList:MemberPhoneInfo[] = [];
 
-        const api = new APIHandler();        
+        // Update the list based on the map
+        pMap.forEach((value, key) => {
+            pList.push(value);
+        });
 
-        switch (updateType) {
-            case UpdateType.create:
-                await api.createData(API_CALLS.phone, pInfo);
-                break;
-            case UpdateType.update:
-                await api.postData(API_CALLS.phone, pInfo);
-                break;
-            default:
-                // Nothing else is currently implemented
-        }
-    }
-    
-    const onSave = async() => {
-        // Ignore if we are not editing
-        if (props.needsSave === false) {
-            return;
-        }
+        // Set the Map
+        setPhoneMap(pMap);
 
-        if (!isDirty) {
-            // No need to save, so inform parent that save is done
-            if (props.onSaveComplete) {
-                props.onSaveComplete();
-            }
-            return;
-        }
-        else {
-            // Convert the map to an array (so we can use await)
-            const ray = Array.from(updateMap.entries());
-            
-            for (var i=0; i<ray.length; i++) {
-                const pId = ray[i][0];
-                const uType = ray[i][1];
-                await saveElement(pId, uType);
-            }
-            
-            // Clear the map
-            updateMap.clear();
+        // Set the list
+        setPhoneList(pList);
 
-            // Now clear the dirty flag
-            setIsDirty(false);
-
-            // Inform that save is done
-            if (props.onSaveComplete) {
-                props.onSaveComplete();
-            }
-        }        
-    }
-
-    const updateIsEditing = () => {
-        const editing = props.isEditing ? true : false;
-        const creating = props.isCreating ? true : false;
-        setIsCreating(creating);
-
-        if (editing !== isEditing) {
-            setIsEditing(editing);            
-
-            if (creating) {                
-                const mp = phoneMap;
-                mp.clear();
-                setPhoneMap(mp);
-                setPhoneList([]);
-            }
+        // Inform parent of the change
+        if (props.onUpdatePhoneList) {
+            props.onUpdatePhoneList(pList);
         }
     }
 
-    const updateMemberInfo = async() => {
-        // If no member Id, then we can't do anything
-        if (props.memberId === undefined || props.memberId.length <= 0) {
-            return
+    const resetState = () => {
+        // Reset isEditing
+        setIsEditing(props.isEditing ? true : false);
+
+        // Reset the phone list
+        var pList:MemberPhoneInfo[] = [];
+        if (props.phoneList) {
+            pList = props.phoneList;
         }
 
-        const mId = props.memberId;
-        setMemberId(mId);
-
-        // Get the member info
-        const api = new APIHandler();
-        const result = await api.getData(API_CALLS.phone, {member_id: mId});
-        var rs = await result.json();
-
-        var mp = new Map<string, MemberPhoneInfo>();
-        if (rs.length > 0) {
-            for(var i=0; i<rs.length; i++) {
-                const pInfo = new MemberPhoneInfo(rs[i]);
-                mp.set(pInfo.phone_id, pInfo);
-            }
+        // Create a map of the phone list
+        var pMap = new Map<string, MemberPhoneInfo>();
+        for(var i=0; i<pList.length; i++) {
+            pMap.set(pList[i].phone_id, pList[i]);
         }
-        setPhoneMap(mp);
-        setPhoneList(Array.from(mp.values()));
+
+        setPhoneList(pList);        
+        setPhoneMap(pMap);
     }
+
 
     useEffect(() => {
-        updateMemberInfo();
-    }, [props.memberId, props.isAdmin]);
-    
-    useEffect(() => {
-        updateIsEditing();
-    }, [props.isEditing, props.isCreating]);
-
-    useEffect(() => {
-        onSave();
-    }, [props.needsSave]);      
+        resetState();        
+    }, [props.phoneList, props.isEditing]);         
 
     return (
         <>
