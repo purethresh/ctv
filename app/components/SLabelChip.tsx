@@ -1,5 +1,5 @@
 import { SLabelChipProps } from "../props/SLabelChipProps";
-import { Box, Button } from "@mui/material";
+import { Button } from "@mui/material";
 import { useEffect, useState } from 'react';
 import { LabelInfo } from "../lib/LabelInfo";
 

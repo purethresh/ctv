@@ -2,8 +2,7 @@
 
 import UserInfo from "../lib/UserInfo";
 import { fetchUserAttributes } from "aws-amplify/auth";
-import { getMemberInfoBySub, getChurchForMember } from "./DBCalls";
-import { APIHandler, API_CALLS } from "../lib/APIHanlder";
+import { APIHandler, API_CALLS } from "../lib/APIHandler";
 import ChurchLabels from "../lib/ChurchLabels";
 import { LabelInfo } from "../lib/LabelInfo";
 import { MinMemberInfo } from "../lib/MinMemberInfo";
@@ -63,19 +62,26 @@ export class PageData {
     // Label Info
     // ----------------------------------------------
 
-    async loadChurchLabels() {
+
+    async loadChurchLabels(cLabels:ChurchLabels | undefined = undefined) {
       const res = await this.api.getData(API_CALLS.labels, {church_id: this.uInfo.church_id});
       const data = await res.json();
 
       // Set the labels
-      this.churchLabels.setAllLabels(data);
-    }
+      if (cLabels) {
+        cLabels.setAllLabels(data);
+      }
+      else {
+        this.churchLabels.setAllLabels(data);
+      }
+    }    
 
+    async loadScheduledLabels(serviceId:string, cLabels:ChurchLabels | undefined = undefined) {
+      const lbls = cLabels ? cLabels : this.churchLabels;
 
-    async loadScheduledLabels(serviceId:string) {
       // If no service id, then return
       if (serviceId.length <= 0) {
-        this.churchLabels.setScheduledLabels([]);
+        lbls.setScheduledLabels([]);
         return;
       }
 
@@ -84,7 +90,7 @@ export class PageData {
       const res = await api.getData(API_CALLS.labelScheduled, {service_id: serviceId});
       const data = await res.json();
 
-      this.churchLabels.setScheduledLabels(data);
+      lbls.setScheduledLabels(data);
     }
 
     async loadMemberLabels(memberId:string) {
@@ -118,9 +124,16 @@ export class PageData {
         const data = await res.json();
 
         this.churchLabels.setOwnersForLabel(data);
-    }     
+    }
 
-    private async loadMembersForLabel(labelId:string) {
+    async loadAllOwners() {
+        const res = await this.api.getData(API_CALLS.labelMember, {owner_id: 'true'});
+        const data = await res.json();
+
+        this.churchLabels.setOwnersForLabel(data);
+    }
+
+    async loadMembersForLabel(labelId:string) {
         // Get the scheduled labels for a specific service
         const api = new APIHandler();
         const res = await api.getData(API_CALLS.labelMember, {label_id: labelId});

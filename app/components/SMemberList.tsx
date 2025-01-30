@@ -20,7 +20,6 @@ export default function SMemberList( props:SMemberListProp) {
         const updateShowElements = async () => {
 
             const lblInfo = props.labelInfo || new LabelInfo({});
-            const userId = props.userId || '';
             
             setTitle(props.title || '');
             setLabelName(lblInfo.labelName);
@@ -28,7 +27,7 @@ export default function SMemberList( props:SMemberListProp) {
         }
         
         updateShowElements();
-    }, [props.labelInfo, props.memberList, props.title, props.userId]);
+    }, [props.labelInfo, props.memberList, props.title,]);
 
     return (
         <Box sx={{paddingBottom:'10px', paddingTop:'10px'}}>

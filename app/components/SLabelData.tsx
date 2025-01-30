@@ -6,82 +6,45 @@ import AddBoxIcon from '@mui/icons-material/AddBox';
 import EditIcon from '@mui/icons-material/Edit';
 import { SLabelDataProp } from "../props/SLabelDataProp";
 import { LabelInfo } from '../lib/LabelInfo';
-import { v4 } from 'uuid';
-import { API_CALLS, APIHandler } from '../lib/APIHanlder';
 
 export default function SLabelData(props: SLabelDataProp) {
 
     let [labelInfo, setLabelInfo] = useState<LabelInfo | undefined>(props.label);
     let [parentLabelInfo, setParentLabelInfo] = useState<LabelInfo | undefined>(props.label);
-    let [userId, setUserId] = useState<string>(props.userId || '');
-    let [churchId, setChurchId] = useState<string>(props.churchId || '');
     let [isCreate, setIsCreate] = useState<boolean>(props.isCreate);
     let [currentInfo, setCurrentInfo] = useState<LabelInfo>(new LabelInfo({}));
-    let [needsSave, setNeedsSave] = useState<boolean>(false);
 
     const saveLabelChanges = async () => {
-        if (needsSave) {
-            const data = {
-                label_id: currentInfo.label_id,
-                labelName: currentInfo.labelName,
-                labelDescription: currentInfo.labelDescription,
-                church_id: churchId,
-                forSchedule: currentInfo.forSchedule,
-                scheduleGroup: currentInfo.scheduleGroup,
-                owner_id: currentInfo.parentLabel?.label_id
-            };
-
-            if (isCreate) {
-                data.label_id = v4();
-                data.owner_id = parentLabelInfo?.label_id || '';
-            }
-
-            const api = new APIHandler();
-            if (isCreate) {
-                await api.createData(API_CALLS.labels, data);
-            }
-            else {
-                await api.postData(API_CALLS.labels, data);
-            }
-
-            if (props.onReload) {
-                props.onReload();
-            }
-
-            setNeedsSave(false);
+        if (props.updateLabel) {
+            props.updateLabel(currentInfo);
         }
     }
 
     const updateLabelName = (name:string) => {
         currentInfo.labelName = name;
         setCurrentInfo(currentInfo);
-        setNeedsSave(true);
     }
 
     const updateLabelInfo = (info:string) => {
         currentInfo.labelDescription = info;
         setCurrentInfo(currentInfo);
-        setNeedsSave(true);
     }
 
     const updateForSchedule = (schedule:boolean) => {
         currentInfo.forSchedule = schedule;
         setCurrentInfo(currentInfo);
-        setNeedsSave(true);
     }
 
     const updateScheduleGroup = (group:boolean) => {
         currentInfo.scheduleGroup = group;
         setCurrentInfo(currentInfo);
-        setNeedsSave(true);
     }
 
     useEffect(() => {
         const updateLabelInfo = async () => {
             setLabelInfo(props.label);
             setParentLabelInfo(props.parent);
-            setChurchId(props.churchId || '');
-            var lInfo = props.label?.clone() || new LabelInfo({});
+            var lInfo = props.label?.clone() || new LabelInfo({});            
 
             if (!props.isCreate) {                
                 setCurrentInfo(lInfo);

@@ -1,167 +1,100 @@
 "use client"
 
 import React, { useState, useEffect } from 'react';
-import UserInfo from '@/app/lib/UserInfo';
-import ChurchLabels from '@/app/lib/ChurchLabels';
 import { LabelInfo } from '@/app/lib/LabelInfo';
 import SLabelList from '@/app/components/SLabelList';
 import SLabelInfo from '@/app/components/SLabelInfo';
 import { MinMemberInfo } from '@/app/lib/MinMemberInfo';
-import { API_CALLS, APIHandler } from '@/app/lib/APIHanlder';
 import { Grid2, Paper, Box, Typography } from '@mui/material';
+import { LabelPageData } from '@/app/db/LabelPageData';
 
 export default function LabelPage() {
-  let [churchLabels, setChurchLabels] = useState<ChurchLabels>(new ChurchLabels());
+  let [pageData, setPageData] = useState<LabelPageData>(new LabelPageData());
   let [memberLabels, setMemberLabels] = useState<LabelInfo[]>([]);
-  let [selectedLabel, setSelectedLabel] = useState<string>('');
-  let [selectedInfo, setSelectedInfo] = useState<LabelInfo | undefined>(undefined);
-  let [memberList, setMemberList] = useState<MinMemberInfo[]>([]);
-  let [ownerList, setOwnerList] = useState<MinMemberInfo[]>([]);
   let [userId, setUserId] = useState<string>('');
-  let [churchId, setChurchId] = useState<string>('');
-  let [memberMap, setMemberMap] = useState<Map<string, MinMemberInfo>>(new Map());
+  let [selectedLabel, setSelectedLabel] = useState<string>('');
+  let [memberList, setMemberList] = useState<MinMemberInfo[]>([]);
+  let [churchMembers, setChurchMembers] = useState<MinMemberInfo[]>([]);
+  let [ownerList, setOwnerList] = useState<MinMemberInfo[]>([]);
+  let [selectedInfo, setSelectedInfo] = useState<LabelInfo | undefined>(undefined);
 
   const onLabelClick = async (labelId:string) => {
-    const lbl = churchLabels.labelMap.get(labelId);
+    const pData = pageData;
+    const lbl = pData.churchLabels.labelMap.get(labelId);
+    var lblId = lbl?.label_id || '';
+    var mList:MinMemberInfo[] = [];
+    var oList:MinMemberInfo[] = [];
+
     if (lbl) {
-      setSelectedLabel(lbl.label_id);
-      setSelectedInfo(lbl);
+      await pData.loadMembersForLabel(lblId);
 
-      // Load the members of the label
-      await churchLabels.fetchMembersForLabel(lbl.label_id);
-
-      // Get the label
-      setMemberList(lbl.getMemberList());
-
-      // Get the owners
-      setOwnerList(lbl.getOwnerList());
+      mList = lbl.getMemberList();
+      oList = lbl.getOwnerList();
     }
-    else {
-      setSelectedLabel('');
-      setSelectedInfo(undefined);
-      setMemberList([]);
-      setOwnerList([]);
-    }
-  }
 
-  const reloadLabelInfo = async() => {
-    await updateUserInfo();
+    setSelectedLabel(lblId);
+    setSelectedInfo(lbl);
+    setMemberList(mList);
+    setOwnerList(oList);
   }
 
   const addMemberToLabel = async (memberId:string, labelId:string, asOwner:boolean) => {
-    // Get the member info
-    const m = memberMap.get(memberId);
-    if (m !== undefined) {
-      // Get Label
-      const l = churchLabels.labelMap.get(labelId);
-      const params = {member_id: memberId, label_id: labelId, owner:false};
-      if (l !== undefined) {
-        if (asOwner) {
-          l.addOwner(m);
-          setSelectedInfo(l);
-          params.owner = true;
-        }
-        else {
-          l.addMember(m);
-          setSelectedInfo(l);
-        }
-
-        // Update the label
-        const api = new APIHandler();
-        await api.postData(API_CALLS.labelMember, params);
-
-        // Force updated data
-        await churchLabels.fetchMembersForLabel(labelId);
-
-        // Reload
-        await onLabelClick(labelId);
-      }
-    }
+    await pageData.addMemberToLabel(memberId, labelId, asOwner);
   }
 
   const removeMemberFromLabel = async (memberId:string, labelId:string) => {
-    const api = new APIHandler();
-    const result = await api.removeData(API_CALLS.labelMember, {member_id: memberId, label_id: labelId});
-    var rs = await result.json();
-
-    // Remove the person from the label
-    const l = churchLabels.labelMap.get(labelId);
-    l?.removeMember(memberId);
-    l?.removeOwner(memberId);
-
-    // Force updated data
-    await churchLabels.fetchMembersForLabel(labelId);
-
-    // Reload
-    await onLabelClick(labelId);
+    await pageData.removeMemberFromLabel(memberId, labelId);
   }
 
   const removeLabel = async (labelId:string) => {
-    const api = new APIHandler();
-    const result = await api.removeData(API_CALLS.labels, {label_id: labelId});
-    var rs = await result.json();
-
-    // Refresh the data
-    await updateUserInfo();
-
-    // Reload
-    await onLabelClick('');
+    await pageData.removeLabel(labelId);
   }
 
-  const getAllMembers = async (churchId:string) => {
-      const api = new APIHandler();
-      const result = await api.getData(API_CALLS.member, {church_id: churchId});
-      var rs = await result.json();
+  const updateLabel = async (lbl:LabelInfo) => {
+    await pageData.updateLabel(lbl);
+  }
 
-      const mMap = new Map<string, MinMemberInfo>();
-      for(var i=0; i<rs.length; i++) {
-        const m = new MinMemberInfo(rs[i]);
-        mMap.set(m.member_id, m);
+  const getInitialState = async () => {
+    const pData = pageData;
+
+    // Load the user info
+    await pData.loadMemberInfo();
+
+    // Load all the member
+    await pData.loadAllMembers();
+
+    // Load all the labels
+    await pData.loadChurchLabels();
+
+    // Load the labels for the member
+    await pData.loadMemberLabels(pData.uInfo.member_id);
+
+    // Load owners
+    await pData.loadAllOwners();
+
+    // Get list of labels
+    const lst = pData.churchLabels.getMemberAndOwner(pData.uInfo.member_id);
+
+    // Sort the labels
+    lst.sort((a:LabelInfo, b:LabelInfo) => {
+      if (a.labelName < b.labelName) {
+        return -1;
       }
-      setMemberMap(mMap);
-  }  
+      if (a.labelName > b.labelName) {
+        return 1;
+      }
+      return 0;
+    });
 
-  const updateUserInfo = async() => {
-      const uInfo = new UserInfo();
-      await uInfo.loadMemberInfo();
-      setUserId(uInfo.member_id);
-      setChurchId(uInfo.church_id);
-
-      // Load all members
-      await getAllMembers(uInfo.church_id);
-
-      // Now load all the labels for the church
-      await churchLabels.fetchAllLabels(uInfo.church_id);
-      
-      // Load the labels for the member
-      await churchLabels.fetchMemberLabels(uInfo.member_id);
-
-      // Load owners for all labels
-      await churchLabels.fetchOwnersForLabel('asdf');
-
-      // Set the church labels
-      setChurchLabels(churchLabels);
-
-      const lst = churchLabels.getMemberAndOwner(uInfo.member_id);
-      
-      // Sort the labels
-      lst.sort((a:LabelInfo, b:LabelInfo) => {
-        if (a.labelName < b.labelName) {
-          return -1;
-        }
-        if (a.labelName > b.labelName) {
-          return 1;
-        }
-        return 0;
-      });
-      setMemberLabels(lst);
+    setChurchMembers(pData.memberList);
+    setUserId(pData.uInfo.member_id);
+    setMemberLabels(lst);
+    setPageData(pData);
   }
 
   useEffect(() => {
-    updateUserInfo();
+    getInitialState();
   }, []);  
-
-  // TODO JLS - fix db calls for this page
 
   return (
     <Grid2 container spacing={2}>
@@ -176,7 +109,7 @@ export default function LabelPage() {
         </Paper>
       </Grid2>
       <Grid2 size={12}>
-        <SLabelInfo labelInfo={selectedInfo} memberList={memberList} ownerList={ownerList} userId={userId} churchId={churchId} onReload={reloadLabelInfo} onAddMember={addMemberToLabel} onRemoveMember={removeMemberFromLabel} onDeleteLabel={removeLabel}/>
+        <SLabelInfo labelInfo={selectedInfo} memberList={memberList} allMembers={churchMembers} ownerList={ownerList} userId={userId} onAddMember={addMemberToLabel} onRemoveMember={removeMemberFromLabel} onDeleteLabel={removeLabel} onUpdateLabel={updateLabel}/>
       </Grid2>
     </Grid2>
   );

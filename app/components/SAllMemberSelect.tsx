@@ -30,7 +30,7 @@ export default function SAllMemberSelect(props:SAllMemberSelectProp) {
         }
         
         originalSetup();
-    }, [props.isVisible, props.updateNumber, props.memberList]);
+    }, [props.isVisible, props.memberList]);
 
     return (
       <Box style={{display:isVisible ? 'block' : 'none', textAlign:'center'}}>

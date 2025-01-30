@@ -1,5 +1,5 @@
 import { PageData } from "./PageData";
-import { API_CALLS } from "../lib/APIHanlder";
+import { API_CALLS } from "../lib/APIHandler";
 import { AvailabilityInfo } from "../lib/AvailabilityInfo";
 import { getMonthStart, getMonthEnd } from "../lib/DateUtils";
 

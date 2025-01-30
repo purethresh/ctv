@@ -1,4 +1,4 @@
-import { API_CALLS } from "../lib/APIHanlder";
+import { API_CALLS } from "../lib/APIHandler";
 import { MemberPhoneInfo } from "../lib/MemberPhoneInfo";
 import { MinMemberInfo } from "../lib/MinMemberInfo";
 import { LinkPageData } from "./LinkPageData";

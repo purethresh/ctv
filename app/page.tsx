@@ -50,6 +50,15 @@ export default function App() {
   const onGetServices = async(yr:number, month:number, day:number) => {
     const pData = pageData;
     await pData.loadServiceForDay(yr, month, day);
+
+    // Loop through the list of services.  For each service, we need to load the scheduled labels
+    for(var i=0; i<pData.serviceList.length; i++) {
+      const lbls = pData.serviceList[i].churchLabels;
+      await pData.loadChurchLabels(lbls);
+      await pData.loadScheduledLabels(pData.serviceList[i].service_id, lbls);
+      await pData.loadMembersForScheduledLabels();
+    }
+
     setPageData(pData);
     setServiceList(pData.serviceList);
   }
@@ -64,10 +73,13 @@ export default function App() {
   useEffect(() => {
     const getUserInfo = async() => {
       const pData = pageData;
-      pData.loadMemberInfo().then(() => {
-        setPageData(pData);
-        setUserInfo(pData.uInfo);
-      });      
+      await pData.loadMemberInfo()
+
+      // Load all the labels
+      await pData.loadChurchLabels();
+      
+      setUserInfo(pData.uInfo);
+      setPageData(pData);
     }    
 
     getUserInfo();

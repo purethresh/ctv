@@ -1,5 +1,5 @@
 import { PageData } from "./PageData";
-import { API_CALLS } from "../lib/APIHanlder";
+import { API_CALLS } from "../lib/APIHandler";
 import { ServiceInfo } from "../lib/ServiceInfo";
 
 

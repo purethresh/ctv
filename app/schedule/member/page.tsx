@@ -128,8 +128,6 @@ export default function MemberPage() {
     updateUserInfo();
   }, []);    
 
-  // TODO JLS - fix db calls for this page
-
   return (
     <Box sx={{textAlign:'center'}}>
       <Paper>

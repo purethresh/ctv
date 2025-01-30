@@ -23,11 +23,6 @@ export default class UserInfo {
         this.church_id = info.church_id;
     }
 
-    async loadMemberAdminInfo(rootLabelId:string) {
-        // TODO JLS, this isn't correct
-        this.isMemberAdmin = false;
-    }
-
     getInitials() {
         var result = '';
 

@@ -8,20 +8,13 @@ import SAllMemberSelect from "./SAllMemberSelect";
 
 export default function SLabelInfo(props:SLabelInfoProps) {
     let [labelName, setLabelName] = useState<string>('');
-    let [labelInfo, setLabelInfo] = useState<LabelInfo>(props.labelInfo || new LabelInfo({}));
     let [labelDescription, setLabelDescription] = useState<string>('');
     let [userId, setUserId] = useState<string>('');
-    let [churchId, setChurchId] = useState<string>('');
-    let [selectedMember, setSelectedMember] = useState<string>('');
+    let [labelInfo, setLabelInfo] = useState<LabelInfo>(props.labelInfo || new LabelInfo({}));
     let [isAdmin, setIsAdmin] = useState<boolean>(false);
+    let [selectedMember, setSelectedMember] = useState<string>('');
     let [canAddMember, setCanAddMember] = useState<boolean>(false);
     let [canAddOwner, setCanOwner] = useState<boolean>(false);
-
-    const removeUser = async (memberId:string) => {
-        if (props.onRemoveMember) {
-            props.onRemoveMember(memberId, labelInfo.label_id);
-        }
-    }
 
     const userSelected = async (memberId:string) => {
         setSelectedMember(memberId);
@@ -43,38 +36,41 @@ export default function SLabelInfo(props:SLabelInfoProps) {
         }
     }
 
+    const removeMember = async (memberId:string) => {
+        if (props.onRemoveMember){
+            props.onRemoveMember(memberId, labelInfo.label_id);
+        }
+    }
+
     const deleteLabel = async () => { 
         if (isAdmin && props.onDeleteLabel ) {
             props.onDeleteLabel(labelInfo.label_id);
         }
     }
 
-    useEffect(() => {
-        const calcValues = async () => {
-            var lblName = props.labelInfo?.labelName || '';
-            lblName = lblName;
-            setLabelName(lblName);
-            setLabelDescription(props.labelInfo?.labelDescription || '');
-
-            const userId = props.userId || '';
-            setUserId(userId);
-            setChurchId(props.churchId || '');
-
-            if (selectedMember === '') {
-                setSelectedMember(userId);
-                await userSelected(userId);
-            }
-
-            const lbl = props.labelInfo || new LabelInfo({});
-            setLabelInfo(lbl);
-
-            if (lbl.isOwner(userId)) {
-                setIsAdmin(true);
-            }
+    const updateLabel = async (lbl:LabelInfo) => {
+        if (props.onUpdateLabel) {
+            props.onUpdateLabel(lbl);
         }
+    }
+
+    const resetState = async () => {
+        setLabelName(props.labelInfo?.labelName || '');
+        setLabelDescription(props.labelInfo?.labelDescription || '');
         
-        calcValues();        
-    }, [props.labelInfo, props.memberList, props.ownerList, props.userId]);    
+        const uId = props.userId || '';
+        const lbl = props.labelInfo || new LabelInfo({});
+
+        setIsAdmin(lbl.isOwner(uId));
+        setUserId(uId);
+        setLabelInfo(lbl);
+    }
+
+    useEffect(() => {
+
+        resetState();
+    }, [props.labelInfo, props.memberList, props.ownerList, props.userId, props.allMembers]);    
+
 
     return (
         <Box style={{display:props.labelInfo ? 'block' : 'none'}}>
@@ -88,23 +84,23 @@ export default function SLabelInfo(props:SLabelInfoProps) {
                     </Box>                    
                 </Box>
             </Paper>
-            <SMemberList labelInfo={props.labelInfo} memberList={props.memberList} title="Members of" userId={userId} onRemoveMember={removeUser}/>
-            <SMemberList labelInfo={props.labelInfo} memberList={props.ownerList} title="Administrators of" userId={userId} onRemoveMember={removeUser}/>
+            <SMemberList labelInfo={props.labelInfo} memberList={props.memberList} title="Members of" userId={userId} onRemoveMember={removeMember}/>
+            <SMemberList labelInfo={props.labelInfo} memberList={props.ownerList} title="Administrators of" userId={userId} onRemoveMember={removeMember}/>
             <Paper>
                 <Box sx={{marginTop: '10px', marginBottom: '10px', paddingBottom: '10px'}}>
-                    <SLabelData label={props.labelInfo} userId={userId} churchId={churchId} onReload={props.onReload} isCreate={false} />
+                    <SLabelData label={props.labelInfo} userId={userId} isCreate={false} updateLabel={updateLabel} />
                 </Box>                
             </Paper>
             <Paper>
                 <Box sx={{marginTop: '10px', marginBottom: '10px', paddingBottom: '10px'}}>
-                    <SLabelData parent={props.labelInfo} userId={userId} churchId={churchId} onReload={props.onReload} isCreate={true} />
+                    <SLabelData parent={props.labelInfo} userId={userId} isCreate={true} updateLabel={updateLabel}/>
                 </Box>
             </Paper>
             <Paper>
                 <Box bgcolor={'secondary.main'} sx={{ display:isAdmin ? 'block' : 'none', paddingLeft: '10px', paddingTop: '4px', paddingBottom: '4px', marginBottom: '5px'}}>
                     <Typography variant="h6" color='secondary.contrastText'>Add Member To Label</Typography>
                 </Box> 
-                <SAllMemberSelect churchId={props.labelInfo?.church_id} defaultMemberId={userId} onClick={userSelected} isVisible={isAdmin} useFilter={false} />
+                <SAllMemberSelect defaultMemberId={userId} onClick={userSelected} isVisible={isAdmin} memberList={props.allMembers} />
                 <Button onClick={addAsMember} style={{display:isAdmin && canAddMember ? 'block' : 'none'}} variant='contained' color='secondary'>Add As Member</Button>
                 <Button onClick={addAsOwner} style={{display:isAdmin && canAddOwner ? 'block' : 'none'}} variant='contained' color='secondary'>Add As Owner</Button>
             </Paper>

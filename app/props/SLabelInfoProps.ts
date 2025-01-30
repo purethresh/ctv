@@ -7,8 +7,10 @@ export interface SLabelInfoProps {
     ownerList?:MinMemberInfo[];
     userId?:string;
     churchId?:string;
-    onReload?:() => void;
+    allMembers:MinMemberInfo[];
+
     onAddMember?: (memberId:string, labelId:string, owner:boolean) => void;
     onRemoveMember?: (memberId:string, labelId:string) => void;
     onDeleteLabel?: (labelId:string) => void;
+    onUpdateLabel?: (label:LabelInfo) => void;
 }
