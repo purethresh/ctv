@@ -9,27 +9,32 @@ import { Authenticator } from "@aws-amplify/ui-react";
 import { useState, useEffect } from "react";
 import UserInfo from "../lib/UserInfo";
 import SNavbar from "../components/SNavbar";
-import { useRouter } from "next/router";
+import { PageData } from "../db/PageData";
 
 Amplify.configure(outputs);
 
 export default function ScheduleLayout({children}: {children: React.ReactNode;}) {
+    let [pageData, setPageData] = useState<PageData>(new PageData());
     let [userInfo, setUserInfo] = useState<UserInfo>(new UserInfo());
     
     useEffect(() => {
         const getUserInfo = async() => {
-            const uInfo = new UserInfo();
+            const pData = pageData;
+            await pData.loadMemberInfo();
 
-            await uInfo.loadMemberInfo();
-            setUserInfo(uInfo);
+            setUserInfo(pData.uInfo);
+            setPageData(pData);
         }    
 
         getUserInfo();
     }, []);  
 
     const onSignout = () => {
-        // Reset the user info
-        setUserInfo(new UserInfo());        
+        const pData = pageData;
+        pData.uInfo.setToNotAuthenticated();
+
+        setUserInfo(pData.uInfo);
+        setPageData(pData);
     }    
 
     return (

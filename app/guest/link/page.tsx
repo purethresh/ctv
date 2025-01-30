@@ -9,6 +9,7 @@ import LinkIcon from '@mui/icons-material/Link';
 import SAllMemberSelect from "@/app/components/SAllMemberSelect";
 import { useRouter } from 'next/navigation';
 import { LinkPageData } from "@/app/db/LinkPageData";
+import { MinMemberInfo } from "@/app/lib/MinMemberInfo";
 
 
 export default function LinkMember() {  
@@ -18,6 +19,7 @@ export default function LinkMember() {
   let [searchNumber, setSearchNumber] = useState<string>('');
   let [selectedMember, setSelectedMember] = useState<string>('');
   let [hasMember, setHasMember] = useState<boolean>(false);
+  let [memberList, setMemberList] = useState<MinMemberInfo[]>([]);
 
   const router = useRouter();
 
@@ -35,10 +37,17 @@ export default function LinkMember() {
     setHasMember(memberId.length > 0);
   }
 
-  const onNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onNumberChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const pData = pageData;
+    const phoneNumber = event.target.value;
+
+    await pData.loadMembersWithPhoneFilter(phoneNumber);
+
     setSearchNumber(event.target.value);
     setHasMember(false);
     setSelectedMember('');
+    setMemberList(pData.memberList);
+    setPageData(pData);
   }
 
   const linkMember = async() => {
@@ -77,7 +86,7 @@ export default function LinkMember() {
                       <TextField color="secondary" required label="Phone Number" onChange={onNumberChange} sx={{ paddingLeft: '10px', paddingRight:'5px', paddingTop:'8px'}}/>
                     </Stack>
                   </Box>
-                  <Box><SAllMemberSelect churchId={userInfo.church_id} isVisible={searchNumber.length > 0} useFilter={true} phoneFilter={searchNumber} onClick={onMemberSelect} /></Box>
+                  <Box><SAllMemberSelect isVisible={searchNumber.length > 0} memberList={memberList} onClick={onMemberSelect} /></Box>
                   <Box><Button sx={{display:hasMember ? "block" : "none"}} color="secondary" onClick={linkMember} endIcon={<LinkIcon />}>Link With Member</Button></Box>
                 </Stack>
             </Paper>
