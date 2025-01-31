@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
 
     try {
         const params = new RParams();
-        params.useRequest(req);
+        await params.useRequest(req);
 
         // Only update if we have a member_id
         if (params.has(MEMBER_ID)) {
@@ -86,7 +86,8 @@ export async function POST(req: NextRequest) {
         }
     }
     catch(e) {
-        
+        console.log('In Error');
+        console.log(e);
     }
 
     return NextResponse.json(result, resultStatus);

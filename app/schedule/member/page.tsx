@@ -49,7 +49,8 @@ export default function MemberPage() {
   const onSave = async (mInfo:MinMemberInfo, phoneList:MemberPhoneInfo[], addressList:MemberAddressInfo[], emailList:MemberEmailInfo[]) => {
     const pData = pageData;
 
-    const mData = { ...mInfo, church_id: pData.uInfo.church_id };
+    // const mData = { ...mInfo, church_id: pData.uInfo.church_id };
+    const mData = { first: mInfo.first, last: mInfo.last, gender:mInfo.gender, member_id: mInfo.member_id, church_id: pData.uInfo.church_id, notes: mInfo.notes, sub: mInfo.sub };
     
     // Create or save the member
     if (mInfo.member_id === '') {
