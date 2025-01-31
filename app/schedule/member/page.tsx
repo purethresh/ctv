@@ -27,8 +27,15 @@ export default function MemberPage() {
   const onViewCreateMember = () => {
     const pData = pageData;
     pData.currentMemberInfo = new MinMemberInfo({});
-    
+    pData.currentPhoneList = [];
+    pData.currentAddressList = [];
+    pData.currentEmailList = [];
+
+    setPhoneList(pData.currentPhoneList);
+    setAddressList(pData.currentAddressList);
+    setEmailList(pData.currentEmailList);
     setMemberInfo(pData.currentMemberInfo);
+
     setIsEditing(true);
     setPageData(pData);
   }
@@ -42,12 +49,14 @@ export default function MemberPage() {
   const onSave = async (mInfo:MinMemberInfo, phoneList:MemberPhoneInfo[], addressList:MemberAddressInfo[], emailList:MemberEmailInfo[]) => {
     const pData = pageData;
 
+    const mData = { ...mInfo, church_id: pData.uInfo.church_id };
+    
     // Create or save the member
     if (mInfo.member_id === '') {
-      mInfo.member_id = v4();
-      await pData.createMember(mInfo);
+      mData.member_id = v4();
+      await pData.createMember(mData);
     } else {
-      await pData.updateMember(mInfo);
+      await pData.updateMember(mData);
     }
 
     // Save the phone list

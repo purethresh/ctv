@@ -6,7 +6,7 @@ import { MemberAddressInfo } from "../lib/MemberAddressInfo";
 export interface SMemberInfoProp {
     isAdmin?: boolean;
     isEditing?: boolean;
-    memberInfo?: MinMemberInfo;
+    memberInfo: MinMemberInfo;
     phoneList?: MemberPhoneInfo[];
     addressList?: MemberAddressInfo[];
     emailList?: MemberEmailInfo[];

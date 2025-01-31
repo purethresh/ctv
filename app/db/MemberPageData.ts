@@ -28,11 +28,11 @@ export class MemberPageData extends LinkPageData {
         }        
     }
 
-    async updateMember(memberInfo:MinMemberInfo) {
+    async updateMember(memberInfo:any) {
         await this.api.postData(API_CALLS.member, memberInfo);
     }
 
-    async createMember(memberInfo:MinMemberInfo) {
+    async createMember(memberInfo:any) {
         await this.api.createData(API_CALLS.member, memberInfo);
     }
 

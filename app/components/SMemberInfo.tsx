@@ -18,6 +18,11 @@ export default function SMemberInfo(props:SMemberInfoProp) {
     let [isAdmin, setIsAdmin] = useState<boolean>(props.isAdmin || false);
     let [isEditing, setIsEditing] = useState<boolean>(props.isEditing || false);
 
+    let [currentGender, setCurrentGender] = useState<string>('male');
+    let [currentFirst, setCurrentFirst] = useState<string>('');
+    let [currentLast, setCurrentLast] = useState<string>('');
+    let [currentNotes, setCurrentNotes] = useState<string>('');
+
     let [phoneList, setPhoneList] = useState<MemberPhoneInfo[]>([]);
     let [emailList, setEmailList] = useState<MemberEmailInfo[]>([]);
     let [addressList, setAddressList] = useState<MemberAddressInfo[]>([]);
@@ -29,6 +34,7 @@ export default function SMemberInfo(props:SMemberInfoProp) {
     let [isLinked, setIsLinked] = useState<boolean>(false);
 
     const onSetEditMode = () => {
+        resetState(props.memberInfo);
         setIsEditing(true);
     }
 
@@ -36,6 +42,7 @@ export default function SMemberInfo(props:SMemberInfoProp) {
         if (props.onCancel) {
             props.onCancel();
         }
+        setIsEditing(false);
     }
 
     const onSave = async () => {
@@ -74,39 +81,47 @@ export default function SMemberInfo(props:SMemberInfoProp) {
     const updateFirstName = (name:string) => {
         const mInfo = memberInfo;
         mInfo.first = name;
+        setCurrentFirst(mInfo.first);        
         setMemberInfo(mInfo);
     }
 
     const updateLastName = (name:string) => {
         const mInfo = memberInfo;
         mInfo.last = name;
+        setCurrentLast(mInfo.last);
         setMemberInfo(mInfo);
     }
 
     const updateNotes = (notes:string) => {
         const mInfo = memberInfo;
         mInfo.notes = notes;
+        setCurrentNotes(mInfo.notes);
         setMemberInfo(mInfo);
     }
 
     const updateGender = (event: React.ChangeEvent<HTMLInputElement>) => {
         const mInfo = memberInfo;
         mInfo.gender = (event.target as HTMLInputElement).value;
+        setCurrentGender(mInfo.gender);
         setMemberInfo(mInfo);
     };
 
-    const resetState = () => {
-        setMemberInfo(props.memberInfo || new MinMemberInfo({}));
+    const resetState = (mInfo:MinMemberInfo) => {
+        setMemberInfo(mInfo);
         setIsAdmin(props.isAdmin || false);
         setIsEditing(props.isEditing || false);
         setPhoneList(props.phoneList || []);
         setEmailList(props.emailList || []);
         setAddressList(props.addressList || []);
-        setIsLinked(props.memberInfo?.isLinked() || false);
+        setIsLinked(mInfo.isLinked() || false);
+        setCurrentGender(mInfo.gender);
+        setCurrentFirst(mInfo.first);
+        setCurrentLast(mInfo.last);
+        setCurrentNotes(mInfo.notes);
     }
 
     useEffect(() => {
-        resetState();
+        resetState(props.memberInfo);
     }, [props.memberInfo, props.isAdmin, props.isEditing]);  
 
     return (
@@ -115,7 +130,7 @@ export default function SMemberInfo(props:SMemberInfoProp) {
             <Grid2 container>
                 <Grid2 size={12}>
                     <Box bgcolor='secondary.main' style={{display:!isEditing ? 'block' : 'none'}}>
-                        <Typography variant="h6" color='secondary.contrastText'>{memberInfo.first} {memberInfo.last}
+                        <Typography variant="h6" color='secondary.contrastText'>{currentFirst} {currentLast}
                             <IconButton onClick={onSetEditMode}>
                                 <ModeEditIcon color='primary' />
                             </IconButton>
@@ -124,22 +139,22 @@ export default function SMemberInfo(props:SMemberInfoProp) {
                 </Grid2>
                 <Grid2 size={{xs: 12, sm: 6}}>
                     <Box style={{display:isEditing ? 'block' : 'none'}}>
-                        <TextField sx={{margin: '5px', padding: '10px'}} label="First Name" defaultValue={memberInfo.first} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { updateFirstName(event.target.value); }} />
+                        <TextField sx={{margin: '5px', padding: '10px'}} label="First Name" defaultValue={currentFirst} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { updateFirstName(event.target.value); }} />
                         <br />
-                        <TextField label="Last Name" defaultValue={memberInfo.last} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { updateLastName(event.target.value); }} />
+                        <TextField label="Last Name" defaultValue={currentLast} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { updateLastName(event.target.value); }} />
                     </Box>
                     <Box style={{display:!isEditing ? 'block' : 'none'}}>
-                        <Typography variant='subtitle1' color="primary.contrastText">{memberInfo.notes}</Typography>                
+                        <Typography variant='subtitle1' color="primary.contrastText">{currentNotes}</Typography>                
                     </Box>
                     <Box style={{display:isEditing ? 'block' : 'none'}}>
-                        <TextField sx={{margin: '5px', padding: '10px'}} label="Notes" defaultValue={memberInfo.notes} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { updateNotes(event.target.value); }}/>
+                        <TextField sx={{margin: '5px', padding: '10px'}} label="Notes" defaultValue={currentNotes} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { updateNotes(event.target.value); }}/>
                     </Box>
                     <Box style={{display:isEditing ? 'block' : 'none'}}>
                         <FormLabel id="gender_label">Gender</FormLabel>
                         <RadioGroup
                             row
                             aria-labelledby="gender_label"
-                            defaultValue={memberInfo.gender}
+                            value={currentGender}
                             onChange={updateGender}
                             name="radio-buttons-group"
                         >
@@ -148,9 +163,9 @@ export default function SMemberInfo(props:SMemberInfoProp) {
                         </RadioGroup>
                     </Box>
                 </Grid2>
-                <SMemberPhoneList phoneList={phoneList} onUpdatePhoneList={onUpdatePhoneList} isAdmin={isAdmin} isEditing={isEditing} />
-                <SMemberEmailList emailList={emailList} onUpdateEmailList={onUpdateEmailList} isAdmin={isAdmin} isEditing={isEditing} />
-                <SMemberAddressList addressList={addressList} onUpdateAddressList={onUpdateAddressList} isAdmin={isAdmin} isEditing={isEditing}/>
+                <SMemberPhoneList memberInfo={memberInfo} phoneList={phoneList} onUpdatePhoneList={onUpdatePhoneList} isAdmin={isAdmin} isEditing={isEditing} />
+                <SMemberEmailList memberInfo={memberInfo} emailList={emailList} onUpdateEmailList={onUpdateEmailList} isAdmin={isAdmin} isEditing={isEditing} />
+                <SMemberAddressList memberInfo={memberInfo} addressList={addressList} onUpdateAddressList={onUpdateAddressList} isAdmin={isAdmin} isEditing={isEditing}/>
                 <Box style={{display:isEditing ? 'block' : 'none'}}>
                     <Button variant="contained" color='secondary' endIcon={<CancelIcon />} onClick={onCancel}>Cancel</Button>
                     <Button variant="contained" color='secondary' endIcon={<DoneIcon />} onClick={onSave}>Save</Button>

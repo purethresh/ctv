@@ -4,6 +4,7 @@ import { NextRequest } from 'next/server';
 import { MinMemberInfo } from '../../lib/MinMemberInfo';
 import {cleanPhoneNumber} from '../../lib/PhoneUtils';
 import { v4 } from 'uuid';
+import { RParams } from '@/app/lib/RParams';
 
 const USER_SUB_ID = 'sub';
 const CHURCH_ID = 'church_id';
@@ -72,13 +73,13 @@ export async function POST(req: NextRequest) {
     var resultStatus = {status: 500};
 
     try {
-        const data = await req.json();
-        const mInfo = new MinMemberInfo(data);
+        const params = new RParams();
+        params.useRequest(req);
 
         // Only update if we have a member_id
-        if (mInfo.member_id.length > 0) {
+        if (params.has(MEMBER_ID)) {
             const query = 'UPDATE members SET first=?, last=?, notes=?, gender=? WHERE member_id=?';
-            const queryParams = [mInfo.first, mInfo.last, mInfo.notes, mInfo.gender, mInfo.member_id];
+            const queryParams = [params.get('first'), params.get('last'), params.get('notes'), params.get('gender'), params.get('member_id')];
             const [dbResults] = await runQuery(query, queryParams);
             result = dbResults;
             resultStatus = {status: 200};
@@ -96,21 +97,20 @@ export async function PUT(req: NextRequest) {
     var resultStatus = {status: 500};
 
     try {
-        const data = await req.json();
-        const mInfo = new MinMemberInfo(data);
-        const cId:string = data[CHURCH_ID] || '';
+        const params = new RParams();
+        await params.useRequest(req);
 
         // Only update if we have a member_id
-        if (mInfo.member_id.length > 0 && cId.length > 0) {
+        if (params.has(CHURCH_ID) && params.has(MEMBER_ID)) {
             // Insert user
             var query = 'INSERT INTO members (member_id, first, last, notes, gender) VALUES (?, ?, ?, ?, ?)';
-            var queryParams = [mInfo.member_id, mInfo.first, mInfo.last, mInfo.notes, mInfo.gender];
+            var queryParams = [params.get(MEMBER_ID), params.get('first'), params.get('last'), params.get('notes'), params.get('gender')];
             var [dbResults] = await runQuery(query, queryParams);
             result = dbResults;
 
             // Add the member to the church
             query = 'INSERT INTO church_member (church_member_id, church_id, member_id) VALUES (?, ?, ?)';
-            queryParams = [v4(), cId, mInfo.member_id];
+            queryParams = [v4(), params.get(CHURCH_ID), params.get(MEMBER_ID)];
             var [dbResults] = await runQuery(query, queryParams);
             result = dbResults;
             resultStatus = {status: 200};
