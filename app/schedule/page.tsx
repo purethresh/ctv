@@ -103,7 +103,7 @@ export default function SchedulePage() {
 
   return (
     <Grid2 container spacing={2}>
-      <SChurchCalendar defaultDate={curentDate} onDateChanged={onDateChange} churchId={userInfo.church_id} updateNumber={updateScheduleNum} onMonthChanged={onMonthChange} />
+      <SChurchCalendar defaultDate={curentDate} onDateChanged={onDateChange} onMonthChanged={onMonthChange} />
       <Grid2 size={{ xs: 12, sm: 6 }}>
         <SServiceAdd defaultDate={currentTime} onCreateService={onServiceCreated} church_id={userInfo.church_id} />
       </Grid2>

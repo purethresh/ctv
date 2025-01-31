@@ -38,7 +38,7 @@ export default function SChurchCalendar(props: SCalendarProps) {
     setSelectedDate(strDt);
     setScheduledDays(props.scheduledDays || []);
     onMonthYearChanged(moment(strDt));
-  }, [props.defaultDate, props.updateNumber, props.selectedDate, props.scheduledDays]);  
+  }, [props.defaultDate, props.selectedDate, props.scheduledDays]);  
 
   return (
     <Grid2 size={{ xs: 12, sm: 6 }}>

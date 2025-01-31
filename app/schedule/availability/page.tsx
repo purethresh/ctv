@@ -114,7 +114,7 @@ export default function AvailabilityPage() {
           <SAllMemberSelect isVisible={true} defaultMemberId={currentUserId} onClick={onMemberChanged} memberList={memberList}/>
         </Paper>
       </Grid2>      
-      <SPersonCalendar memberId={currentUserId} restrictedDays={blockOutList} onDateChanged={onDateChanged} onMonthChanged={onMonthYearChanged} />      
+      <SPersonCalendar restrictedDays={blockOutList} onDateChanged={onDateChanged} onMonthChanged={onMonthYearChanged} />      
       <Grid2 size={{ xs: 12, sm: 6 }}>
         <SAvailabilityList blockedList={blockFullList} onRemove={onRemoveBlockedDate} />
       </Grid2>
