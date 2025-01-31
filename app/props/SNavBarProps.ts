@@ -1,6 +1,6 @@
 import UserInfo from "../lib/UserInfo";
 
 export interface SNavBarProps {
-    userInfo?: UserInfo;
+    userInfo: UserInfo;
     onSignout?: () => void;
 }

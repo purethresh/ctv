@@ -15,12 +15,12 @@ export default class UserInfo {
     }
 
     setMemberInfo(info:any) {
-        this.first = info.first;
-        this.last = info.last;
-        this.member_id = info.member_id;      
-        this.sub = info.sub;
-        this.churchName = info.churchName;
-        this.church_id = info.church_id;
+        this.first = info.first || '';
+        this.last = info.last || '';
+        this.member_id = info.member_id || '';
+        this.sub = info.sub || '';
+        this.churchName = info.churchName || DEFAULT_CHURCH_NAME;
+        this.church_id = info.church_id || DEFAULT_CHURCH_ID;
     }
 
     getInitials() {
@@ -37,6 +37,10 @@ export default class UserInfo {
 
     isLinkedMember() {
         return this.member_id !== undefined && this.member_id.length > 0;
+    }
+
+    isAuthenticated() {
+        return this.sub.length > 0;
     }
 
     setToNotAuthenticated() {

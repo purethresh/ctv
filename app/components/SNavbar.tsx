@@ -56,13 +56,10 @@ export default function SNavbar(props: SNavBarProps) {
   }
   
   useEffect(() => {
-    const updatedInfo = props.userInfo || new UserInfo();
+    const updatedInfo = props.userInfo;
     setUserInfo(updatedInfo);
-    const lm = updatedInfo.isLinkedMember();
-    setIsLinkedMember(lm);
-
-    const isAuth:boolean = updatedInfo.sub.length > 0;
-    setIsAuthenticated(isAuth);
+    setIsLinkedMember(updatedInfo.isLinkedMember());
+    setIsAuthenticated(updatedInfo.isAuthenticated());
     setUserInitials(updatedInfo.getInitials());
     setChurchName(updatedInfo.churchName);
   }, [props.userInfo]);

@@ -54,6 +54,9 @@ export default function LinkMember() {
     const pData = new LinkPageData();
     await pData.linkMember(selectedMember, userInfo.sub);
 
+    // Now that things are linked, we need to refetch everything.
+    pData.clearCache();
+
     // Jump to the calendar page
     router.replace('/');    
   }

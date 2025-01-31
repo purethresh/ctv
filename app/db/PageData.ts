@@ -25,6 +25,10 @@ export class PageData {
       this.uInfo.setToNotAuthenticated();
     }
 
+    clearCache() {
+      this.api.resetCache();
+    }
+
     // ----------------------------------------------
     // User / Member Info
     // ----------------------------------------------
@@ -37,9 +41,14 @@ export class PageData {
           // Load the member info by sub
           const res = await this.api.getData(API_CALLS.member, { sub: aInfo.sub });
           const data = await res.json();
-          if (data) {
+          // If there is data, and it isn't an error
+          if (data && data.error === undefined) {
             this.uInfo.setMemberInfo(data);
-          }        
+          }
+          else {
+            // Make sure sub is set
+            this.uInfo.sub = aInfo.sub;
+          }
         }
       }
       catch(e) {

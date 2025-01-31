@@ -7,7 +7,7 @@ node_modules
 npm-debug.log*
 
 *.tsbuildinfo
-next-env.d.ts
+next-env.*
 
 .amplify
 amplify_outputs*
