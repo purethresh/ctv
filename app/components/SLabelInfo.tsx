@@ -84,16 +84,16 @@ export default function SLabelInfo(props:SLabelInfoProps) {
                     </Box>                    
                 </Box>
             </Paper>
-            <SMemberList labelInfo={props.labelInfo} memberList={props.memberList} title="Members of" userId={userId} onRemoveMember={removeMember}/>
-            <SMemberList labelInfo={props.labelInfo} memberList={props.ownerList} title="Administrators of" userId={userId} onRemoveMember={removeMember}/>
+            <SMemberList labelInfo={labelInfo} memberList={props.memberList} title="Members of" userId={userId} onRemoveMember={removeMember}/>
+            <SMemberList labelInfo={labelInfo} memberList={props.ownerList} title="Administrators of" userId={userId} onRemoveMember={removeMember}/>
             <Paper>
                 <Box sx={{marginTop: '10px', marginBottom: '10px', paddingBottom: '10px'}}>
-                    <SLabelData label={props.labelInfo} userId={userId} isCreate={false} updateLabel={updateLabel} />
+                    <SLabelData label={labelInfo} userId={userId} isCreate={false} updateLabel={updateLabel} />
                 </Box>                
             </Paper>
             <Paper>
                 <Box sx={{marginTop: '10px', marginBottom: '10px', paddingBottom: '10px'}}>
-                    <SLabelData parent={props.labelInfo} userId={userId} isCreate={true} updateLabel={updateLabel}/>
+                    <SLabelData parent={labelInfo} userId={userId} isCreate={true} updateLabel={updateLabel}/>
                 </Box>
             </Paper>
             <Paper>

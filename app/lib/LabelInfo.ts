@@ -1,5 +1,6 @@
 
 import { MinMemberInfo } from "./MinMemberInfo";
+import { UpdateType } from "./UpdateType";
 
 // This is a label.
 // It could have multiple people assigned to it
@@ -23,6 +24,8 @@ export class LabelInfo {
     forSchedule:boolean;
     scheduleGroup:boolean;
     owner_id:string;
+
+    updateType:UpdateType;
 
     // Labels can have both a parent and children
     parentLabel:LabelInfo | null;
@@ -63,6 +66,7 @@ export class LabelInfo {
         this.memberMap = new Map<string, MinMemberInfo>();
         this.owners = new Map<string, MinMemberInfo>();
         this.scheduled = [];
+        this.updateType = UpdateType.none;
     }
 
     clone() : LabelInfo {

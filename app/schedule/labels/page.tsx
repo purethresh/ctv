@@ -51,7 +51,20 @@ export default function LabelPage() {
   }
 
   const updateLabel = async (lbl:LabelInfo) => {
-    await pageData.updateLabel(lbl);
+    const data = {  label_id: lbl.label_id,
+                    labelName: lbl.labelName,
+                    labelDescription: lbl.labelDescription,
+                    church_id: pageData.uInfo.church_id,
+                    forSchedule: lbl.forSchedule ? 'true' : 'false',
+                    scheduleGroup: lbl.scheduleGroup ? 'true' : 'false',
+                    owner_id: lbl.owner_id,
+                    updateType: lbl.updateType};
+
+    await pageData.updateLabel(data);
+    // Unselect the current label
+    setSelectedLabel('');
+    setSelectedInfo(undefined);
+    getInitialState();
   }
 
   const getInitialState = async () => {

@@ -23,8 +23,7 @@ export class LabelPageData extends PageData {
     }
 
     async updateLabel(lbl:any) {
-        if (lbl.label_id == '') {
-            lbl.label_id = v4();
+        if (lbl.updateType === 'create') {
             await this.api.createData(API_CALLS.labels, lbl);
         }
         else {
