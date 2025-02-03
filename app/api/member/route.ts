@@ -6,6 +6,7 @@ import { NextRequest } from 'next/server';
 import {cleanPhoneNumber} from '../../lib/PhoneUtils';
 import { v4 } from 'uuid';
 import { RParams } from '@/app/lib/RParams';
+import { Amplify } from 'aws-amplify';
 
 const USER_SUB_ID = 'sub';
 const CHURCH_ID = 'church_id';
@@ -22,7 +23,7 @@ export async function GET(req: NextRequest) {
     const useFilter = params.get(USE_FILTER) === 'true';
     var query = '';
     var queryParams:any[] = [];
-
+    
     // Look for member based on sub info
     if (params.has(USER_SUB_ID)) {
         query = 'Select * from ctv.members JOIN ctv.church_member ON members.member_id=church_member.member_id JOIN ctv.churches on church_member.church_id = churches.church_id WHERE members.sub=?';
@@ -62,18 +63,8 @@ export async function GET(req: NextRequest) {
         }
         resultStatus = {status: 200};
     }
-    catch (e:any) {
-        // TODO JLS, remove
-        // var strMessage = e.message + "\n";
-        // TODO JLS
-        const env = process.env;
-        var strMessage = process.env.REACT_APP_SCHED_DB + "\n";
-        strMessage += process.env.REACT_APP_CTV_SCHED_DB_USER + "\n";
-        strMessage += process.env.REACT_APP_CTV_SCHED_DB_PASS + "\n";
-        strMessage += process.env.REACT_APP_CTV_SCHED_DB_NAME + "\n";
-        strMessage += process.env.REACT_APP_CTV_SCHED_DB_PORT + "\n";
-
-        result = { error: strMessage  };
+    catch (e:any) {        
+        result = { error: e.message  };
     }
 
     return NextResponse.json(result, resultStatus);
