@@ -1,11 +1,11 @@
 import mysql from 'mysql2/promise';
 
 var pool = mysql.createPool({
-    host: process.env.REACT_APP_SCHED_DB || '',
-    user: process.env.REACT_APP_CTV_SCHED_DB_USER || '',
-    password: process.env.REACT_APP_CTV_SCHED_DB_PASS || '',
-    database: process.env.REACT_APP_CTV_SCHED_DB_NAME || '',
-    port: Number(process.env.REACT_APP_CTV_SCHED_DB_PORT) || 3306,
+    host: process.env.CTV_SCHED_DB || 'ctv.cluxslktfpl7.us-west-1.rds.amazonaws.com',
+    user: process.env.CTV_SCHED_DB_USER || 'admin',
+    password: process.env.CTV_SCHED_DB_PASS || 'Romans9:10',
+    database: process.env.CTV_SCHED_DB_NAME || 'ctv',
+    port: Number(process.env.CTV_SCHED_DB_PORT) || 3306,
     waitForConnections: true,
     connectionLimit: 10,
 });
