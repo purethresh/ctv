@@ -3,12 +3,9 @@
 import { runQuery } from '../../lib/db';
 import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
-import { MinMemberInfo } from '../../lib/MinMemberInfo';
-import {secret} from '@aws-amplify/backend';
 import {cleanPhoneNumber} from '../../lib/PhoneUtils';
 import { v4 } from 'uuid';
 import { RParams } from '@/app/lib/RParams';
-const { env } = require('$amplify/env'); // Import environment variables
 
 const USER_SUB_ID = 'sub';
 const CHURCH_ID = 'church_id';
@@ -68,11 +65,13 @@ export async function GET(req: NextRequest) {
     catch (e:any) {
         // TODO JLS, remove
         // var strMessage = e.message + "\n";
-        var strMessage = env.CTV_SCHED_DB + "\n";
-        strMessage += env.CTV_SCHED_DB_USER + "\n";
-        strMessage += env.CTV_SCHED_DB_PASS + "\n";
-        strMessage += env.CTV_SCHED_DB_NAME + "\n";
-        strMessage += env.CTV_SCHED_DB_PORT + "\n";
+        // TODO JLS
+        const env = process.env;
+        var strMessage = process.env.REACT_APP_SCHED_DB + "\n";
+        strMessage += process.env.REACT_APP_CTV_SCHED_DB_USER + "\n";
+        strMessage += process.env.REACT_APP_CTV_SCHED_DB_PASS + "\n";
+        strMessage += process.env.REACT_APP_CTV_SCHED_DB_NAME + "\n";
+        strMessage += process.env.REACT_APP_CTV_SCHED_DB_PORT + "\n";
 
         result = { error: strMessage  };
     }
