@@ -1,0 +1,101 @@
+CREATE TABLE ctv.addresses (
+  `address_id` char(40) NOT NULL,
+  `member_id` char(40) NOT NULL,
+  `address1` varchar(128) NOT NULL DEFAULT '',
+  `address2` varchar(128) NOT NULL DEFAULT '',
+  `city` varchar(128) NOT NULL DEFAULT '',
+  `state` varchar(128) NOT NULL DEFAULT '',
+  `zip` varchar(40) NOT NULL DEFAULT '',
+  PRIMARY KEY (`address_id`),
+  UNIQUE KEY `address_id_UNIQUE` (`address_id`)
+);
+CREATE TABLE ctv.availability (
+  `availability_id` char(40) NOT NULL,
+  `member_id` char(40) NOT NULL,
+  `blockOutDay` varchar(45) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`availability_id`),
+  UNIQUE KEY `availability_id_UNIQUE` (`availability_id`)
+);
+CREATE TABLE ctv.churches (
+  `church_id` char(40) NOT NULL,
+  `churchName` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`church_id`),
+  UNIQUE KEY `church_id_UNIQUE` (`church_id`)
+);
+CREATE TABLE ctv.church_member (
+  `church_member_id` char(40) NOT NULL,
+  `church_id` char(40) NOT NULL,
+  `member_id` char(40) NOT NULL,
+  PRIMARY KEY (`church_member_id`),
+  UNIQUE KEY `church_member_id_UNIQUE` (`church_member_id`)
+);
+CREATE TABLE ctv.emails (
+  `email_id` char(40) NOT NULL,
+  `member_id` char(40) NOT NULL,
+  `email` varchar(255) NOT NULL DEFAULT '',
+  `isPrimary` varchar(10) NOT NULL DEFAULT 'true',
+  PRIMARY KEY (`email_id`),
+  UNIQUE KEY `email_id_UNIQUE` (`email_id`)
+);
+CREATE TABLE ctv.label_member (
+  `label_member_id` char(40) NOT NULL,
+  `label_id` char(40) NOT NULL,
+  `member_id` char(40) NOT NULL,
+  `isOwnerOfLabel` varchar(40) NOT NULL DEFAULT 'false',
+  PRIMARY KEY (`label_member_id`),
+  UNIQUE KEY `label_member_id_UNIQUE` (`label_member_id`)
+);
+CREATE TABLE ctv.labels (
+  `label_id` char(40) NOT NULL,
+  `labelName` varchar(255) NOT NULL DEFAULT '',
+  `labelDescription` varchar(255) NOT NULL DEFAULT '',
+  `church_id` char(40) NOT NULL DEFAULT '',
+  `forSchedule` varchar(45) NOT NULL DEFAULT 'false',
+  `scheduleGroup` varchar(45) NOT NULL DEFAULT 'false',
+  `owner_id` varchar(40) NOT NULL DEFAULT '',
+  PRIMARY KEY (`label_id`),
+  UNIQUE KEY `label_id_UNIQUE` (`label_id`)
+);
+CREATE TABLE ctv.members (
+  `member_id` char(40) NOT NULL,
+  `first` varchar(255) NOT NULL DEFAULT '',
+  `last` varchar(255) NOT NULL DEFAULT '',
+  `sub` varchar(255) NOT NULL DEFAULT '',
+  `notes` varchar(255) NOT NULL DEFAULT '',
+  `gender` varchar(45) NOT NULL DEFAULT '',
+  PRIMARY KEY (`member_id`),
+  UNIQUE KEY `member_id_UNIQUE` (`member_id`)
+);
+CREATE TABLE ctv.phones (
+  `phone_id` char(40) NOT NULL,
+  `member_id` char(40) NOT NULL,
+  `pNumber` varchar(45) NOT NULL DEFAULT '',
+  `isPrimary` varchar(10) NOT NULL DEFAULT 'true',
+  PRIMARY KEY (`phone_id`),
+  UNIQUE KEY `phone_id_UNIQUE` (`phone_id`)
+);
+CREATE TABLE ctv.schedule (
+  `schedule_id` char(40) NOT NULL,
+  `church_id` char(40) NOT NULL DEFAULT '',
+  `service_id` char(40) NOT NULL,
+  `label_id` char(40) NOT NULL,
+  `member_id` char(40) NOT NULL,
+  PRIMARY KEY (`schedule_id`),
+  UNIQUE KEY `schedule_id_UNIQUE` (`schedule_id`)
+);
+CREATE TABLE ctv.service (
+  `service_id` char(40) NOT NULL,
+  `church_id` char(40) NOT NULL,
+  `serviceTime` bigint NOT NULL DEFAULT '0',
+  `name` varchar(255) NOT NULL DEFAULT '',
+  `info` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`service_id`),
+  UNIQUE KEY `service_id_UNIQUE` (`service_id`)
+);
+INSERT INTO ctv.churches (church_id, churchName) VALUES ('13943128-2c3c-408a-ad0d-7500578acc54', 'Calvary Tri Valley');
+INSERT INTO ctv.labels (label_id, labelName, church_id, forSchedule, scheduleGroup) VALUES ('7b9f288e-79d4-428d-a445-6e13d28834b9', 'church-admin', '13943128-2c3c-408a-ad0d-7500578acc54', 'false', 'false');
+INSERT INTO ctv.labels (label_id, labelName, church_id, forSchedule, scheduleGroup, owner_id) VALUES ('6a334648-588f-4f65-b446-1ad0a041ba4c', 'church-member-admin', '13943128-2c3c-408a-ad0d-7500578acc54', 'false', 'false', '7b9f288e-79d4-428d-a445-6e13d28834b9');
+INSERT INTO ctv.members (member_id, first, last, gender) VALUES ('ad909e80-f454-406f-b01c-282b83d7f20b', 'John (admin)', 'Simpson', 'male');
+INSERT INTO ctv.church_member (church_member_id, church_id, member_id) VALUES ('1caa9ad7-d691-499a-9dd1-ddaeba3fd977', '13943128-2c3c-408a-ad0d-7500578acc54', 'ad909e80-f454-406f-b01c-282b83d7f20b');
+INSERT INTO ctv.label_member (label_member_id, label_id, member_id, isOwnerOfLabel) VALUES ('3370d3cd-4a46-4b3a-a25f-9380880527bc', '7b9f288e-79d4-428d-a445-6e13d28834b9', 'ad909e80-f454-406f-b01c-282b83d7f20b', 'true');
+INSERT INTO ctv.phones (phone_id, member_id, pNumber, isPrimary) VALUES ('4177a4eb-c19b-48f0-9e33-4afadc7cad6d', 'ad909e80-f454-406f-b01c-282b83d7f20b', '9254564617', 'true');
