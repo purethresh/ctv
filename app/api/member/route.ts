@@ -1,3 +1,5 @@
+"use server"
+
 import { runQuery } from '../../lib/db';
 import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
@@ -62,8 +64,9 @@ export async function GET(req: NextRequest) {
         resultStatus = {status: 200};
     }
     catch (e:any) {
-        var strMessage = e.message + "\n";
-        strMessage += process.env.CTV_SCHED_DB + "\n";
+        // TODO JLS, remove
+        // var strMessage = e.message + "\n";
+        var strMessage = process.env.CTV_SCHED_DB + "\n";
         strMessage += process.env.CTV_SCHED_DB_USER + "\n";
         strMessage += process.env.CTV_SCHED_DB_PASS + "\n";
         strMessage += process.env.CTV_SCHED_DB_NAME + "\n";
