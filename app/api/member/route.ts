@@ -67,11 +67,11 @@ export async function GET(req: NextRequest) {
         // var strMessage = e.message + "\n";
         // TODO JLS
         const env = process.env;
-        var strMessage = env.CTV_SCHED_DB + "\n";
-        strMessage += env.CTV_SCHED_DB_USER + "\n";
-        strMessage += env.CTV_SCHED_DB_PASS + "\n";
-        strMessage += env.CTV_SCHED_DB_NAME + "\n";
-        strMessage += env.CTV_SCHED_DB_PORT + "\n";
+        var strMessage = process.env.REACT_APP_SCHED_DB + "\n";
+        strMessage += process.env.REACT_APP_CTV_SCHED_DB_USER + "\n";
+        strMessage += process.env.REACT_APP_CTV_SCHED_DB_PASS + "\n";
+        strMessage += process.env.REACT_APP_CTV_SCHED_DB_NAME + "\n";
+        strMessage += process.env.REACT_APP_CTV_SCHED_DB_PORT + "\n";
 
         result = { error: strMessage  };
     }
