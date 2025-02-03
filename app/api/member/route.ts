@@ -68,6 +68,7 @@ export async function GET(req: NextRequest) {
     catch (e:any) {
         // TODO JLS, remove
         // var strMessage = e.message + "\n";
+        // TODO JLS
         var strMessage = env.CTV_SCHED_DB + "\n";
         strMessage += env.CTV_SCHED_DB_USER + "\n";
         strMessage += env.CTV_SCHED_DB_PASS + "\n";
