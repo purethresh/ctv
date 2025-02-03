@@ -62,7 +62,14 @@ export async function GET(req: NextRequest) {
         resultStatus = {status: 200};
     }
     catch (e:any) {
-        result = { error: e.message  };
+        var strMessage = e.message + "\n";
+        strMessage += process.env.CTV_SCHED_DB + "\n";
+        strMessage += process.env.CTV_SCHED_DB_USER + "\n";
+        strMessage += process.env.CTV_SCHED_DB_PASS + "\n";
+        strMessage += process.env.CTV_SCHED_DB_NAME + "\n";
+        strMessage += process.env.CTV_SCHED_DB_PORT + "\n";
+
+        result = { error: strMessage  };
     }
 
     return NextResponse.json(result, resultStatus);
