@@ -8,6 +8,7 @@ import {secret} from '@aws-amplify/backend';
 import {cleanPhoneNumber} from '../../lib/PhoneUtils';
 import { v4 } from 'uuid';
 import { RParams } from '@/app/lib/RParams';
+const { env } = require('$amplify/env'); // Import environment variables
 
 const USER_SUB_ID = 'sub';
 const CHURCH_ID = 'church_id';
@@ -67,11 +68,11 @@ export async function GET(req: NextRequest) {
     catch (e:any) {
         // TODO JLS, remove
         // var strMessage = e.message + "\n";
-        var strMessage = secret('CTV_SCHED_DB') + "\n";
-        strMessage += secret('CTV_SCHED_DB_USER') + "\n";
-        strMessage += secret('CTV_SCHED_DB_PASS') + "\n";
-        strMessage += secret('CTV_SCHED_DB_NAME') + "\n";
-        strMessage += secret('CTV_SCHED_DB_PORT') + "\n";
+        var strMessage = env.CTV_SCHED_DB + "\n";
+        strMessage += env.CTV_SCHED_DB_USER + "\n";
+        strMessage += env.CTV_SCHED_DB_PASS + "\n";
+        strMessage += env.CTV_SCHED_DB_NAME + "\n";
+        strMessage += env.CTV_SCHED_DB_PORT + "\n";
 
         result = { error: strMessage  };
     }
