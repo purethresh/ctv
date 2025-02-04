@@ -74,6 +74,7 @@ export class MemberPageData extends LinkPageData {
         for(var i=0; i<phoneList.length; i++) {
             const pInfo = phoneList[i];
             pInfo.member_id = member_id;
+            
             if (pInfo.updateType === UpdateType.update) {
                 await this.api.postData(API_CALLS.phone, pInfo);
             } else if (pInfo.updateType === UpdateType.create) {

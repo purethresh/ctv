@@ -54,7 +54,8 @@ export default function MemberPage() {
     
     // Create or save the member
     if (mInfo.member_id === '') {
-      mData.member_id = v4();
+      mInfo.member_id = v4();
+      mData.member_id = mInfo.member_id;
       await pData.createMember(mData);
     } else {
       await pData.updateMember(mData);

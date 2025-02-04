@@ -80,7 +80,8 @@ export default function SMemberEmailList(props:SMemberInfoProp) {
 
     const resetState = () => {
         // Reset isEditing
-        setIsEditing(props.isEditing ? true : false);
+        const isEdit = props.isEditing ? true : false;
+        setIsEditing(isEdit);
 
         // Reset the phone list
         var eList:MemberEmailInfo[] = [];
@@ -111,7 +112,7 @@ export default function SMemberEmailList(props:SMemberInfoProp) {
                     <Checkbox style={{display:isEditing ? 'block' : 'none'}} defaultChecked={eInfo.isPrimary === 'true'} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { updateIsPrimary(eInfo.email_id || '', event.target.checked); }} />
                 </Box>
             ))}
-            <Button onClick={onAddEmail} style={{display:isEditing ? 'block' : 'none'}}>Add Email</Button>            
+            <Button color="secondary" variant="contained" onClick={onAddEmail} style={{display:isEditing ? 'block' : 'none'}}>Add Email</Button>            
         </>
     );
 
