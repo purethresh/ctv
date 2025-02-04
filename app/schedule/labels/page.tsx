@@ -7,6 +7,7 @@ import SLabelInfo from '@/app/components/SLabelInfo';
 import { MinMemberInfo } from '@/app/lib/MinMemberInfo';
 import { Grid2, Paper, Box, Typography } from '@mui/material';
 import { LabelPageData } from '@/app/db/LabelPageData';
+import { PageData } from '@/app/db/PageData';
 
 export default function LabelPage() {
   let [pageData, setPageData] = useState<LabelPageData>(new LabelPageData());
@@ -22,32 +23,59 @@ export default function LabelPage() {
     const pData = pageData;
     const lbl = pData.churchLabels.labelMap.get(labelId);
     var lblId = lbl?.label_id || '';
+
+    await updateMemberAndOwner(pData, lbl);
+
+    setPageData(pData);
+    setSelectedLabel(lblId);
+    setSelectedInfo(lbl);
+  }
+
+  const updateMemberAndOwner = async (pageData:PageData, lbl:LabelInfo | undefined) => {
+    var lblId = lbl?.label_id || '';
     var mList:MinMemberInfo[] = [];
     var oList:MinMemberInfo[] = [];
 
     if (lbl) {
-      await pData.loadMembersForLabel(lblId);
+      await pageData.loadMembersForLabel(lblId);
 
       mList = lbl.getMemberList();
       oList = lbl.getOwnerList();
     }
 
-    setSelectedLabel(lblId);
-    setSelectedInfo(lbl);
     setMemberList(mList);
     setOwnerList(oList);
   }
 
   const addMemberToLabel = async (memberId:string, labelId:string, asOwner:boolean) => {
-    await pageData.addMemberToLabel(memberId, labelId, asOwner);
+    const pData = pageData;
+    const lbl = pData.churchLabels.labelMap.get(labelId);
+
+    await pData.addMemberToLabel(memberId, labelId, asOwner);
+
+    await updateMemberAndOwner(pData, lbl);
+    setPageData(pData);
+    setSelectedInfo(lbl);
   }
 
   const removeMemberFromLabel = async (memberId:string, labelId:string) => {
-    await pageData.removeMemberFromLabel(memberId, labelId);
+    const pData = pageData;
+    const lbl = pData.churchLabels.labelMap.get(labelId);
+
+    await pData.removeMemberFromLabel(memberId, labelId);
+
+    await updateMemberAndOwner(pData, lbl);
+    setPageData(pData);
+    setSelectedInfo(lbl);
   }
 
   const removeLabel = async (labelId:string) => {
-    await pageData.removeLabel(labelId);
+    const pData = pageData;
+
+    await pData.removeLabel(labelId);
+
+    // Unselect the current label
+    await onLabelClick('');
   }
 
   const updateLabel = async (lbl:LabelInfo) => {

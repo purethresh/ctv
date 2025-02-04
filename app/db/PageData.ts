@@ -148,6 +148,13 @@ export class PageData {
         const res = await api.getData(API_CALLS.labelMember, {label_id: labelId});
         const data = await res.json();
 
+        // TODO JLS, reset all the members for this label
+        const lbl = this.churchLabels.labelMap.get(labelId);
+        if (lbl) {
+          lbl.memberMap.clear();
+          lbl.owners.clear();
+        }
+
         this.churchLabels.setMemberLabels(data);
     }
 

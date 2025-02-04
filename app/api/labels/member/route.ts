@@ -1,4 +1,5 @@
 import { runQuery } from '@/app/lib/db';
+import { RParams } from '@/app/lib/RParams';
 import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
 import { v4 } from 'uuid';
@@ -46,20 +47,23 @@ export async function GET(req: NextRequest) {
 }
 
 
-export async function POST(req: NextRequest) {
+export async function PUT(req: NextRequest) {
     var result = {error: 'nothing happened'};
     var resultStatus = {status: 500};
 
-    const data = await req.json();
+    const params = new RParams();
+    await params.useRequest(req);
+
     var query = '';
     var queryParams:any[] = [];
 
-    if (data[LABEL_ID] !== undefined && data[MEMBER_ID] !== undefined) {
-        var isOwner:string = data[IS_OWNER] === 'true' ? 'true' : 'false';
+    if (params.has(LABEL_ID) && params.has(MEMBER_ID)) {        
+        var isOwnerParam = params.get(IS_OWNER);
+        var isOwner:string = isOwnerParam === 'true' || isOwnerParam === true ? 'true' : 'false';
         const lableMemberId = v4();
 
         query = "INSERT INTO label_member (label_member_id, label_id, member_id, isOwnerOfLabel) VALUES (?, ?, ?, ?)";
-        queryParams = [lableMemberId, data[LABEL_ID], data[MEMBER_ID], isOwner];
+        queryParams = [lableMemberId, params.get(LABEL_ID), params.get(MEMBER_ID), isOwner];
     }
 
     if (query.length > 0) {
