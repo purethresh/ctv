@@ -114,7 +114,7 @@ export class APIHandler {
         return cacheSet !== undefined && cacheSet.has(url);
     }
 
-    private clearCache(api: API_CALLS) {
+    clearCache(api: API_CALLS) {
         APIHandler.cacheMap.delete(api);
     }
 

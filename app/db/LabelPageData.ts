@@ -11,7 +11,7 @@ export class LabelPageData extends PageData {
     
     async addMemberToLabel(memberId:string, labelId:string, asOwner:boolean) {
         const params = {member_id: memberId, label_id: labelId, owner:asOwner};
-        await this.api.postData(API_CALLS.labelMember, params);
+        await this.api.createData(API_CALLS.labelMember, params);
     }
 
     async removeMemberFromLabel(memberId:string, labelId:string) {
