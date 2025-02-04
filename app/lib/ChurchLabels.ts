@@ -60,6 +60,9 @@ export default class ChurchLabels {
     }
 
     async setMemberLabels(data:any) {
+        // TODO JLS, need to clear member list and owner list
+        this.memberMap.clear();
+        
         // Loop through the data and add member to each label
         for (var i=0; i<data.length; i++) {
             const d = data[i];
