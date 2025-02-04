@@ -3,8 +3,10 @@ import { runQuery } from '../../../lib/db';
 import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
 import { cleanPhoneNumber, formatPhoneNumber } from '@/app/lib/PhoneUtils';
+import { RParams } from '@/app/lib/RParams';
 
 const MEMBER_ID = 'member_id';
+const PHONE_ID = 'phone_id';
 
 export async function GET(req: NextRequest) {
     var result = {error: 'nothing happened'};
@@ -45,13 +47,13 @@ export async function POST(req: NextRequest) {
     var resultStatus = {status: 500};
 
     try {
-        const data = await req.json();
-        const mInfo = new MemberPhoneInfo(data);
+        const params = new RParams();
+        await params.useRequest(req);
 
         // Only update if we have a member_id
-        if (mInfo.phone_id.length > 0) {
+        if (params.has(MEMBER_ID) && params.has(PHONE_ID)) {
             const query = 'UPDATE phones SET pNumber=?, isPrimary=? WHERE phone_id=?';
-            const queryParams = [ cleanPhoneNumber(mInfo.pNumber), mInfo.isPrimary, mInfo.phone_id];
+            const queryParams = [ cleanPhoneNumber(params.get('pNumber')), params.get('isPrimary'), params.get(PHONE_ID)];
             const [dbResults] = await runQuery(query, queryParams);
             result = dbResults;
             resultStatus = {status: 200};
@@ -69,13 +71,13 @@ export async function PUT(req: NextRequest) {
     var resultStatus = {status: 500};
 
     try {
-        const data = await req.json();
-        const mInfo = new MemberPhoneInfo(data);
+        const params = new RParams();
+        await params.useRequest(req);
 
         // Only update if we have a member_id
-        if (mInfo.phone_id.length > 0) {
+        if (params.has(MEMBER_ID) && params.has(PHONE_ID)) {
             const query = 'INSERT INTO phones (phone_id, member_id, pNumber, isPrimary) VALUES (?, ?, ?, ?)';
-            const queryParams = [ cleanPhoneNumber(mInfo.phone_id), mInfo.member_id, mInfo.pNumber, mInfo.isPrimary];
+            const queryParams = [ params.get(PHONE_ID), params.get(MEMBER_ID), cleanPhoneNumber(params.get('pNumber')), params.get('isPrimary')];
             const [dbResults] = await runQuery(query, queryParams);
             result = dbResults;
             resultStatus = {status: 200};

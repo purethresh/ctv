@@ -159,10 +159,10 @@ export default function SMemberAddressList(props:SMemberInfoProp) {
                             {aInfo.city}, {aInfo.state} {aInfo.zip}
                         </Typography>
                         <TextField style={{display:isEditing ? 'block' : 'none'}} label="Address 1" defaultValue={aInfo.address1} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { updateAddress1(aInfo.address_id, event.target.value); }} />                    
-                        <TextField style={{display:isEditing ? 'block' : 'none'}} label="Address 2" defaultValue={aInfo.address1} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { updateAddress2(aInfo.address_id, event.target.value); }} />                        
-                        <TextField style={{display:isEditing ? 'block' : 'none'}} label="City" defaultValue={aInfo.address1} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { updateCity(aInfo.address_id, event.target.value); }} />                        
-                        <TextField style={{display:isEditing ? 'block' : 'none'}} label="State" defaultValue={aInfo.address1} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { updateState(aInfo.address_id, event.target.value); }} />                        
-                        <TextField style={{display:isEditing ? 'block' : 'none'}} label="Zip" defaultValue={aInfo.address1} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { updateZipcode(aInfo.address_id, event.target.value); }} />                        
+                        <TextField style={{display:isEditing ? 'block' : 'none'}} label="Address 2" defaultValue={aInfo.address2} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { updateAddress2(aInfo.address_id, event.target.value); }} />                        
+                        <TextField style={{display:isEditing ? 'block' : 'none'}} label="City" defaultValue={aInfo.city} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { updateCity(aInfo.address_id, event.target.value); }} />                        
+                        <TextField style={{display:isEditing ? 'block' : 'none'}} label="State" defaultValue={aInfo.state} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { updateState(aInfo.address_id, event.target.value); }} />                        
+                        <TextField style={{display:isEditing ? 'block' : 'none'}} label="Zip" defaultValue={aInfo.zip} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { updateZipcode(aInfo.address_id, event.target.value); }} />                        
                     </Box>
                 </Grid2>
             ))}
