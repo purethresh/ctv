@@ -5,6 +5,7 @@ import SMemberList from "./SMemberList";
 import SLabelData from "./SLabelData";
 import { LabelInfo } from "../lib/LabelInfo";
 import SAllMemberSelect from "./SAllMemberSelect";
+import { MinMemberInfo } from "../lib/MinMemberInfo";
 
 export default function SLabelInfo(props:SLabelInfoProps) {
     let [labelName, setLabelName] = useState<string>('');
@@ -15,13 +16,11 @@ export default function SLabelInfo(props:SLabelInfoProps) {
     let [selectedMember, setSelectedMember] = useState<string>('');
     let [canAddMember, setCanAddMember] = useState<boolean>(false);
     let [canAddOwner, setCanOwner] = useState<boolean>(false);
+    let [memberList, setMemberList] = useState<MinMemberInfo[]>([]);
+    let [ownerList, setOwnerList] = useState<MinMemberInfo[]>([]);
 
     const userSelected = async (memberId:string) => {
         setSelectedMember(memberId);
-
-        // Update the add buttons        
-        setCanAddMember(!labelInfo.isMember(memberId));
-        setCanOwner(!labelInfo.isOwner(memberId));
     }
 
     const addAsMember = async () => {
@@ -60,6 +59,13 @@ export default function SLabelInfo(props:SLabelInfoProps) {
         
         const uId = props.userId || '';
         const lbl = props.labelInfo || new LabelInfo({});
+
+        // Update the add buttons
+        const iMember = lbl.isMember(selectedMember);
+        const iOwner = lbl.isOwner(selectedMember);
+
+        setCanAddMember(!iMember);
+        setCanOwner(!iOwner);        
 
         setIsAdmin(lbl.isOwner(uId));
         setUserId(uId);

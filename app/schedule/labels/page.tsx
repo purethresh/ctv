@@ -39,6 +39,8 @@ export default function LabelPage() {
     if (lbl) {
       await pageData.loadMembersForLabel(lblId);
 
+      await pageData.loadAllOwners();
+
       mList = lbl.getMemberList();
       oList = lbl.getOwnerList();
     }
