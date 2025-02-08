@@ -38,20 +38,26 @@ export class SchedulePageData extends PageData {
         }
     }
 
+    async createService(info:ServiceInfo) {
+        await this.api.createData(API_CALLS.services, info);
+    }
+
     async addMemberToService(info:any) {
-        await this.api.postData(API_CALLS.schedule, info);        
+        await this.api.createData(API_CALLS.schedule, info);        
     }
 
     async removeMemberFromService(info:any) {
         await this.api.removeData(API_CALLS.schedule, info);
     }
 
-    async loadScheduleWithBufferDays(dt:Date){
+    // TODO JLS, need to get member for service
+
+    async loadServicesWithBufferDays(dt:Date){
         // get month / year as a string
         const month = (dt.getMonth() + 1).toString();
         const year = dt.getFullYear().toString();
 
-        const res = await this.api.getData(API_CALLS.schedule, { church_id: this.uInfo.church_id, year: year, month: month });
+        const res = await this.api.getData(API_CALLS.services, { church_id: this.uInfo.church_id, year: year, month: month });
         const data = await res.json();
 
         var scheduleList = [];
@@ -78,26 +84,6 @@ export class SchedulePageData extends PageData {
             }
         }
         this.schedule.setBlockedOutList(blockedOutList);
-    }
-
-    // async fetchScheduledMembers(lblInfo:ChurchLabels) {
-    //     const api = new APIHandler();
-    //     const res = await api.getData(API_CALLS.schedule, { service_id: this.service_id});
-    //     const data = await res.json();
-
-    //     // First loop through and add the members, and add them to the label
-    //     const memberMap = lblInfo.memberMap;
-    //     const lblMap = lblInfo.labelMap;
-    //     for (var i=0; i<data.length; i++) {
-    //         const mInfo = new MinMemberInfo(data[i]);    
-    //         memberMap.set(mInfo.member_id, mInfo);
-
-    //         // Get the label
-    //         if (lblMap.has(data[i].label_id)) {
-    //             const lbl = lblMap.get(data[i].label_id);
-    //             lbl?.addMember(mInfo);
-    //         }
-    //     }
-    // }    
+    }   
 
 }

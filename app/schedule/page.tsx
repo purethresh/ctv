@@ -19,9 +19,9 @@ export default function SchedulePage() {
   
   let [curentDate, setCurrentDate] = useState<string>(getDefaultSunday());
   let [currentTime, setCurrentTime] = useState<Date>(new Date(getDefaultSunday()));
+  let [scheduledDays, setScheduledDays] = useState<number[]>([]);
   let [userInfo, setUserInfo] = useState<UserInfo>(new UserInfo());
   let [serviceList, setServiceList] = useState<ServiceInfo[]>([]);
-  let [updateScheduleNum, setUpdateScheduleNum] = useState<number>(0);
 
   const onDateChange = async (dt:Date) => {
     setCurrentTime(dt);
@@ -37,34 +37,45 @@ export default function SchedulePage() {
   const onMonthChange = async (dt:Date) => {
     const pData = pageData;
     await pData.loadServiceForDay(dt.getFullYear(), dt.getMonth()+1, dt.getDate());
+    await loadMonthSchedule(pData, dt);
 
     setServiceList(pData.serviceList);
     setPageData(pData);
   }
 
   const onServiceCreated = async (sInfo:ServiceInfo) => {
-    // Need to reload list of scheduled services
-    setUpdateScheduleNum(updateScheduleNum + 1);
-
     const pData = pageData;
+    await pData.createService(sInfo);
     await pData.loadServiceForDay(currentTime.getFullYear(), currentTime.getMonth()+1, currentTime.getDate());
+
+    await loadMonthSchedule(pData, currentTime);
 
     setServiceList(pData.serviceList);
     setPageData(pData);
   }
 
+  const loadMonthSchedule = async (pData:SchedulePageData, dt:Date) => {
+    await pData.loadServicesWithBufferDays(dt);
+
+    setScheduledDays(pData.schedule.getMonthlySchedule());
+  }
+
   const onAddMemberToSchedule = async (info:any, sTime:Date) => {
     await pageData.addMemberToService(info);
-    await pageData.loadScheduleWithBufferDays(sTime);
+    // TODO JLS, need to get members for service
+    // {service_id: sId, label_id: lId, member_id: mId}    
+    // await pageData.loadScheduleWithBufferDays(sTime);
 
-    setPageData(pageData);
+    // setPageData(pageData);
   }
 
   const onRemoveMemberFromSchedule = async (info:any, sTime:Date) => {
     await pageData.removeMemberFromService(info);
-    await pageData.loadScheduleWithBufferDays(sTime);
+    // TODO JLS, need to get members for service
+    // {service_id: sId, label_id: lId, member_id: mId}
+    // await pageData.loadScheduleWithBufferDays(sTime);
 
-    setPageData(pageData);
+    // setPageData(pageData);
   }
 
   useEffect(() => {
@@ -82,8 +93,7 @@ export default function SchedulePage() {
       await pData.loadMembersForScheduledLabels();
 
       // Load the schedule
-      await pData.loadScheduleWithBufferDays(currentTime);
-      await pData.loadBlockedOutDaysWithBuffer(currentTime);
+      await loadMonthSchedule(pData, currentTime);
 
       // Get members for the scheduled labels
       for (var i=0; i<pData.serviceList.length; i++) {
@@ -103,7 +113,7 @@ export default function SchedulePage() {
 
   return (
     <Grid2 container spacing={2}>
-      <SChurchCalendar defaultDate={curentDate} onDateChanged={onDateChange} onMonthChanged={onMonthChange} />
+      <SChurchCalendar defaultDate={curentDate} onDateChanged={onDateChange} onMonthChanged={onMonthChange} scheduledDays={scheduledDays} />
       <Grid2 size={{ xs: 12, sm: 6 }}>
         <SServiceAdd defaultDate={currentTime} onCreateService={onServiceCreated} church_id={userInfo.church_id} />
       </Grid2>

@@ -17,7 +17,6 @@ export async function GET(req: NextRequest) {
     var resultStatus = {status: 500};
 
     const params = req.nextUrl.searchParams;
-
     // Either get a specific schedule or all schedules for a month
     if (params.has(SERVICE_ID)) {
         try {
@@ -54,17 +53,17 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(result, resultStatus);
 }
 
-export async function POST(req: NextRequest) {
+export async function PUT(req: NextRequest) {
     var result = {error: 'nothing happened'};
     var resultStatus = {status: 500};
 
     try {
-        const data = await req.json();
+        const params = new RParams();
+        await params.useRequest(req);
 
-        const params = req.nextUrl.searchParams;
-        if (data[CHURCH_ID] !== undefined && data[SERVICE_ID] !== undefined && data[LABEL_ID] !== undefined && data[MEMBER_ID] !== undefined) {
+        if (params.has(CHURCH_ID) && params.has(SERVICE_ID) && params.has(LABEL_ID) && params.has(MEMBER_ID)) {
             const query = 'INSERT INTO schedule (schedule_id, church_id, service_id, label_id, member_id) VALUES (?, ?, ?, ?, ?)';
-            const queryParams = [v4(), data[CHURCH_ID], data[SERVICE_ID], data[LABEL_ID], data[MEMBER_ID]];
+            const queryParams = [v4(), params.get(CHURCH_ID), params.get(SERVICE_ID), params.get(LABEL_ID), params.get(MEMBER_ID)];
             const [dbResults] = await runQuery(query, queryParams);
             result = dbResults;
             resultStatus = {status: 200};

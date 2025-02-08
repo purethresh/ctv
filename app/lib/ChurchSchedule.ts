@@ -23,6 +23,21 @@ export class ChurchSchedule {
         this.blockedOutList = list;
     }
 
+    getMonthlySchedule = () : number[] => {
+        var result:number[] = [];
+
+        // Loop through the schedule list and get the days
+        for(var i=0; i<this.scheduleList.length; i++) {
+            const sInfo = this.scheduleList[i];
+            const day = new Date(sInfo.serviceTime).getDate();
+            if (!result.includes(day)) {
+                result.push(day);
+            }
+        }
+
+        return result;
+    }
+
     updateMembersWithSchedule = (memberMap:Map<string, MinMemberInfo>, service_id:string) => {
         // Loop through the members and reset
         memberMap.forEach((value:MinMemberInfo, key:string) => {
