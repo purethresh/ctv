@@ -80,6 +80,11 @@ export class LabelInfo {
             church_id: this.church_id
         });
 
+        // Add members
+        this.memberMap.forEach((value:MinMemberInfo, key:string) => {
+            result.memberMap.set(key, new MinMemberInfo(value));
+        });
+
         return result;
     }
 

@@ -39,6 +39,30 @@ export default class ChurchLabels {
         });        
     }
 
+    clone() : ChurchLabels {
+        var result = new ChurchLabels();
+
+        // Loop through the labels, clone them and add them to the new list
+        this.labelMap.forEach((value:LabelInfo, key:string) => {
+            result.labelMap.set(key, value.clone());
+            if (value.owner_id.length <= 0) {
+                result.labelRoot = value;
+            }
+        });
+
+        // Now make this a graph
+        result.labelMap.forEach((value:any, key:string) => {
+            if (value.owner_id.length > 0) {
+                const owner = result.labelMap.get(value.owner_id);
+                if (owner) {
+                    owner.addChildLabel(value);
+                }
+            }
+        });        
+
+        return result;
+    }
+
     async setScheduledLabels(data:any) {     
         // Clear the list before loading
         if (this.labelRoot) {
@@ -50,7 +74,6 @@ export default class ChurchLabels {
                 const sInfo = data[i];
                 // Get the label by id
                 const lbl = this.labelMap.get(sInfo.label_id);
-
                 // Now add a scheduled person to the label
                 if (lbl) {
                     lbl.addScheduled(new MinMemberInfo(sInfo));

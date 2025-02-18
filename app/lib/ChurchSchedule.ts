@@ -2,17 +2,23 @@ import { MinMemberInfo } from "./MinMemberInfo";
 import { ScheduleInfo } from "./ScheduleInfo";
 import { getMinTimeForDay, getMaxTimeForDay } from "@/app/lib/DateUtils";
 import { AvailabilityInfo } from "./AvailabilityInfo";
+import { ServiceInfo } from "./ServiceInfo";
+import ChurchLabels from "./ChurchLabels";
 
 
 export class ChurchSchedule {
     church_id:string;
+    serviceInfo:ServiceInfo;
     scheduleList: ScheduleInfo[];
     blockedOutList:AvailabilityInfo[];
+    churchLabels:ChurchLabels;
 
     constructor(church_id:string) {
         this.church_id = church_id;
         this.scheduleList = [];
         this.blockedOutList = [];
+        this.serviceInfo = new ServiceInfo({});
+        this.churchLabels = new ChurchLabels();
     }
 
     setScheduleList(list:ScheduleInfo[]) {
