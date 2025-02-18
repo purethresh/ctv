@@ -11,6 +11,7 @@ import { SchedulePageData } from "../db/SchedulePageData";
 import { ChurchSchedule } from "../lib/ChurchSchedule";
 import { getDayString } from "../lib/DateUtils";
 import SServiceInfo from "../components/SServiceInfo";
+import { API_CALLS, APIHandler } from '../lib/APIHandler';
 
 export default function SchedulePage() {
   let [pageData, setPageData] = useState<SchedulePageData>(new SchedulePageData());
@@ -71,7 +72,6 @@ export default function SchedulePage() {
         await pData.loadScheduledLabels(sInfo.serviceInfo.service_id, sInfo.churchLabels);
       }
 
-
       setScheduleList(pData.scheduleList);
       setScheduledDays(pData.monthlyDays);
   }
@@ -82,6 +82,11 @@ export default function SchedulePage() {
     // Add to the service
     await pData.addMemberToService(info);
 
+    // Clear the cache
+    const handler = new APIHandler();
+    handler.clearCache(API_CALLS.schedule);
+    handler.clearCache(API_CALLS.labelScheduled);
+    
     // Reload everything
     await loadServicesForMonth(pData, sTime);
 
@@ -94,6 +99,11 @@ export default function SchedulePage() {
 
     // Remove from the service
     await pData.removeMemberFromService(info);
+
+    // Clear the cache
+    const handler = new APIHandler();
+    handler.clearCache(API_CALLS.schedule);
+    handler.clearCache(API_CALLS.labelScheduled);
 
     // Reload everything
     await loadServicesForMonth(pData, sTime);
