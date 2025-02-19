@@ -37,6 +37,7 @@ export default function SchedulePage() {
         cSchedule.push(sInfo);
       }
     }
+
     setCurrentSchedule(cSchedule);
   }
 
@@ -72,6 +73,9 @@ export default function SchedulePage() {
         await pData.loadScheduledLabels(sInfo.serviceInfo.service_id, sInfo.churchLabels);
       }
 
+      // Load the members scheduled for the labels
+      await pData.loadScheduledMembersForMonth(dt);
+
       setScheduleList(pData.scheduleList);
       setScheduledDays(pData.monthlyDays);
   }
@@ -86,12 +90,11 @@ export default function SchedulePage() {
     const handler = new APIHandler();
     handler.clearCache(API_CALLS.schedule);
     handler.clearCache(API_CALLS.labelScheduled);
-    
-    // Reload everything
-    await loadServicesForMonth(pData, sTime);
 
-    // Save the page data
+    await onDateChange(sTime);
+
     setPageData(pData);
+
   }
 
   const onRemoveMemberFromSchedule = async (info:any, sTime:Date) => {
@@ -105,35 +108,33 @@ export default function SchedulePage() {
     handler.clearCache(API_CALLS.schedule);
     handler.clearCache(API_CALLS.labelScheduled);
 
-    // Reload everything
-    await loadServicesForMonth(pData, sTime);
+    await onDateChange(sTime);
 
-    // Save the page data
     setPageData(pData);
   }
 
+  const getServiceInfo = async() => {
+    // Load member info
+    const pData = pageData;
+    await pData.loadMemberInfo();
+    setUserInfo(pData.uInfo);
+
+    // Load all the labels
+    await pData.loadChurchLabels();
+
+    // Load the members for the scheduled labels
+    await pData.loadMembersForScheduledLabels();
+
+    // Load the services for the month
+    await loadServicesForMonth(pData, currentTime);
+
+    // Show schedules for current time
+    await onDateChange(currentTime);
+    
+    setPageData(pData);
+  }  
+
   useEffect(() => {
-    const getServiceInfo = async() => {
-      // Load member info
-      const pData = pageData;
-      await pData.loadMemberInfo();
-      setUserInfo(pData.uInfo);
-
-      // Load all the labels
-      await pData.loadChurchLabels();
-
-      // Load the members for the scheduled labels
-      await pData.loadMembersForScheduledLabels();
-
-      // Load the services for the month
-      await loadServicesForMonth(pData, currentTime);
-
-      // Show schedules for current time
-      await onDateChange(currentTime);
-      
-      setPageData(pData);
-    }
-
     getServiceInfo();
   }, []);
 

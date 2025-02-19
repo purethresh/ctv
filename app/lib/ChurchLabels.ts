@@ -58,7 +58,9 @@ export default class ChurchLabels {
                     owner.addChildLabel(value);
                 }
             }
-        });        
+        });
+
+        result.memberMap = this.memberMap;  // TODO JLS, should I clone, or just copy
 
         return result;
     }
@@ -76,22 +78,34 @@ export default class ChurchLabels {
                 const lbl = this.labelMap.get(sInfo.label_id);
                 // Now add a scheduled person to the label
                 if (lbl) {
-                    lbl.addScheduled(new MinMemberInfo(sInfo));
+                    const member = lbl.memberMap.get(sInfo.member_id);
+                    if (member) {
+                        member.addScheduledLabel(lbl.label_id);
+                        lbl.addScheduled(member);
+                    }
                 }
             }
         }
     }
 
     async setMemberLabels(data:any) {
-        // TODO JLS, need to clear member list and owner list
         this.memberMap.clear();
         
         // Loop through the data and add member to each label
         for (var i=0; i<data.length; i++) {
             const d = data[i];
             const lblId = d.label_id;
-            const member = new MinMemberInfo(d);
+            var member:MinMemberInfo = new MinMemberInfo(d);
             const isOwner = d.isOwnerOfLabel !== 'false';
+
+            // Make sure the member is in the main member map            
+            if (this.memberMap.has(d.member_id)) {
+                // @ts-ignore
+                member = this.memberMap.get(d.member_id);
+            }
+            else {
+                this.memberMap.set(d.member_id, member);
+            }
 
             // Get the label by id
             const lbl = this.labelMap.get(lblId);

@@ -7,8 +7,6 @@ import { getStartOfPreviousMonth, getEndOfNextMonth, getMinTimeForDay, getMaxTim
 import { AvailabilityInfo } from '../lib/AvailabilityInfo';
 import ChurchLabels from '../lib/ChurchLabels';
 
-// TODO JLS HERE
-// Change church schedule to a list of church schedules
 
 export class SchedulePageData extends PageData {
     scheduleList:ChurchSchedule[];
@@ -29,9 +27,6 @@ export class SchedulePageData extends PageData {
         // this.schedule = new ChurchSchedule(this.uInfo.church_id);
     }
 
-    // TODO JLS
-    // Service has info about the service
-    // Schedule has info on people scheduled for a service
 
     async loadServiceForDay(yr:number, mo:number, dy:number) {
         // // If no church ID, then return
@@ -95,9 +90,43 @@ export class SchedulePageData extends PageData {
         this.monthlyDays = Array.from(monthSet);
     }
 
-    // TODO JLS - HERE
+    async loadScheduledMembersForMonth(dt:Date) {
+        // get month / year as a string
+        const month = (dt.getMonth() + 1).toString();
+        const year = dt.getFullYear().toString();
+
+        // Get all the data for this month
+        const res = await this.api.getData(API_CALLS.schedule, { church_id: this.uInfo.church_id, year: year, month: month });
+        const data = await res.json();
+
+        // Create a map of services, so we can add the members to the service
+        const serviceMap = new Map<string, ChurchSchedule>();
+        for (var i=0; i<this.scheduleList.length; i++) {
+            const cSchedule = this.scheduleList[i];
+            serviceMap.set(cSchedule.serviceInfo.service_id, cSchedule);
+        }
+
+        // Loop through the data and add it to the correct place
+        if (data != null && data.length > 0) {
+            for( var i=0; i<data.length; i++) {
+                const sInfo = new ScheduleInfo(data[i]);
+
+                // Get the service, label, and member
+                const cSchedule = serviceMap.get(sInfo.service_id);
+                const lbl = cSchedule?.churchLabels.labelMap.get(sInfo.label_id);
+                const mInfo = cSchedule?.churchLabels.memberMap.get(sInfo.member_id);
+
+                // Add the member to the list of schecduled members
+                if (cSchedule != undefined && lbl != undefined && mInfo != undefined) {
+                    lbl.addScheduled(mInfo);
+                    mInfo.addScheduledLabel(lbl.label_id);
+                }
+            }
+        }
+    }
+
     // This loads all the scheduled people for the month
-    async loadScheduledInfo(dt:Date) {
+    // async loadScheduledInfo(dt:Date) {
         // // get month / year as a string
         // const month = (dt.getMonth() + 1).toString();
         // const year = dt.getFullYear().toString();
@@ -113,9 +142,9 @@ export class SchedulePageData extends PageData {
         //     }
         // }
         // this.schedule.setScheduleList(scheduleList);        
-    }
+    // }
 
-    async loadBlockedOutDaysWithBuffer(dt:Date){
+    // async loadBlockedOutDaysWithBuffer(dt:Date){
         // // Get month / year as a string
         // const min = getStartOfPreviousMonth(dt);
         // const max = getEndOfNextMonth(dt);
@@ -130,7 +159,7 @@ export class SchedulePageData extends PageData {
         //     }
         // }
         // this.schedule.setBlockedOutList(blockedOutList);
-    }
+    // }
 
 
     // TODO JLS, this sets the scheduled member for each label
