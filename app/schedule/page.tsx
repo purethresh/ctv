@@ -12,6 +12,7 @@ import { ChurchSchedule } from "../lib/ChurchSchedule";
 import { getDayString } from "../lib/DateUtils";
 import SServiceInfo from "../components/SServiceInfo";
 import { API_CALLS, APIHandler } from '../lib/APIHandler';
+import { FullMemberInfo } from '../lib/FullMemberInfo';
 
 export default function SchedulePage() {
   let [pageData, setPageData] = useState<SchedulePageData>(new SchedulePageData());
@@ -21,7 +22,8 @@ export default function SchedulePage() {
   let [curentDate, setCurrentDate] = useState<string>(getDefaultSunday());
   let [currentTime, setCurrentTime] = useState<Date>(new Date(getDefaultSunday()));
   let [currentSchedule, setCurrentSchedule] = useState<ChurchSchedule[]>([]);
-  
+
+  let [memberMap, setMemberMap] = useState<Map<string, FullMemberInfo>>(new Map<string, FullMemberInfo>());
   let [userInfo, setUserInfo] = useState<UserInfo>(new UserInfo());
 
   const onDateChange = async (dt:Date) => {
@@ -39,6 +41,7 @@ export default function SchedulePage() {
     }
 
     setCurrentSchedule(cSchedule);
+    setMemberMap(pData.memberMap);
   }
 
   const onMonthChange = async (dt:Date) => {
@@ -132,7 +135,10 @@ export default function SchedulePage() {
     await onDateChange(currentTime);
     
     setPageData(pData);
-  }  
+  }
+
+  // TODO JLS
+  // The way this is loading data isn't correct. Fix it.
 
   useEffect(() => {
     getServiceInfo();
@@ -146,7 +152,7 @@ export default function SchedulePage() {
       </Grid2>
       {currentSchedule.map((item, index) => (
         <Grid2 size={12} key={item.serviceInfo.service_id + '_grid'}>
-          <SServiceInfo key={item.serviceInfo.service_id} churchLabels={item.churchLabels} schedule={item} serviceInfo={item.serviceInfo} onAddMemberToSchedule={onAddMemberToSchedule} onRemoveMemberFromSchedule={onRemoveMemberFromSchedule} />
+          <SServiceInfo key={item.serviceInfo.service_id} churchLabels={item.churchLabels} schedule={item} serviceInfo={item.serviceInfo} onAddMemberToSchedule={onAddMemberToSchedule} onRemoveMemberFromSchedule={onRemoveMemberFromSchedule} members={pageData.memberMap} />
         </Grid2>
       ))}
     </Grid2>  

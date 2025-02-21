@@ -5,10 +5,13 @@ import { LabelInfo} from "../lib/LabelInfo";
 import { Box, Typography } from "@mui/material";
 import SLabelGroup from "./SLabelGroup";
 import { MinMemberInfo } from "../lib/MinMemberInfo";
+import { FullMemberInfo } from "../lib/FullMemberInfo";
 
 export default function SServiceInfo(props: SServiceInfoProps) {
   let [labelGroupList, setLabelGroupList] = useState<LabelInfo[]>([]);
   let [serviceTime, setServiceTime] = useState<string>('');
+  let [memberMap, setMemberMap] = useState<Map<string, FullMemberInfo>>(new Map<string, FullMemberInfo>());
+  let [serviceId, setServiceId] = useState<string>('');
 
   const addMember = async (memberInfo:MinMemberInfo, labelInfo:LabelInfo) => {
     const sInfo = props.serviceInfo;
@@ -42,6 +45,12 @@ export default function SServiceInfo(props: SServiceInfoProps) {
   const getServiceInfo = async () => {
     const sInfo = props.serviceInfo;
     if (sInfo.church_id.length > 0) {
+      setServiceId(sInfo.service_id);
+
+      // Set the member map
+      if (props.members !== undefined) {
+        setMemberMap(props.members);
+      }
 
       // Get the time
       const sTime = sInfo.serviceAsDate();
@@ -65,7 +74,7 @@ export default function SServiceInfo(props: SServiceInfoProps) {
       <Box bgcolor='secondary.main'><Typography variant="h6" color='secondary.contrastText' sx={{padding: '5px'}}>{serviceTime} - {props.serviceInfo.name}</Typography></Box>
       <Box bgcolor='secondary.dark'><Typography variant="subtitle1" color='secondary.contrastText' sx={{padding: '5px'}}>{props.serviceInfo.info}</Typography></Box>      
       {labelGroupList.map((item, index) => (
-        <SLabelGroup key={item.label_id} groupInfo={item} onAddMember={addMember} onRemoveMember={removeMember} showAddMember={true} showRemoveMember={true} />
+        <SLabelGroup key={item.label_id} groupInfo={item} onAddMember={addMember} onRemoveMember={removeMember} showAddMember={true} showRemoveMember={true} members={memberMap} serviceId={serviceId} />
       ))}      
     </Box>
   );

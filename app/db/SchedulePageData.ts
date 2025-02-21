@@ -99,30 +99,48 @@ export class SchedulePageData extends PageData {
         const res = await this.api.getData(API_CALLS.schedule, { church_id: this.uInfo.church_id, year: year, month: month });
         const data = await res.json();
 
-        // Create a map of services, so we can add the members to the service
-        const serviceMap = new Map<string, ChurchSchedule>();
-        for (var i=0; i<this.scheduleList.length; i++) {
-            const cSchedule = this.scheduleList[i];
-            serviceMap.set(cSchedule.serviceInfo.service_id, cSchedule);
-        }
-
-        // Loop through the data and add it to the correct place
+        // Loop through the data, add the member (if needed). Add the scheduleInfo to the member
         if (data != null && data.length > 0) {
-            for( var i=0; i<data.length; i++) {
+            for(var i=0; i<data.length; i++) {
+                // Get schedule Info
                 const sInfo = new ScheduleInfo(data[i]);
 
-                // Get the service, label, and member
-                const cSchedule = serviceMap.get(sInfo.service_id);
-                const lbl = cSchedule?.churchLabels.labelMap.get(sInfo.label_id);
-                const mInfo = cSchedule?.churchLabels.memberMap.get(sInfo.member_id);
-
-                // Add the member to the list of schecduled members
-                if (cSchedule != undefined && lbl != undefined && mInfo != undefined) {
-                    lbl.addScheduled(mInfo);
-                    mInfo.addScheduledLabel(lbl.label_id);
+                // If the member exists, add this to the member
+                if (this.memberMap.has(sInfo.member_id)) {
+                    const mInfo = this.memberMap.get(sInfo.member_id);
+                    if (mInfo) {
+                        mInfo.addSchedule(sInfo);
+                        this.memberMap.set(sInfo.member_id, mInfo);
+                    }
                 }
             }
         }
+
+
+        // // Create a map of services, so we can add the members to the service
+        // const serviceMap = new Map<string, ChurchSchedule>();
+        // for (var i=0; i<this.scheduleList.length; i++) {
+        //     const cSchedule = this.scheduleList[i];
+        //     serviceMap.set(cSchedule.serviceInfo.service_id, cSchedule);
+        // }
+
+        // // Loop through the data and add it to the correct place
+        // if (data != null && data.length > 0) {
+        //     for( var i=0; i<data.length; i++) {
+        //         const sInfo = new ScheduleInfo(data[i]);
+
+        //         // Get the service, label, and member
+        //         const cSchedule = serviceMap.get(sInfo.service_id);
+        //         const lbl = cSchedule?.churchLabels.labelMap.get(sInfo.label_id);
+        //         const mInfo = cSchedule?.churchLabels.memberMap.get(sInfo.member_id);
+
+        //         // Add the member to the list of schecduled members
+        //         if (cSchedule != undefined && lbl != undefined && mInfo != undefined) {
+        //             lbl.addScheduled(mInfo);
+        //             mInfo.addScheduledLabel(lbl.label_id);
+        //         }
+        //     }
+        // }
     }
 
     // This loads all the scheduled people for the month

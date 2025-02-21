@@ -6,25 +6,28 @@ import { MinMemberInfo } from "../lib/MinMemberInfo";
 import SLabelMember from "./SLabelMember";
 import { ScheduleStatus } from "../lib/ScheduleStatus";
 import { Typography } from "@mui/material";
+import { FullMemberInfo } from "../lib/FullMemberInfo";
 
 export default function SScheduledLabel(props:SLabelGroupProps) {
 
     let [labelMargin, setLabelMargin] = useState<number>(2);
     let [labelName, setLabelName] = useState<string>(props.groupInfo?.labelName || '');
     let [labelInfo, setLabelInfo] = useState<LabelInfo>(props.groupInfo || new LabelInfo({}));
-    let [scheduledMemberList, setScheduledMemberList] = useState<MinMemberInfo[]>([]);
-    let [nonScheduledMemberList, setNonScheduledMemberList] = useState<MinMemberInfo[]>([]);
+    let [scheduledMemberList, setScheduledMemberList] = useState<FullMemberInfo[]>([]);
+    let [nonScheduledMemberList, setNonScheduledMemberList] = useState<FullMemberInfo[]>([]);
     let [updateNumber, setUpdateNumber] = useState<number>(props.updateNumber || 0);
     let [showAddMember, setShowAddMember] = useState<boolean>(props.showAddMember || false);
     let [showRemoveMember, setShowRemoveMember] = useState<boolean>(props.showRemoveMember || false);
+    let [memberMap, setMemberMap] = useState<Map<string, FullMemberInfo>>(new Map<string, FullMemberInfo>());
+    let [serviceId, setServiceId] = useState<string>('');
     
-    const onAdd = (memberInfo:MinMemberInfo) => {
+    const onAdd = (memberInfo:FullMemberInfo) => {
         if (props.onAddMember) {
             props.onAddMember(memberInfo, labelInfo);
         }
     }
 
-    const onRemove = (memberInfo:MinMemberInfo) => {
+    const onRemove = (memberInfo:FullMemberInfo) => {
         if (props.onRemoveMember) {
             props.onRemoveMember(memberInfo, labelInfo);
         }
@@ -34,6 +37,14 @@ export default function SScheduledLabel(props:SLabelGroupProps) {
         if (props.groupInfo !== undefined) {
             setShowAddMember(props.showAddMember || false);
             setShowRemoveMember(props.showRemoveMember || false);
+
+            if (props.members !== undefined) {
+                setMemberMap(props.members);
+            }
+
+            if (props.serviceId !== undefined) {
+                setServiceId(props.serviceId);
+            }
 
             const lbl = props.groupInfo;
             setLabelName(lbl.labelName);
@@ -48,26 +59,38 @@ export default function SScheduledLabel(props:SLabelGroupProps) {
             }
 
             // Get the members
-            const sMemList:MinMemberInfo[] = [];
-            const nsMemList:MinMemberInfo[] = [];
-            lbl.memberMap.forEach((value, key) => {
-                if (value.scheduledStatus === ScheduleStatus.scheduled) {
-                    if (value.scheduledLabels.has(lbl.label_id)) {
-                        // The member is scheduled for this label
-                        sMemList.push(value);
+            const sMemList:FullMemberInfo[] = [];
+            const nsMemList:FullMemberInfo[] = [];
+            lbl.memberSet.forEach((value) => {
+                const mInfo = memberMap.get(value);
+                if (mInfo !== undefined) {
+                    if (mInfo.isScheduledForLabel(serviceId, lbl.label_id)) {
+                        sMemList.push(mInfo);
                     }
                     else {
-                        // The member is scheduled, but for a different label
-                        nsMemList.push(value);
-                    }                    
-                }
-                else {
-                    // The member is not scheduled
-                    nsMemList.push(value);
+                        nsMemList.push(mInfo);
+                    }
                 }
             });
 
-            nsMemList.sort(MinMemberInfo.compare);
+            // lbl.memberMap.forEach((value, key) => {
+            //     if (value.scheduledStatus === ScheduleStatus.scheduled) {
+            //         if (value.scheduledLabels.has(lbl.label_id)) {
+            //             // The member is scheduled for this label
+            //             sMemList.push(value);
+            //         }
+            //         else {
+            //             // The member is scheduled, but for a different label
+            //             nsMemList.push(value);
+            //         }                    
+            //     }
+            //     else {
+            //         // The member is not scheduled
+            //         nsMemList.push(value);
+            //     }
+            // });
+
+            // nsMemList.sort(MinMemberInfo.compare);
             
             setScheduledMemberList(sMemList);
             setNonScheduledMemberList(nsMemList);

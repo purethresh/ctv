@@ -32,13 +32,16 @@ export class LabelInfo {
     childLabels:LabelInfo[];
 
     // Labels can have members
-    memberMap:Map<string, MinMemberInfo>;
+    memberSet:Set<string>;
+    // memberMap:Map<string, MinMemberInfo>;
 
     // Labels can have owners
-    owners:Map<string, MinMemberInfo>;
+    // owners:Map<string, MinMemberInfo>;
+    owners:Set<string>;
 
     // List of people scheduled for this label
-    scheduled:MinMemberInfo[];
+    scheduled:Set<string>;
+    // scheduled:MinMemberInfo[];
 
     constructor(info:ILabelInfo = {}) {
         this.label_id = info.label_id || '';
@@ -63,10 +66,13 @@ export class LabelInfo {
 
         this.parentLabel = null;
         this.childLabels = [];
-        this.memberMap = new Map<string, MinMemberInfo>();
-        this.owners = new Map<string, MinMemberInfo>();
-        this.scheduled = [];
+        this.memberSet = new Set<string>();
+        // this.memberMap = new Map<string, MinMemberInfo>();
+        // this.owners = new Map<string, MinMemberInfo>();
+        this.owners = new Set<string>();
+        // this.scheduled = [];
         this.updateType = UpdateType.none;
+        this.scheduled = new Set<string>();
     }
 
     clone() : LabelInfo {
@@ -81,9 +87,12 @@ export class LabelInfo {
         });
 
         // Add members
-        this.memberMap.forEach((value:MinMemberInfo, key:string) => {
-            result.memberMap.set(key, new MinMemberInfo(value));
+        this.memberSet.forEach((value:string) => {
+            result.memberSet.add(value);
         });
+        // this.memberMap.forEach((value:MinMemberInfo, key:string) => {
+        //     result.memberMap.set(key, new MinMemberInfo(value));
+        // });
 
         return result;
     }
@@ -107,37 +116,37 @@ export class LabelInfo {
         label.parentLabel = this;
     }
 
-    addMember(member:MinMemberInfo) {     
-        this.memberMap.set(member.member_id, member); 
+    addMember(memberId:string) {     
+        this.memberSet.add(memberId);
     }
 
     removeMember(memberId:string) {
-        this.memberMap.delete(memberId);        
+        this.memberSet.delete(memberId);
     }
 
     isMember(memberId:string) {
-        return this.memberMap.has(memberId);
+        return this.memberSet.has(memberId);
     }
 
-    getMemberList() : MinMemberInfo[] {
-        var result:MinMemberInfo[] = [];
-        this.memberMap.forEach((value:MinMemberInfo, key:string) => {
-            result.push(value);
-        });
+    // getMemberList() : MinMemberInfo[] {
+    //     var result:MinMemberInfo[] = [];
+    //     this.memberMap.forEach((value:MinMemberInfo, key:string) => {
+    //         result.push(value);
+    //     });
 
-        return result;
-    }
+    //     return result;
+    // }
 
     isOwner(memberId:string) {
         return this.owners.has(memberId);
     }
 
-    addOwner(owner:MinMemberInfo) {
-        this.owners.set(owner.member_id, owner);
+    addOwner(memberId:string) {
+        this.owners.add(memberId);
 
         // Loop through and add this as an owner to all the children too
         this.childLabels.forEach((child) => {
-            child.addOwner(owner);
+            child.addOwner(memberId);
         });
     }
 
@@ -152,21 +161,25 @@ export class LabelInfo {
 
     getOwnerList() : MinMemberInfo[] {
         var result:MinMemberInfo[] = [];
-        this.owners.forEach((value:MinMemberInfo, key:string) => {
-            result.push(value);
-        });
+        // this.owners.forEach((value:MinMemberInfo, key:string) => {
+        //     result.push(value);
+        // });
 
         return result;
     }   
 
     clearScheduled() {
-        this.scheduled = [];
+        this.scheduled.clear();            
+        // this.scheduled = [];
         for(var i=0; i<this.childLabels.length; i++) {
             this.childLabels[i].clearScheduled();
         }
     }
 
-    addScheduled(scheduled:MinMemberInfo) {
-        this.scheduled.push(scheduled);
+    addScheduled(memberId:string) {
+        this.scheduled.add(memberId);
     }
+    // addScheduled(scheduled:MinMemberInfo) {
+    //     this.scheduled.push(scheduled);
+    // }
 }

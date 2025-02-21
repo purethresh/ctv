@@ -6,6 +6,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import { Typography } from "@mui/material";
 import { ScheduleStatus } from "../lib/ScheduleStatus";
+import { FullMemberInfo } from "../lib/FullMemberInfo";
 
 export default function SLabelMember(props:SMemberLabelProps) {
     const defaultBackColor = 'info.main';
@@ -19,7 +20,7 @@ export default function SLabelMember(props:SMemberLabelProps) {
 
     let [memberId, setMemberId] = useState<string>('');
     let [labelId, setLabelId] = useState<string>('');
-    let [memberInfo, setMemberInfo] = useState<MinMemberInfo>(props.memberInfo || new MinMemberInfo({}));
+    let [memberInfo, setMemberInfo] = useState<FullMemberInfo>(props.memberInfo || new FullMemberInfo({}));
     let [fullName, setFullName] = useState<string>('');
     let [backColor, setBackColor] = useState<string>(defaultBackColor);
     let [textColor, setTextColor] = useState<string>(defaultTextColor);
@@ -58,24 +59,25 @@ export default function SLabelMember(props:SMemberLabelProps) {
             }
             setFullName(nm);
 
-            if (mInfo.scheduledStatus === ScheduleStatus.blockedOut) {
-                setBackColor(blockedBackColor);
-                setTextColor(blockedTextColor);
-            } else if (mInfo.scheduledStatus === ScheduleStatus.recommended) {
-                setBackColor(recommendedBackColor);
-                setTextColor(recommendedTextColor);
-            } else if (mInfo.scheduledStatus === ScheduleStatus.scheduled) {
-                if (mInfo.scheduledLabels.has(lblId)) {
-                    setBackColor(scheduledBackColor);
-                    setTextColor(scheduledTextColor);
-                } else {
-                    setBackColor(defaultBackColor);
-                    setTextColor(defaultTextColor);
-                }
-            } else {
-                setBackColor(defaultBackColor);
-                setTextColor(defaultTextColor);
-            }
+            // TODO JLS - need to fix this!
+            // if (mInfo.scheduledStatus === ScheduleStatus.blockedOut) {
+            //     setBackColor(blockedBackColor);
+            //     setTextColor(blockedTextColor);
+            // } else if (mInfo.scheduledStatus === ScheduleStatus.recommended) {
+            //     setBackColor(recommendedBackColor);
+            //     setTextColor(recommendedTextColor);
+            // } else if (mInfo.scheduledStatus === ScheduleStatus.scheduled) {
+            //     if (mInfo.scheduledLabels.has(lblId)) {
+            //         setBackColor(scheduledBackColor);
+            //         setTextColor(scheduledTextColor);
+            //     } else {
+            //         setBackColor(defaultBackColor);
+            //         setTextColor(defaultTextColor);
+            //     }
+            // } else {
+            //     setBackColor(defaultBackColor);
+            //     setTextColor(defaultTextColor);
+            // }
         }
     }
 

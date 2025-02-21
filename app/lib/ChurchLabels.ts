@@ -78,11 +78,12 @@ export default class ChurchLabels {
                 const lbl = this.labelMap.get(sInfo.label_id);
                 // Now add a scheduled person to the label
                 if (lbl) {
-                    const member = lbl.memberMap.get(sInfo.member_id);
-                    if (member) {
-                        member.addScheduledLabel(lbl.label_id);
-                        lbl.addScheduled(member);
-                    }
+                    lbl.addScheduled(sInfo.member_id);
+                    // const member = lbl.memberMap.get(sInfo.member_id);
+                    // if (member) {
+                    //     member.addScheduledLabel(lbl.label_id);
+                    //     lbl.addScheduled(member);
+                    // }
                 }
             }
         }
@@ -98,23 +99,14 @@ export default class ChurchLabels {
             var member:MinMemberInfo = new MinMemberInfo(d);
             const isOwner = d.isOwnerOfLabel !== 'false';
 
-            // Make sure the member is in the main member map            
-            if (this.memberMap.has(d.member_id)) {
-                // @ts-ignore
-                member = this.memberMap.get(d.member_id);
-            }
-            else {
-                this.memberMap.set(d.member_id, member);
-            }
-
             // Get the label by id
             const lbl = this.labelMap.get(lblId);
             if (lbl) {
-                lbl.addMember(member);
+                lbl.addMember(member.member_id);
 
                 // If owner, add it as an owner
                 if (isOwner) {
-                    lbl.addOwner(member);
+                    lbl.addOwner(member.member_id);
                 }
             }
         }
@@ -138,7 +130,7 @@ export default class ChurchLabels {
 
                 const lbl = this.labelMap.get(lblId);
                 if (lbl) {
-                    lbl.addMember(member);
+                    lbl.addMember(member.member_id);
                 }
             }
         }
@@ -153,7 +145,7 @@ export default class ChurchLabels {
 
                 const lbl = this.labelMap.get(lblId);
                 if (lbl) {
-                    lbl.addOwner(member);
+                    lbl.addOwner(member.member_id);
                 }
             }
         }

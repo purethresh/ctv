@@ -1,11 +1,11 @@
-import { MinMemberInfo } from "../lib/MinMemberInfo";
+import { FullMemberInfo } from "../lib/FullMemberInfo";
 
 export interface SMemberLabelProps {
-    memberInfo?: MinMemberInfo;
+    memberInfo?: FullMemberInfo;
     updateNumber?:number;
     label_id?:string;
     showAdd?:boolean;
     showRemove?:boolean;
-    addMember?: (memberInfo:MinMemberInfo) => void;
-    removeMember?: (memberInfo:MinMemberInfo) => void;
+    addMember?: (memberInfo:FullMemberInfo) => void;
+    removeMember?: (memberInfo:FullMemberInfo) => void;
 }
