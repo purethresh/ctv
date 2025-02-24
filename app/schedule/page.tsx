@@ -18,6 +18,7 @@ export default function SchedulePage() {
   let [scheduleList, setScheduleList] = useState<ChurchSchedule[]>([]);
   let [scheduledDays, setScheduledDays] = useState<number[]>([]);
   
+  let [defaultDate, setDefaultDate] = useState<string>(getDefaultSunday());
   let [curentDate, setCurrentDate] = useState<string>(getDefaultSunday());
   let [currentTime, setCurrentTime] = useState<Date>(new Date(getDefaultSunday()));
   let [currentSchedule, setCurrentSchedule] = useState<ChurchSchedule[]>([]);
@@ -42,12 +43,13 @@ export default function SchedulePage() {
   }
 
   const onMonthChange = async (dt:Date) => {
+
+    // Wait for things to be initialized
     if (!hasBeenInitialized) {
       return;
     }
-    const pData = pageData;
-    await pData.loadServiceForDay(dt.getFullYear(), dt.getMonth()+1, dt.getDate());
 
+    const pData = pageData;
     await loadServicesForMonth(pageData, dt);
     saveData(pData);
   }
@@ -85,7 +87,7 @@ export default function SchedulePage() {
     await pData.addMemberToService(info);
 
     // Reload members scheduled for the month
-    await loadServicesForMonth(pData, sTime); // TODO JLS, does this work
+    await loadServicesForMonth(pData, sTime);
 
     // Force a refresh of the data
     await onDateChange(sTime, pData);
@@ -99,7 +101,7 @@ export default function SchedulePage() {
     await pData.removeMemberFromService(info);
 
     // Reload members scheduled for the month
-    await loadServicesForMonth(pData, sTime); // TODO JLS, does this work
+    await loadServicesForMonth(pData, sTime);
 
     // Force a refresh of the data
     await onDateChange(sTime, pData);
@@ -132,6 +134,9 @@ export default function SchedulePage() {
     // Show schedules for current time
     await onDateChange(currentTime, pData);
 
+    // Allow monthly update
+    setHasBeenInitialized(true);
+
     // Set data
     saveData(pData);
   }
@@ -142,7 +147,7 @@ export default function SchedulePage() {
 
   return (
     <Grid2 container spacing={2}>
-      <SChurchCalendar defaultDate={curentDate} onDateChanged={onDateChange} onMonthChanged={onMonthChange} scheduledDays={scheduledDays} />
+      <SChurchCalendar defaultDate={defaultDate} scheduledDays={scheduledDays} onDateChanged={onDateChange} onMonthChanged={onMonthChange} />
       <Grid2 size={{ xs: 12, sm: 6 }}>
         <SServiceAdd defaultDate={currentTime} onCreateService={onServiceCreated} church_id={userInfo.church_id} />
       </Grid2>
