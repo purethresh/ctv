@@ -16,8 +16,17 @@ export class FullMemberInfo extends MinMemberInfo {
         this.availabilityMap = new Map<string, ScheduleInfo>();
     }
 
+    // Clear Scheduled
+    clearScheduled() {
+        this.scheduleMap.clear();
+    }
+
     addSchedule(sInfo:ScheduleInfo) {
         this.scheduleMap.set(sInfo.service_id, sInfo);
+    }
+
+    isBlockedOutForService(blockedAsDateStr:string) : boolean {
+        return this.availabilityMap.has(blockedAsDateStr);
     }
 
     isScheduledForService(serviceId:string) : boolean {
@@ -29,6 +38,11 @@ export class FullMemberInfo extends MinMemberInfo {
         if (sInfo) {
             return sInfo.label_id === labelId;
         }
+        return false;
+    }
+
+    isRecommendedForLabel(labelId:string) : boolean {
+        // TODO JLS - need to implement
         return false;
     }
 

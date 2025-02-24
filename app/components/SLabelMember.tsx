@@ -42,7 +42,6 @@ export default function SLabelMember(props:SMemberLabelProps) {
 
     const setupUserInfo = () => {
         if (props.memberInfo !== undefined) {
-
             setShowAdd(props.showAdd || false);
             setShowRemove(props.showRemove || false);
             const lblId = props.label_id || '';
@@ -59,31 +58,38 @@ export default function SLabelMember(props:SMemberLabelProps) {
             }
             setFullName(nm);
 
-            // TODO JLS - need to fix this!
-            // if (mInfo.scheduledStatus === ScheduleStatus.blockedOut) {
-            //     setBackColor(blockedBackColor);
-            //     setTextColor(blockedTextColor);
-            // } else if (mInfo.scheduledStatus === ScheduleStatus.recommended) {
-            //     setBackColor(recommendedBackColor);
-            //     setTextColor(recommendedTextColor);
-            // } else if (mInfo.scheduledStatus === ScheduleStatus.scheduled) {
-            //     if (mInfo.scheduledLabels.has(lblId)) {
-            //         setBackColor(scheduledBackColor);
-            //         setTextColor(scheduledTextColor);
-            //     } else {
-            //         setBackColor(defaultBackColor);
-            //         setTextColor(defaultTextColor);
-            //     }
-            // } else {
-            //     setBackColor(defaultBackColor);
-            //     setTextColor(defaultTextColor);
-            // }
+            const serviceDate = props.serviceDate || '';
+            const serviceId = props.service_id || '';
+
+            // Set the status
+            if (mInfo.isBlockedOutForService(serviceDate)) {
+                setBackColor(blockedBackColor);
+                setTextColor(blockedTextColor);
+            }
+            else if (mInfo.isScheduledForLabel(serviceId, lblId)) {
+                setBackColor(scheduledBackColor);
+                setTextColor(scheduledTextColor);
+            }
+            else if (mInfo.isRecommendedForLabel(lblId)) {
+                setBackColor(recommendedBackColor);
+                setTextColor(recommendedTextColor);
+            }
+            else if (mInfo.isScheduledForService(serviceId)) {
+                // TODO JLS, need a new color for this.
+                // Member is scheduled for a different label in this service
+                setBackColor(scheduledBackColor);
+                setTextColor(scheduledTextColor);
+            }
+            else {
+                setBackColor(defaultBackColor);
+                setTextColor(defaultTextColor);
+            }
         }
     }
 
     useEffect(() => {
         setupUserInfo();
-    }, [props.memberInfo, props.updateNumber]);
+    }, [props.memberInfo]);
 
     return (
         <Box sx={{backgroundColor: backColor, display: 'inline-flex', paddingLeft: '10px', paddingRight: '10px', paddingTop: '3px', paddingBottom: '2px', margin: '5px', borderRadius: '10px'}}>

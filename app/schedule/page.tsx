@@ -11,7 +11,6 @@ import { SchedulePageData } from "../db/SchedulePageData";
 import { ChurchSchedule } from "../lib/ChurchSchedule";
 import { getDayString } from "../lib/DateUtils";
 import SServiceInfo from "../components/SServiceInfo";
-import { API_CALLS, APIHandler } from '../lib/APIHandler';
 import { FullMemberInfo } from '../lib/FullMemberInfo';
 
 export default function SchedulePage() {
@@ -22,36 +21,35 @@ export default function SchedulePage() {
   let [curentDate, setCurrentDate] = useState<string>(getDefaultSunday());
   let [currentTime, setCurrentTime] = useState<Date>(new Date(getDefaultSunday()));
   let [currentSchedule, setCurrentSchedule] = useState<ChurchSchedule[]>([]);
+  let [hasBeenInitialized, setHasBeenInitialized] = useState<boolean>(false);
 
   let [memberMap, setMemberMap] = useState<Map<string, FullMemberInfo>>(new Map<string, FullMemberInfo>());
   let [userInfo, setUserInfo] = useState<UserInfo>(new UserInfo());
 
-  const onDateChange = async (dt:Date) => {
+  const onDateChange = async (dt:Date, data:SchedulePageData | undefined = undefined) => {
+    // The schedule should already be loaded, we just need to show it.
+    const pData = data || pageData;
+    pData.selectServiceForDay(dt);
+
+    // Save the time change here
     setCurrentTime(dt);
     setCurrentDate(getDayString(dt));
 
-    // The schedule should already be loaded, we just need to show it.
-    var cSchedule:ChurchSchedule[] = [];
-    const pData = pageData;
-    for (var i=0; i<scheduleList.length; i++) {
-      const sInfo = scheduleList[i];
-      if (sInfo.serviceInfo.serviceAsDate().getDate() == dt.getDate()) {
-        cSchedule.push(sInfo);
-      }
+    // Only save if no data was supplied
+    if (data == undefined) {
+      saveData(pData);
     }
-
-    setCurrentSchedule(cSchedule);
-    setMemberMap(pData.memberMap);
   }
 
   const onMonthChange = async (dt:Date) => {
+    if (!hasBeenInitialized) {
+      return;
+    }
     const pData = pageData;
     await pData.loadServiceForDay(dt.getFullYear(), dt.getMonth()+1, dt.getDate());
 
     await loadServicesForMonth(pageData, dt);
-
-    setScheduleList(pData.scheduleList);
-    setPageData(pData);
+    saveData(pData);
   }
 
   const onServiceCreated = async (sInfo:ServiceInfo) => {
@@ -59,7 +57,7 @@ export default function SchedulePage() {
     await pData.createService(sInfo);
 
     await loadServicesForMonth(pData, currentTime);
-    setPageData(pData);
+    saveData(pData);
   }
 
   const loadServicesForMonth = async (pData:SchedulePageData, dt:Date) => {
@@ -78,9 +76,6 @@ export default function SchedulePage() {
 
       // Load the members scheduled for the labels
       await pData.loadScheduledMembersForMonth(dt);
-
-      setScheduleList(pData.scheduleList);
-      setScheduledDays(pData.monthlyDays);
   }
 
   const onAddMemberToSchedule = async (info:any, sTime:Date) => {
@@ -89,15 +84,12 @@ export default function SchedulePage() {
     // Add to the service
     await pData.addMemberToService(info);
 
-    // Clear the cache
-    const handler = new APIHandler();
-    handler.clearCache(API_CALLS.schedule);
-    handler.clearCache(API_CALLS.labelScheduled);
+    // Reload members scheduled for the month
+    await loadServicesForMonth(pData, sTime); // TODO JLS, does this work
 
-    await onDateChange(sTime);
-
-    setPageData(pData);
-
+    // Force a refresh of the data
+    await onDateChange(sTime, pData);
+    saveData(pData);
   }
 
   const onRemoveMemberFromSchedule = async (info:any, sTime:Date) => {
@@ -106,14 +98,20 @@ export default function SchedulePage() {
     // Remove from the service
     await pData.removeMemberFromService(info);
 
-    // Clear the cache
-    const handler = new APIHandler();
-    handler.clearCache(API_CALLS.schedule);
-    handler.clearCache(API_CALLS.labelScheduled);
+    // Reload members scheduled for the month
+    await loadServicesForMonth(pData, sTime); // TODO JLS, does this work
 
-    await onDateChange(sTime);
+    // Force a refresh of the data
+    await onDateChange(sTime, pData);
+    saveData(pData);
+  }
 
+  const saveData = (pData:SchedulePageData) => {
+    setMemberMap(pData.memberMap);
+    setScheduleList(pData.scheduleList);
+    setScheduledDays(pData.monthlyDays);
     setPageData(pData);
+    setCurrentSchedule(pData.currentSchedule);
   }
 
   const getServiceInfo = async() => {
@@ -132,13 +130,11 @@ export default function SchedulePage() {
     await loadServicesForMonth(pData, currentTime);
 
     // Show schedules for current time
-    await onDateChange(currentTime);
-    
-    setPageData(pData);
-  }
+    await onDateChange(currentTime, pData);
 
-  // TODO JLS
-  // The way this is loading data isn't correct. Fix it.
+    // Set data
+    saveData(pData);
+  }
 
   useEffect(() => {
     getServiceInfo();
@@ -152,7 +148,7 @@ export default function SchedulePage() {
       </Grid2>
       {currentSchedule.map((item, index) => (
         <Grid2 size={12} key={item.serviceInfo.service_id + '_grid'}>
-          <SServiceInfo key={item.serviceInfo.service_id} churchLabels={item.churchLabels} schedule={item} serviceInfo={item.serviceInfo} onAddMemberToSchedule={onAddMemberToSchedule} onRemoveMemberFromSchedule={onRemoveMemberFromSchedule} members={pageData.memberMap} />
+          <SServiceInfo key={item.serviceInfo.service_id} churchLabels={item.churchLabels} schedule={item} serviceInfo={item.serviceInfo} onAddMemberToSchedule={onAddMemberToSchedule} onRemoveMemberFromSchedule={onRemoveMemberFromSchedule} members={memberMap} />
         </Grid2>
       ))}
     </Grid2>  

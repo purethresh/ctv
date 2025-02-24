@@ -111,7 +111,7 @@ export class PageData {
         const res = await api.getData(API_CALLS.labelMember, {member_id: memberId});
         const data = await res.json();
 
-        this.churchLabels.setMemberLabels(data);
+        this.churchLabels.setMemberLabels(data);        
     }
 
     async loadMembersForScheduledLabels() {
@@ -169,9 +169,7 @@ export class PageData {
           }
         }
 
-        // TODO JLS, first make sure all the members are in the memberMap
-        // HERE
-
+        // Add the member to the label
         this.churchLabels.setMemberLabels(data);
     }
 

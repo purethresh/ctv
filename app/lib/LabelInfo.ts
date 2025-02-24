@@ -85,7 +85,7 @@ export class LabelInfo {
             owner_id: this.owner_id,
             church_id: this.church_id
         });
-
+    
         // Add members
         this.memberSet.forEach((value:string) => {
             result.memberSet.add(value);

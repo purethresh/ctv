@@ -12,6 +12,7 @@ export default function SServiceInfo(props: SServiceInfoProps) {
   let [serviceTime, setServiceTime] = useState<string>('');
   let [memberMap, setMemberMap] = useState<Map<string, FullMemberInfo>>(new Map<string, FullMemberInfo>());
   let [serviceId, setServiceId] = useState<string>('');
+  let [serviceDateStr, setServiceDateStr] = useState<string>('');
 
   const addMember = async (memberInfo:MinMemberInfo, labelInfo:LabelInfo) => {
     const sInfo = props.serviceInfo;
@@ -47,6 +48,8 @@ export default function SServiceInfo(props: SServiceInfoProps) {
     if (sInfo.church_id.length > 0) {
       setServiceId(sInfo.service_id);
 
+      setServiceDateStr(sInfo.serviceAsDate().toDateString());
+
       // Set the member map
       if (props.members !== undefined) {
         setMemberMap(props.members);
@@ -65,7 +68,6 @@ export default function SServiceInfo(props: SServiceInfoProps) {
   }
 
   useEffect(() => {
-    // getInitialInfo();
     getServiceInfo();
   }, [props.serviceInfo, props.churchLabels, props.schedule]);
 
@@ -74,7 +76,7 @@ export default function SServiceInfo(props: SServiceInfoProps) {
       <Box bgcolor='secondary.main'><Typography variant="h6" color='secondary.contrastText' sx={{padding: '5px'}}>{serviceTime} - {props.serviceInfo.name}</Typography></Box>
       <Box bgcolor='secondary.dark'><Typography variant="subtitle1" color='secondary.contrastText' sx={{padding: '5px'}}>{props.serviceInfo.info}</Typography></Box>      
       {labelGroupList.map((item, index) => (
-        <SLabelGroup key={item.label_id} groupInfo={item} onAddMember={addMember} onRemoveMember={removeMember} showAddMember={true} showRemoveMember={true} members={memberMap} serviceId={serviceId} />
+        <SLabelGroup key={item.label_id} serviceDate={serviceDateStr} groupInfo={item} onAddMember={addMember} onRemoveMember={removeMember} showAddMember={true} showRemoveMember={true} members={memberMap} serviceId={serviceId} />
       ))}      
     </Box>
   );
