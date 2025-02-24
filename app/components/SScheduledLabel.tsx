@@ -8,11 +8,14 @@ import { FullMemberInfo } from "../lib/FullMemberInfo";
 
 export default function SScheduledLabel(props:SLabelGroupProps) {
 
+    const DEFAULT_MAX_SCHEDULED = 100;
+
     let [labelMargin, setLabelMargin] = useState<number>(2);
     let [labelName, setLabelName] = useState<string>(props.groupInfo?.labelName || '');
     let [labelInfo, setLabelInfo] = useState<LabelInfo>(props.groupInfo || new LabelInfo({}));
     let [scheduledMemberList, setScheduledMemberList] = useState<FullMemberInfo[]>([]);
     let [nonScheduledMemberList, setNonScheduledMemberList] = useState<FullMemberInfo[]>([]);
+    let [scheduledNumber, setScheduledNumber] = useState<number>(DEFAULT_MAX_SCHEDULED);
     let [showAddMember, setShowAddMember] = useState<boolean>(props.showAddMember || false);
     let [showRemoveMember, setShowRemoveMember] = useState<boolean>(props.showRemoveMember || false);
     let [memberMap, setMemberMap] = useState<Map<string, FullMemberInfo>>(new Map<string, FullMemberInfo>());
@@ -61,11 +64,13 @@ export default function SScheduledLabel(props:SLabelGroupProps) {
             }
 
             // Get the members
+            var minScheduled = DEFAULT_MAX_SCHEDULED;
             const sMemList:FullMemberInfo[] = [];
             const nsMemList:FullMemberInfo[] = [];
             lbl.memberSet.forEach((value) => {
                 const mInfo = currentMembers.get(value);
                 if (mInfo !== undefined) {
+                    minScheduled = Math.min(minScheduled, mInfo.getScheduledNumber());
                     if (mInfo.isScheduledForLabel(sId, lbl.label_id)) {
                         sMemList.push(mInfo);
                     }
@@ -74,7 +79,30 @@ export default function SScheduledLabel(props:SLabelGroupProps) {
                     }
                 }
             });
+
+            // Sort Scheduled Members (by name)
+            sMemList.sort(FullMemberInfo.sortByName);
+
+            // 
+            nsMemList.sort( (a, b) => {
+                var aSched = a.getScheduledNumber();
+                var bSched = b.getScheduledNumber();
+
+                // If both less than minScheduled, then sort by name
+                if (aSched <= minScheduled && bSched <= minScheduled) {
+                    return FullMemberInfo.sortByName(a, b);
+                }
+                else if (aSched > minScheduled && bSched <= minScheduled) {
+                    // Both are greater than minScheduled
+                    return FullMemberInfo.sortByName(a, b);
+                }
+                else {
+                    // Otherwise, return the one that is smaller than minScheduled
+                    return aSched - bSched;
+                }
+            });
             
+            setScheduledNumber(minScheduled);
             setScheduledMemberList(sMemList);
             setNonScheduledMemberList(nsMemList);
         }
@@ -92,10 +120,10 @@ export default function SScheduledLabel(props:SLabelGroupProps) {
             </Box>
             <Box sx={{textAlign:'left', marginLeft:labelMargin}}>
                 { scheduledMemberList.map((item, index) => (
-                    <SLabelMember key={item.member_id + props.groupInfo?.label_id + "scheduled"} label_id={props.groupInfo?.label_id} service_id={serviceId} serviceDate={serviceDateStr} memberInfo={item} removeMember={onRemove} showAdd={false} showRemove={showRemoveMember}/>
+                    <SLabelMember key={item.member_id + props.groupInfo?.label_id + "scheduled"} label_id={props.groupInfo?.label_id} service_id={serviceId} serviceDate={serviceDateStr} memberInfo={item} removeMember={onRemove} showAdd={false} showRemove={showRemoveMember} maxScheduledForRecommendation={scheduledNumber}/>
                 ))}
                 { nonScheduledMemberList.map((item, index) => (
-                    <SLabelMember key={item.member_id + props.groupInfo?.label_id + "not-scheduled"} label_id={props.groupInfo?.label_id} service_id={serviceId} serviceDate={serviceDateStr} memberInfo={item} addMember={onAdd} showAdd={showAddMember} showRemove={false}/>
+                    <SLabelMember key={item.member_id + props.groupInfo?.label_id + "not-scheduled"} label_id={props.groupInfo?.label_id} service_id={serviceId} serviceDate={serviceDateStr} memberInfo={item} addMember={onAdd} showAdd={showAddMember} showRemove={false} maxScheduledForRecommendation={scheduledNumber}/>
                 ))}
             </Box>
         </Box>

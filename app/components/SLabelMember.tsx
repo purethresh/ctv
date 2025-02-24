@@ -1,11 +1,9 @@
 import { Box, IconButton } from "@mui/material";
 import { SMemberLabelProps } from "../props/SMemberLabelProps";
 import { useEffect, useState } from 'react';
-import { MinMemberInfo } from "../lib/MinMemberInfo";
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import { Typography } from "@mui/material";
-import { ScheduleStatus } from "../lib/ScheduleStatus";
 import { FullMemberInfo } from "../lib/FullMemberInfo";
 
 export default function SLabelMember(props:SMemberLabelProps) {
@@ -20,6 +18,7 @@ export default function SLabelMember(props:SMemberLabelProps) {
 
     let [memberId, setMemberId] = useState<string>('');
     let [labelId, setLabelId] = useState<string>('');
+    let [maxScheduledForRecommendation, setMaxScheduledForRecommendation] = useState<number>(props.maxScheduledForRecommendation || 1);
     let [memberInfo, setMemberInfo] = useState<FullMemberInfo>(props.memberInfo || new FullMemberInfo({}));
     let [fullName, setFullName] = useState<string>('');
     let [backColor, setBackColor] = useState<string>(defaultBackColor);
@@ -70,7 +69,7 @@ export default function SLabelMember(props:SMemberLabelProps) {
                 setBackColor(scheduledBackColor);
                 setTextColor(scheduledTextColor);
             }
-            else if (mInfo.isRecommendedForLabel(lblId)) {
+            else if (mInfo.isRecommendedForLabel(serviceId, maxScheduledForRecommendation)) {
                 setBackColor(recommendedBackColor);
                 setTextColor(recommendedTextColor);
             }

@@ -7,6 +7,7 @@ export interface SMemberLabelProps {
     serviceDate?:string;
     showAdd?:boolean;
     showRemove?:boolean;
+    maxScheduledForRecommendation?:number;
     addMember?: (memberInfo:FullMemberInfo) => void;
     removeMember?: (memberInfo:FullMemberInfo) => void;
 }

@@ -41,9 +41,33 @@ export class FullMemberInfo extends MinMemberInfo {
         return false;
     }
 
-    isRecommendedForLabel(labelId:string) : boolean {
-        // TODO JLS - need to implement
-        return false;
+    isRecommendedForLabel(serviceId:string, maxNumScheduled:number) : boolean {
+        // Start by assuming this person is recommended        
+        var recommended = true;
+
+        // If already scheduled, then not recommended
+        if (this.isScheduledForService(serviceId)) {
+            recommended = false;
+        }
+
+        // If scheduled less than maxNumbScheduled, then recommended
+        if (this.scheduleMap.size > maxNumScheduled) {
+            recommended = false;
+        }
+
+        return recommended;
+    }
+
+    getScheduledNumber() : number {
+        return this.scheduleMap.size;
+    }
+
+    static sortByName(a:FullMemberInfo, b:FullMemberInfo) : number {
+        var result = a.first.localeCompare(b.first);
+        if (result === 0) {
+            result = a.last.localeCompare(b.last);
+        }
+        return result;
     }
 
 }
