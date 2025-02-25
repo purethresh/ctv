@@ -10,6 +10,7 @@ export default function SLabelGroup(props:SLabelGroupProps) {
     let [childLabels, setChildLabels] = useState<LabelInfo[]>([]);
     let [showAddMember, setShowAddMember] = useState<boolean>(props.showAddMember || false);
     let [showRemoveMember, setShowRemoveMember] = useState<boolean>(props.showRemoveMember || false);
+    let [showNonScheduledMembers, setShowNonScheduledMembers] = useState<boolean>(true);
     let [memberMap, setMemberMap] = useState<Map<string, FullMemberInfo>>(new Map<string, FullMemberInfo>());
     let [serviceId, setServiceId] = useState<string>(props.serviceId || '');
     let [serviceDateStr, setServiceDateStr] = useState<string>(props.serviceDate || '');
@@ -39,7 +40,13 @@ export default function SLabelGroup(props:SLabelGroupProps) {
 
             if (props.serviceId !== undefined) {
                 setServiceId(props.serviceId);
-            }            
+            }
+            
+            var sScheduled = showNonScheduledMembers;
+            if (props.showNonScheduledMembers !== undefined) {
+                sScheduled = props.showNonScheduledMembers;
+            }
+            setShowNonScheduledMembers(sScheduled);
             
             // If this is a group, then use the children
             var lst:LabelInfo[] = [];
@@ -61,9 +68,9 @@ export default function SLabelGroup(props:SLabelGroupProps) {
 
     return (
         <Box>
-            <SScheduledLabel key={groupLabels?.label_id + "_label"} groupInfo={groupLabels} serviceDate={serviceDateStr} showAddMember={false} showRemoveMember={false} members={memberMap} serviceId={serviceId} />
+            <SScheduledLabel key={groupLabels?.label_id + "_label"} groupInfo={groupLabels} serviceDate={serviceDateStr} showAddMember={false} showRemoveMember={false} members={memberMap} serviceId={serviceId} showNonScheduledMembers={showNonScheduledMembers} />
             {childLabels.map((item, index) => ( 
-                <SScheduledLabel key={item.label_id + "_label"} groupInfo={item} serviceDate={serviceDateStr} onAddMember={addMember} onRemoveMember={removeMember} showAddMember={showAddMember} showRemoveMember={showRemoveMember} members={memberMap} serviceId={serviceId} />
+                <SScheduledLabel key={item.label_id + "_label"} groupInfo={item} serviceDate={serviceDateStr} onAddMember={addMember} onRemoveMember={removeMember} showAddMember={showAddMember} showRemoveMember={showRemoveMember} members={memberMap} serviceId={serviceId} showNonScheduledMembers={showNonScheduledMembers} />
             ))}
         </Box>
     );

@@ -1,11 +1,11 @@
 import { FullMemberInfo } from '../lib/FullMemberInfo';
 import { LabelInfo } from '../lib/LabelInfo';
-import { MinMemberInfo } from '../lib/MinMemberInfo';
 
 export interface SLabelGroupProps {
     groupInfo?:LabelInfo;
     showAddMember?:boolean;
     showRemoveMember?:boolean;
+    showNonScheduledMembers?:boolean;
     members?:Map<string, FullMemberInfo>;
     serviceId?:string;
     serviceDate?:string;

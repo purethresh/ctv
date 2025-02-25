@@ -16,11 +16,11 @@ import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
-import { Grid2, Paper, Stack } from "@mui/material";
-import {getDayString} from "./lib/DateUtils";
+import { Grid2 } from "@mui/material";
 
 import { AppPageData } from "./db/AppPageData";
-import { ServiceInfo } from "./lib/ServiceInfo";
+import { ChurchSchedule } from "./lib/ChurchSchedule";
+import { FullMemberInfo } from "./lib/FullMemberInfo";
 
 
 Amplify.configure(outputs);
@@ -31,36 +31,46 @@ export default function App() {
   let [selectedDay, setSelectedDay] = useState<string>(getDefaultSunday());
   let [userInfo, setUserInfo] = useState<UserInfo>(new UserInfo());
   let [scheduledDays, setScheduledDays] = useState<number[]>([]);
-  let [serviceList, setServiceList] = useState<ServiceInfo[]>([]);
+  let [currentSchedule, setCurrentSchedule] = useState<ChurchSchedule[]>([]);
+  let [hasBeenInitialized, setHasBeenInitialized] = useState<boolean>(false);
+  let [memberMap, setMemberMap] = useState<Map<string, FullMemberInfo>>(new Map<string, FullMemberInfo>());
 
   const onDateChange = (date:Date) => {
-    const dateStr = getDayString(date);
-    setSelectedDay(dateStr);
+    const pData = pageData;
+    pData.selectServiceForDay(date);
+    setCurrentSchedule(pData.currentSchedule);
+    setPageData(pData);    
   }
 
   const onGetSchedule = async(date:Date) => {
-    const pData = pageData;
-    const didLoad = await pData.loadScheduledDays(date);
-    if (didLoad) {
-      setPageData(pData);
-      setScheduledDays(pData.scheduled);
+    if (!hasBeenInitialized) {
+      return;
     }
+
+    const pData = pageData;
+    await loadServicesForMonth(pData, date);
+
+    setScheduledDays(pData.monthlyDays);
+    setCurrentSchedule(pData.currentSchedule);
+    setPageData(pData);
   }
 
-  const onGetServices = async(yr:number, month:number, day:number) => {
-    const pData = pageData;
-    await pData.loadServiceForDay(yr, month, day);
+  const loadServicesForMonth = async (pData:AppPageData, dt:Date) => {
+    // Load the services for the month
+    await pData.loadServicesWithBufferDays(dt);
 
-    // Loop through the list of services.  For each service, we need to load the scheduled labels
-    for(var i=0; i<pData.serviceList.length; i++) {
-      const lbls = pData.serviceList[i].churchLabels;
-      await pData.loadChurchLabels(lbls);
-      await pData.loadScheduledLabels(pData.serviceList[i].service_id, lbls);
-      await pData.loadMembersForScheduledLabels();
+    // Loop through the schedule list and load the labels
+    for (var i=0; i<pData.scheduleList.length; i++) {
+      const sInfo = pData.scheduleList[i];
+      // Set the labels for this schedule
+      sInfo.churchLabels = pData.churchLabels.clone();
+
+      // Load the scheduled labels for this service
+      await pData.loadScheduledLabels(sInfo.serviceInfo.service_id, sInfo.churchLabels);
     }
 
-    setPageData(pData);
-    setServiceList(pData.serviceList);
+    // Load the members scheduled for the labels
+    await pData.loadScheduledMembersForMonth(dt);
   }
 
   const onSignout = () => {
@@ -78,8 +88,19 @@ export default function App() {
       // Load all the labels
       await pData.loadChurchLabels();
       
+      // Load the members for the scheduled labels
+      await pData.loadMembersForScheduledLabels();
+
+      // Load the services for the month
+      const dt = new Date(selectedDay);
+      await loadServicesForMonth(pData, dt);
+
       setUserInfo(pData.uInfo);
+      setMemberMap(pData.memberMap);
+      setScheduledDays(pData.monthlyDays);
+      setCurrentSchedule(pData.currentSchedule);
       setPageData(pData);
+      setHasBeenInitialized(true);
     }    
 
     getUserInfo();
@@ -91,7 +112,7 @@ export default function App() {
       <br />
       <Grid2 container spacing={2}>
         <SChurchCalendar selectedDate={selectedDay} defaultDate={defaultDate} onDateChanged={onDateChange} scheduledDays={scheduledDays} onMonthChanged={onGetSchedule}  />
-        <SAllServices serviceDate={selectedDay} serviceList={serviceList} loadServiceList={onGetServices} />
+        <SAllServices scheduleList={currentSchedule} members={memberMap} />      
       </Grid2>
     </main>
   )

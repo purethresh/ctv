@@ -6,20 +6,25 @@ import { LabelInfo } from '../lib/LabelInfo';
 import { Paper } from '@mui/material';
 import { ServiceInfo } from '../lib/ServiceInfo';
 import { Typography } from "@mui/material";
+import { ChurchSchedule } from '../lib/ChurchSchedule';
+import { FullMemberInfo } from '../lib/FullMemberInfo';
 
 // Custom day Render
 export default function SServiceSchedule(props:SServiceScheduleProps) {
-    let [serviceInfo, setServiceInfo] = useState<ServiceInfo>(new ServiceInfo({}));
+    let [schedule, setSchedule] = useState<ChurchSchedule>(props.schedule);
+    let [serviceInfo, setServiceInfo] = useState<ServiceInfo>(schedule.serviceInfo || new ServiceInfo({}));
     let [serviceTime, setServiceTime] = useState<string>('');
     let [shouldShowName, setShouldShowName] = useState<boolean>(false);
     let [shouldShowInfo, setShouldShowInfo] = useState<boolean>(false);
     let [groupList, setGroupList] = useState<LabelInfo[]>([]);
+    let [memberMap, setMemberMap] = useState<Map<string, FullMemberInfo>>(new Map<string, FullMemberInfo>());
+    let [serviceId, setServiceId] = useState<string>('');
+    let [serviceDateStr, setServiceDateStr] = useState<string>('');
 
   useEffect(() => {
     const updateShowElements = async () => {
-
         // Set the service info
-        const sInfo = props.serviceInfo || new ServiceInfo({});
+        const sInfo = schedule.serviceInfo || new ServiceInfo({});
         setServiceInfo(sInfo);
 
         // Set the service time as a string
@@ -28,16 +33,18 @@ export default function SServiceSchedule(props:SServiceScheduleProps) {
         const str = new Intl.DateTimeFormat('en-US', options).format(sTime);
 
         setServiceTime(str);
-
+        setMemberMap(props.members);
+        setServiceId(sInfo.service_id);
+        setServiceDateStr(sInfo.serviceAsDate().toDateString());
         setShouldShowName(sInfo.name.length > 0);
         setShouldShowInfo(sInfo.info.length > 0);
 
-        const groups = serviceInfo.churchLabels.getLabelGroups();
-        setGroupList(groups);
+        const lGroup = schedule.churchLabels.getLabelGroups();
+        setGroupList(lGroup);
     }
     
     updateShowElements();
-  }, [props.serviceInfo]);
+  }, [props.schedule]);
 
     return (
         <Box>
@@ -49,7 +56,7 @@ export default function SServiceSchedule(props:SServiceScheduleProps) {
               <Typography variant="subtitle1" color='secondary.contrastText'>{serviceInfo.info}</Typography>
             </Box>
             {groupList.map((item, index) => (
-              <SLabelGroup key={item.label_id + "_label_group"} groupInfo={item} />
+              <SLabelGroup key={item.label_id + "_label_group"} serviceDate={serviceDateStr} groupInfo={item} members={memberMap} serviceId={serviceId} showNonScheduledMembers={false} />              
             ))}
           </Paper>
         </Box>

@@ -60,9 +60,6 @@ export default class ChurchLabels {
                 }
             }
         });
-
-        // result.memberMap = this.memberMap;  // TODO JLS, should I clone, or just copy
-
         return result;
     }
 

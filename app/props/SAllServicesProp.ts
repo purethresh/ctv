@@ -1,8 +1,9 @@
-import { ServiceInfo } from "../lib/ServiceInfo";
+// import { ServiceInfo } from "../lib/ServiceInfo";
+import { ChurchSchedule } from "../lib/ChurchSchedule";
+import { FullMemberInfo } from "../lib/FullMemberInfo";
 
 
 export interface SAllServicesProp {
-    serviceDate?: string;
-    serviceList: ServiceInfo[];
-    loadServiceList: (yr:number, mo:number, dy:number) => void;
+    scheduleList: ChurchSchedule[];
+    members: Map<string, FullMemberInfo>;
 }

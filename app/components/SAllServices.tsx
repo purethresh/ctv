@@ -2,44 +2,30 @@
 
 import { useEffect, useState } from "react";
 import SServiceSchedule from "./SServiceSchedule";
-import { ServiceInfo } from "../lib/ServiceInfo";
 import { Grid2 } from "@mui/material";
 import { SAllServicesProp } from "../props/SAllServicesProp";
+import { ChurchSchedule } from "../lib/ChurchSchedule";
+import { FullMemberInfo } from "../lib/FullMemberInfo";
 
 export default function SAllServices(props:SAllServicesProp) {
-  let [serviceDate, setServiceDate] = useState<string>(props.serviceDate || '');
-  let [serviceIdList, setServiceIdList] = useState<ServiceInfo[]>(props.serviceList);
-
+  let [scheduleList, setScheduleList] = useState<ChurchSchedule[]>(props.scheduleList);
+  let [memberMap, setMemberMap] = useState<Map<string, FullMemberInfo>>(props.members);
 
   // Get the services for the selected day
   const getServicesForDay = async() => {
-    setServiceIdList(props.serviceList);
-
-    if (props == undefined) return;
-    if (props.serviceDate == undefined) return;
-    if (props.serviceDate.length == 0) return;
-
-    if ( props.serviceDate != serviceDate ) {
-      const sDate = new Date(serviceDate);
-      const yr = sDate.getFullYear();
-      const mo = sDate.getMonth() + 1;
-      const dy = sDate.getDate() + 1;
-      setServiceDate(props.serviceDate);
-
-      // Now load the service list
-      props.loadServiceList(yr, mo, dy);
-    }
+    setScheduleList(props.scheduleList);
+    setMemberMap(props.members);
   }
 
   useEffect(() => {
     getServicesForDay();
-  }, [props.serviceDate, props.serviceList]);
+  }, [props.scheduleList]);
 
   return (
     <>
-      {serviceIdList.map((item, index) => (
-        <Grid2 key={index+'_schedule_grid'} size={{ xs: 12, sm: 6}}>
-          <SServiceSchedule key={index+'_schedule'} serviceInfo={item} />
+      {scheduleList.map((item, index) => (
+        <Grid2 key={item.serviceInfo.service_id+'_schedule_grid'} size={{ xs: 12, sm: 6}}>
+          <SServiceSchedule key={index+'_schedule'} schedule={item} members={memberMap} />
         </Grid2>        
       ))}
     </>

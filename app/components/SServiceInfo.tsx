@@ -76,7 +76,7 @@ export default function SServiceInfo(props: SServiceInfoProps) {
       <Box bgcolor='secondary.main'><Typography variant="h6" color='secondary.contrastText' sx={{padding: '5px'}}>{serviceTime} - {props.serviceInfo.name}</Typography></Box>
       <Box bgcolor='secondary.dark'><Typography variant="subtitle1" color='secondary.contrastText' sx={{padding: '5px'}}>{props.serviceInfo.info}</Typography></Box>      
       {labelGroupList.map((item, index) => (
-        <SLabelGroup key={item.label_id} serviceDate={serviceDateStr} groupInfo={item} onAddMember={addMember} onRemoveMember={removeMember} showAddMember={true} showRemoveMember={true} members={memberMap} serviceId={serviceId} />
+        <SLabelGroup key={item.label_id} serviceDate={serviceDateStr} groupInfo={item} onAddMember={addMember} onRemoveMember={removeMember} showAddMember={true} showRemoveMember={true} members={memberMap} serviceId={serviceId} showNonScheduledMembers={true} />
       ))}      
     </Box>
   );

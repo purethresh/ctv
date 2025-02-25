@@ -18,6 +18,7 @@ export default function SScheduledLabel(props:SLabelGroupProps) {
     let [scheduledNumber, setScheduledNumber] = useState<number>(DEFAULT_MAX_SCHEDULED);
     let [showAddMember, setShowAddMember] = useState<boolean>(props.showAddMember || false);
     let [showRemoveMember, setShowRemoveMember] = useState<boolean>(props.showRemoveMember || false);
+    let [showNonScheduledMembers, setShowNonScheduledMembers] = useState<boolean>(props.showNonScheduledMembers || false);
     let [memberMap, setMemberMap] = useState<Map<string, FullMemberInfo>>(new Map<string, FullMemberInfo>());
     let [serviceId, setServiceId] = useState<string>(props.serviceId || '');
     let [serviceDateStr, setServiceDateStr] = useState<string>(props.serviceDate || '');
@@ -52,6 +53,12 @@ export default function SScheduledLabel(props:SLabelGroupProps) {
                 setServiceId(props.serviceId);
             }
 
+            var sNonScheduledMembers = true;
+            if (props.showNonScheduledMembers !== undefined) {
+                sNonScheduledMembers = props.showNonScheduledMembers;
+            }
+            setShowNonScheduledMembers(sNonScheduledMembers);
+
             const lbl = props.groupInfo;
             setLabelName(lbl.labelName);
             setLabelInfo(lbl);
@@ -66,7 +73,7 @@ export default function SScheduledLabel(props:SLabelGroupProps) {
             // Get the members
             var minScheduled = DEFAULT_MAX_SCHEDULED;
             const sMemList:FullMemberInfo[] = [];
-            const nsMemList:FullMemberInfo[] = [];
+            var nsMemList:FullMemberInfo[] = [];
             lbl.memberSet.forEach((value) => {
                 const mInfo = currentMembers.get(value);
                 if (mInfo !== undefined) {
@@ -80,10 +87,14 @@ export default function SScheduledLabel(props:SLabelGroupProps) {
                 }
             });
 
+            if (!sNonScheduledMembers) {
+                nsMemList = [];
+            }
+
             // Sort Scheduled Members (by name)
             sMemList.sort(FullMemberInfo.sortByName);
 
-            // 
+            // Sort non scheduled members
             nsMemList.sort( (a, b) => {
                 var aSched = a.getScheduledNumber();
                 var bSched = b.getScheduledNumber();
