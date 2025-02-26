@@ -3,7 +3,8 @@ import { API_CALLS } from '../lib/APIHandler';
 import { ServiceInfo } from '../lib/ServiceInfo';
 import { ChurchSchedule } from '../lib/ChurchSchedule';
 import { ScheduleInfo } from '../lib/ScheduleInfo';
-
+import { getMonthStart, getMonthEnd } from "../lib/DateUtils";
+import { AvailabilityInfo } from '../lib/AvailabilityInfo';
 
 export class SchedulePageData extends PageData {
     scheduleList:ChurchSchedule[];      // List of ChurchSchedule for the month
@@ -87,6 +88,29 @@ export class SchedulePageData extends PageData {
 
         // Now convert the set to an array
         this.monthlyDays = Array.from(monthSet);
+    }
+
+    async loadBlockedOutDays(dt:Date) {
+        // First calculate the start and end of the month
+        const min = getMonthStart(dt);
+        const max = getMonthEnd(dt);
+        
+        // Get the data
+        const res = await this.api.getData(API_CALLS.availability, { church_id: this.uInfo.church_id, min: min.toString(), max: max.toString() });
+        const data = await res.json();
+
+        // Loop through the data and add to each member
+        if (data != null && data.length > 0) {
+            for(var i=0; i<data.length; i++) {
+                const aInfo:AvailabilityInfo = new AvailabilityInfo(data[i]);
+                const memberId = aInfo.member_id;
+                const mInfo = this.memberMap.get(memberId);
+                if (mInfo) {
+                    mInfo.addBlockedOutDay(aInfo);                    
+                    this.memberMap.set(memberId, mInfo);
+                }
+            }
+        }
     }
 
     async loadScheduledMembersForMonth(dt:Date) {

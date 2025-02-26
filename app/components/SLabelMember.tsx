@@ -41,8 +41,8 @@ export default function SLabelMember(props:SMemberLabelProps) {
 
     const setupUserInfo = () => {
         if (props.memberInfo !== undefined) {
-            setShowAdd(props.showAdd || false);
-            setShowRemove(props.showRemove || false);
+            var sAdd = props.showAdd || false;
+            var sRemove = props.showRemove || false;
             const lblId = props.label_id || '';
             setLabelId(lblId);
             
@@ -62,6 +62,7 @@ export default function SLabelMember(props:SMemberLabelProps) {
 
             // Set the status
             if (mInfo.isBlockedOutForService(serviceDate)) {
+                sAdd = false;
                 setBackColor(blockedBackColor);
                 setTextColor(blockedTextColor);
             }
@@ -83,6 +84,10 @@ export default function SLabelMember(props:SMemberLabelProps) {
                 setBackColor(defaultBackColor);
                 setTextColor(defaultTextColor);
             }
+
+            // If blocked out, it could change the showAdd and showRemove
+            setShowAdd(sAdd);
+            setShowRemove(sRemove);
         }
     }
 

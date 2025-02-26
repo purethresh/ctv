@@ -9,7 +9,7 @@ import { v4 } from 'uuid';
 import { IAvailabilityInfo, AvailabilityInfo } from "@/app/lib/AvailabilityInfo";
 import { Grid2, Paper } from "@mui/material";
 import { AvailabilityPageData } from "@/app/db/AvailabilityPageData";
-import { MinMemberInfo } from "@/app/lib/MinMemberInfo";
+import { FullMemberInfo } from "@/app/lib/FullMemberInfo";
 
 export default function AvailabilityPage() {
   let [pageData, setPageData] = useState<AvailabilityPageData>(new AvailabilityPageData());
@@ -18,7 +18,7 @@ export default function AvailabilityPage() {
   let [blockOutMap, setBlockOutMap] = useState<Map<number, AvailabilityInfo>>(new Map<number, AvailabilityInfo>());
   let [blockFullList, setBlockFullList] = useState<AvailabilityInfo[]>([]);
   let [currentViewedDate, setCurrentViewedDate] = useState<Date>(new Date(getDefaultSunday()));
-  let [memberList, setMemberList] = useState<MinMemberInfo[]>([]);
+  let [memberList, setMemberList] = useState<FullMemberInfo[]>([]);
 
   const onMemberChanged = async (memberId:string) => {
     setCurrentUserId(memberId);
@@ -92,15 +92,18 @@ export default function AvailabilityPage() {
       // Load availability
       await pData.loadBlockOutInfo(uInfo.member_id, currentViewedDate);
 
-      // Load the members in the list
+      // Load the members
       await pData.loadAllMembers();
+
+      // Convert the map to a list
+      const memberList:FullMemberInfo[] = pData.getMembersAsList();
 
       // Set the state
       setCurrentUserId(uInfo.member_id);
       setBlockOutMap(pData.blockOutMap);
       setBlockOutList(pData.blockOutList);
       setBlockFullList(pData.blockFullList);
-      setMemberList(pData.memberList);
+      setMemberList(memberList);
       setPageData(pData);
     }    
 

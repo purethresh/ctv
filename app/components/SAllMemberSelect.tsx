@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { MinMemberInfo } from '../lib/MinMemberInfo';
 import { InputLabel, Select, MenuItem, IconButton, Box, Typography, Stack } from '@mui/material';
 import { SelectChangeEvent } from '@mui/material/Select';
 import { SAllMemberSelectProp } from '../props/SAllMemberSelectProp';
+import { FullMemberInfo } from '../lib/FullMemberInfo';
 
 export default function SAllMemberSelect(props:SAllMemberSelectProp) {
-    let [memberList, setMemberList] = useState<MinMemberInfo[]>(props.memberList);
+    let [memberList, setMemberList] = useState<FullMemberInfo[]>(props.memberList);
     let [selectedMember, setSelectedMember] = useState<string>('');
     let [isVisible, setIsVisible] = useState<boolean>(false);
     let [defaultMemberId, setDefaultMemberId] = useState<string>('');

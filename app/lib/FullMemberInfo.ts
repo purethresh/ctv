@@ -1,3 +1,4 @@
+import { AvailabilityInfo } from "./AvailabilityInfo";
 import { IMinMemberInfo, MinMemberInfo } from "./MinMemberInfo";
 import { ScheduleInfo } from "./ScheduleInfo";
 
@@ -7,13 +8,13 @@ export class FullMemberInfo extends MinMemberInfo {
     scheduleMap:Map<string, ScheduleInfo>;
 
     // Map of AvailabilityInfo mapped by blockedAsDateStr
-    availabilityMap:Map<string, ScheduleInfo>;
+    availabilityMap:Map<string, AvailabilityInfo>;
 
     constructor(obj:IMinMemberInfo = {}) {
         super(obj);
 
         this.scheduleMap = new Map<string, ScheduleInfo>();
-        this.availabilityMap = new Map<string, ScheduleInfo>();
+        this.availabilityMap = new Map<string, AvailabilityInfo>();
     }
 
     // Clear Scheduled
@@ -23,6 +24,11 @@ export class FullMemberInfo extends MinMemberInfo {
 
     addSchedule(sInfo:ScheduleInfo) {
         this.scheduleMap.set(sInfo.service_id, sInfo);
+    }
+
+    addBlockedOutDay(aInfo:AvailabilityInfo) {
+        const key = aInfo.blockedAsDateStr;
+        this.availabilityMap.set(key, aInfo);
     }
 
     isBlockedOutForService(blockedAsDateStr:string) : boolean {

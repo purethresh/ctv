@@ -78,6 +78,9 @@ export default function SchedulePage() {
 
       // Load the members scheduled for the labels
       await pData.loadScheduledMembersForMonth(dt);
+
+      // Load the blocked out days
+      await pData.loadBlockedOutDays(dt);
   }
 
   const onAddMemberToSchedule = async (info:any, sTime:Date) => {
