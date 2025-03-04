@@ -1,5 +1,8 @@
-import { ServiceInfo } from "../lib/ServiceInfo";
+import { ChurchSchedule } from "../lib/ChurchSchedule";
+import { FullMemberInfo } from "../lib/FullMemberInfo";
+// import { ServiceInfo } from "../lib/ServiceInfo";
 
 export interface SServiceScheduleProps {
-    serviceInfo?:ServiceInfo;
+    schedule:ChurchSchedule;
+    members: Map<string, FullMemberInfo>;
 }

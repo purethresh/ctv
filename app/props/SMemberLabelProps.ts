@@ -1,11 +1,13 @@
-import { MinMemberInfo } from "../lib/MinMemberInfo";
+import { FullMemberInfo } from "../lib/FullMemberInfo";
 
 export interface SMemberLabelProps {
-    memberInfo?: MinMemberInfo;
-    updateNumber?:number;
+    memberInfo?: FullMemberInfo;
     label_id?:string;
+    service_id?:string;
+    serviceDate?:string;
     showAdd?:boolean;
     showRemove?:boolean;
-    addMember?: (memberInfo:MinMemberInfo) => void;
-    removeMember?: (memberInfo:MinMemberInfo) => void;
+    maxScheduledForRecommendation?:number;
+    addMember?: (memberInfo:FullMemberInfo) => void;
+    removeMember?: (memberInfo:FullMemberInfo) => void;
 }

@@ -45,11 +45,6 @@ export default function SServiceAdd(props:SServiceAddProps) {
   const createService = async () => {
     setIsCreating(false);
 
-    // If no church id, then we can't create a service
-    if (props.church_id === undefined || props.church_id.length <= 0) {
-      return;
-    }
-
     // Create the propert time
     const sTime = new Date(defaultDate.getTime());
     sTime.setHours(serviceTime.getHours());

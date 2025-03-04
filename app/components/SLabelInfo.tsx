@@ -16,8 +16,6 @@ export default function SLabelInfo(props:SLabelInfoProps) {
     let [selectedMember, setSelectedMember] = useState<string>('');
     let [canAddMember, setCanAddMember] = useState<boolean>(false);
     let [canAddOwner, setCanOwner] = useState<boolean>(false);
-    let [memberList, setMemberList] = useState<MinMemberInfo[]>([]);
-    let [ownerList, setOwnerList] = useState<MinMemberInfo[]>([]);
 
     const userSelected = async (memberId:string) => {
         setSelectedMember(memberId);
@@ -59,16 +57,18 @@ export default function SLabelInfo(props:SLabelInfoProps) {
         
         const uId = props.userId || '';
         const lbl = props.labelInfo || new LabelInfo({});
+        const sMember = uId;
 
         // Update the add buttons
-        const iMember = lbl.isMember(selectedMember);
-        const iOwner = lbl.isOwner(selectedMember);
+        const iMember = lbl.isMember(sMember);
+        const iOwner = lbl.isOwner(sMember);
 
         setCanAddMember(!iMember);
         setCanOwner(!iOwner);        
 
         setIsAdmin(lbl.isOwner(uId));
         setUserId(uId);
+        setSelectedMember(sMember);
         setLabelInfo(lbl);
     }
 

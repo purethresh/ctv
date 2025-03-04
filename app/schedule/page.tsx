@@ -1,115 +1,162 @@
 "use client";
 
-import SServiceInfo from "../components/SServiceInfo";
 import { useState, useEffect } from 'react';
-import { getDayString, getDefaultSunday } from "../lib/DateUtils";
+import { getDefaultSunday } from "../lib/DateUtils";
 import SServiceAdd from "../components/SServiceAdd";
 import SChurchCalendar from "../components/SChurchCalendar";
 import UserInfo from "../lib/UserInfo";
 import { ServiceInfo } from "../lib/ServiceInfo";
 import { Grid2 } from "@mui/material";
 import { SchedulePageData } from "../db/SchedulePageData";
-import ChurchLabels from "../lib/ChurchLabels";
 import { ChurchSchedule } from "../lib/ChurchSchedule";
+import { getDayString } from "../lib/DateUtils";
+import SServiceInfo from "../components/SServiceInfo";
+import { FullMemberInfo } from '../lib/FullMemberInfo';
 
 export default function SchedulePage() {
   let [pageData, setPageData] = useState<SchedulePageData>(new SchedulePageData());
-  let [allLabels, setAllLabels] = useState<ChurchLabels>(new ChurchLabels());
-  let [schedule, setSchedule] = useState<ChurchSchedule>(new ChurchSchedule(''));
+  let [scheduleList, setScheduleList] = useState<ChurchSchedule[]>([]);
+  let [scheduledDays, setScheduledDays] = useState<number[]>([]);
   
+  let [defaultDate, setDefaultDate] = useState<string>(getDefaultSunday());
   let [curentDate, setCurrentDate] = useState<string>(getDefaultSunday());
   let [currentTime, setCurrentTime] = useState<Date>(new Date(getDefaultSunday()));
-  let [userInfo, setUserInfo] = useState<UserInfo>(new UserInfo());
-  let [serviceList, setServiceList] = useState<ServiceInfo[]>([]);
-  let [updateScheduleNum, setUpdateScheduleNum] = useState<number>(0);
+  let [currentSchedule, setCurrentSchedule] = useState<ChurchSchedule[]>([]);
+  let [hasBeenInitialized, setHasBeenInitialized] = useState<boolean>(false);
 
-  const onDateChange = async (dt:Date) => {
+  let [memberMap, setMemberMap] = useState<Map<string, FullMemberInfo>>(new Map<string, FullMemberInfo>());
+  let [userInfo, setUserInfo] = useState<UserInfo>(new UserInfo());
+
+  const onDateChange = async (dt:Date, data:SchedulePageData | undefined = undefined) => {
+    // The schedule should already be loaded, we just need to show it.
+    const pData = data || pageData;
+    pData.selectServiceForDay(dt);
+
+    // Save the time change here
     setCurrentTime(dt);
     setCurrentDate(getDayString(dt));
 
-    const pData = pageData;
-    await pData.loadServiceForDay(dt.getFullYear(), dt.getMonth()+1, dt.getDate());
-
-    setServiceList(pData.serviceList);
-    setPageData(pData);
+    // Only save if no data was supplied
+    if (data == undefined) {
+      saveData(pData);
+    }
   }
 
   const onMonthChange = async (dt:Date) => {
-    const pData = pageData;
-    await pData.loadServiceForDay(dt.getFullYear(), dt.getMonth()+1, dt.getDate());
 
-    setServiceList(pData.serviceList);
-    setPageData(pData);
+    // Wait for things to be initialized
+    if (!hasBeenInitialized) {
+      return;
+    }
+
+    const pData = pageData;
+    await loadServicesForMonth(pageData, dt);
+    saveData(pData);
   }
 
   const onServiceCreated = async (sInfo:ServiceInfo) => {
-    // Need to reload list of scheduled services
-    setUpdateScheduleNum(updateScheduleNum + 1);
-
     const pData = pageData;
-    await pData.loadServiceForDay(currentTime.getFullYear(), currentTime.getMonth()+1, currentTime.getDate());
+    await pData.createService(sInfo);
 
-    setServiceList(pData.serviceList);
-    setPageData(pData);
+    await loadServicesForMonth(pData, currentTime);
+    saveData(pData);
+  }
+
+  const loadServicesForMonth = async (pData:SchedulePageData, dt:Date) => {
+      // Load the services for the month
+      await pData.loadServicesWithBufferDays(dt);
+
+      // Loop through the schedule list and load the labels
+      for (var i=0; i<pData.scheduleList.length; i++) {
+        const sInfo = pData.scheduleList[i];
+        // Set the labels for this schedule
+        sInfo.churchLabels = pData.churchLabels.clone();
+
+        // Load the scheduled labels for this service
+        await pData.loadScheduledLabels(sInfo.serviceInfo.service_id, sInfo.churchLabels);
+      }
+
+      // Load the members scheduled for the labels
+      await pData.loadScheduledMembersForMonth(dt);
+
+      // Load the blocked out days
+      await pData.loadBlockedOutDays(dt);
   }
 
   const onAddMemberToSchedule = async (info:any, sTime:Date) => {
-    await pageData.addMemberToService(info);
-    await pageData.loadScheduleWithBufferDays(sTime);
+    const pData = pageData;
 
-    setPageData(pageData);
+    // Add to the service
+    await pData.addMemberToService(info);
+
+    // Reload members scheduled for the month
+    await loadServicesForMonth(pData, sTime);
+
+    // Force a refresh of the data
+    await onDateChange(sTime, pData);
+    saveData(pData);
   }
 
   const onRemoveMemberFromSchedule = async (info:any, sTime:Date) => {
-    await pageData.removeMemberFromService(info);
-    await pageData.loadScheduleWithBufferDays(sTime);
+    const pData = pageData;
 
-    setPageData(pageData);
+    // Remove from the service
+    await pData.removeMemberFromService(info);
+
+    // Reload members scheduled for the month
+    await loadServicesForMonth(pData, sTime);
+
+    // Force a refresh of the data
+    await onDateChange(sTime, pData);
+    saveData(pData);
+  }
+
+  const saveData = (pData:SchedulePageData) => {
+    setMemberMap(pData.memberMap);
+    setScheduleList(pData.scheduleList);
+    setScheduledDays(pData.monthlyDays);
+    setPageData(pData);
+    setCurrentSchedule(pData.currentSchedule);
+  }
+
+  const getServiceInfo = async() => {
+    // Load member info
+    const pData = pageData;
+    await pData.loadMemberInfo();
+    setUserInfo(pData.uInfo);
+
+    // Load all the labels
+    await pData.loadChurchLabels();
+
+    // Load the members for the scheduled labels
+    await pData.loadMembersForScheduledLabels();
+
+    // Load the services for the month
+    await loadServicesForMonth(pData, currentTime);
+
+    // Show schedules for current time
+    await onDateChange(currentTime, pData);
+
+    // Allow monthly update
+    setHasBeenInitialized(true);
+
+    // Set data
+    saveData(pData);
   }
 
   useEffect(() => {
-    const getServiceInfo = async() => {
-      // Load member info
-      const pData = pageData;
-      await pData.loadMemberInfo();
-      setUserInfo(pData.uInfo);
-
-      // Load the service info
-      await pData.loadServiceForDay(currentTime.getFullYear(), currentTime.getMonth()+1, currentTime.getDate());
-
-      // Load the labels
-      await pData.loadChurchLabels();
-      await pData.loadMembersForScheduledLabels();
-
-      // Load the schedule
-      await pData.loadScheduleWithBufferDays(currentTime);
-      await pData.loadBlockedOutDaysWithBuffer(currentTime);
-
-      // Get members for the scheduled labels
-      for (var i=0; i<pData.serviceList.length; i++) {
-        const sInfo = pData.serviceList[i];
-        await pData.loadScheduledLabels(sInfo.service_id);
-      }
-
-      setServiceList(pData.serviceList);
-      setAllLabels(pData.churchLabels);
-      setSchedule(pData.schedule);
-      
-      setPageData(pData);
-    }
-
     getServiceInfo();
   }, []);
 
   return (
     <Grid2 container spacing={2}>
-      <SChurchCalendar defaultDate={curentDate} onDateChanged={onDateChange} onMonthChanged={onMonthChange} />
+      <SChurchCalendar defaultDate={defaultDate} scheduledDays={scheduledDays} onDateChanged={onDateChange} onMonthChanged={onMonthChange} />
       <Grid2 size={{ xs: 12, sm: 6 }}>
         <SServiceAdd defaultDate={currentTime} onCreateService={onServiceCreated} church_id={userInfo.church_id} />
       </Grid2>
-      {serviceList.map((item, index) => (
-        <Grid2 size={12} key={item.service_id + '_grid'}>
-          <SServiceInfo key={item.service_id} churchLabels={allLabels} schedule={schedule} serviceInfo={item} onAddMemberToSchedule={onAddMemberToSchedule} onRemoveMemberFromSchedule={onRemoveMemberFromSchedule} />
+      {currentSchedule.map((item, index) => (
+        <Grid2 size={12} key={item.serviceInfo.service_id + '_grid'}>
+          <SServiceInfo key={item.serviceInfo.service_id} churchLabels={item.churchLabels} schedule={item} serviceInfo={item.serviceInfo} onAddMemberToSchedule={onAddMemberToSchedule} onRemoveMemberFromSchedule={onRemoveMemberFromSchedule} members={memberMap} />
         </Grid2>
       ))}
     </Grid2>  

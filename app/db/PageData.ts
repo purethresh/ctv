@@ -5,20 +5,20 @@ import { fetchUserAttributes } from "aws-amplify/auth";
 import { APIHandler, API_CALLS } from "../lib/APIHandler";
 import ChurchLabels from "../lib/ChurchLabels";
 import { LabelInfo } from "../lib/LabelInfo";
-import { MinMemberInfo } from "../lib/MinMemberInfo";
+import { FullMemberInfo } from "../lib/FullMemberInfo";
 
 
 export class PageData {
     api:APIHandler;
     uInfo:UserInfo;
     churchLabels:ChurchLabels;
-    memberList:MinMemberInfo[];
+    memberMap:Map<string,FullMemberInfo>;
 
     constructor() {
         this.uInfo = new UserInfo();
         this.api = new APIHandler();
         this.churchLabels = new ChurchLabels();
-        this.memberList = [];
+        this.memberMap = new Map<string,FullMemberInfo>();
     }
 
     signOut() {
@@ -108,7 +108,7 @@ export class PageData {
         const res = await api.getData(API_CALLS.labelMember, {member_id: memberId});
         const data = await res.json();
 
-        this.churchLabels.setMemberLabels(data);
+        this.churchLabels.setMemberLabels(data);        
     }
 
     async loadMembersForScheduledLabels() {
@@ -151,10 +151,22 @@ export class PageData {
         // Reset all the members / owners for this label
         const lbl = this.churchLabels.labelMap.get(labelId);
         if (lbl) {
-          lbl.memberMap.clear();
+          lbl.memberSet.clear();
+          // lbl.memberMap.clear();
           lbl.owners.clear();
         }
 
+        // Loop through the data, and make sure there is a member for each response
+        if (data && data.length > 0) {
+          for(var i=0; i<data.length; i++) {
+            const mInfo = new FullMemberInfo(data[i]);
+            if (!this.memberMap.has(mInfo.member_id)) {
+              this.memberMap.set(mInfo.member_id, mInfo);
+            }
+          }
+        }
+
+        // Add the member to the label
         this.churchLabels.setMemberLabels(data);
     }
 
@@ -173,7 +185,7 @@ export class PageData {
     async loadMembersWithPhoneFilter(filter:string) {
       // If the filter is empty, use an empty list
       if (filter.length <= 0) {
-        this.memberList = [];
+        this.memberMap.clear();
         return;
       }
 
@@ -185,21 +197,32 @@ export class PageData {
       this.updateMemberList(rs);
     }
 
-    private updateMemberList(data:any) {
-      this.memberList = [];
+    getMembersAsList() : FullMemberInfo[] {
+      var result:FullMemberInfo[] = [];
 
-      for(var i=0; i<data.length; i++) {
-          this.memberList.push(new MinMemberInfo(data[i]));
-      }
+      this.memberMap.forEach((value, key) => {
+        result.push(value);
+      });
 
       // Sort the list
-      this.memberList.sort((a, b) => {
+      result.sort((a, b) => {
           var result = a.first.localeCompare(b.first);
           if (result === 0) {
               result = a.last.localeCompare(b.last);
           }
           return result;
       });
+
+      return result;
     }
+
+    protected updateMemberList(data:any) {
+      this.memberMap.clear();
+
+      for(var i=0; i<data.length; i++) {
+        const mInfo = new FullMemberInfo(data[i]);
+        this.memberMap.set(mInfo.member_id, mInfo);
+      }
+    }    
 
 }

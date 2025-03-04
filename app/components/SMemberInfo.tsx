@@ -1,7 +1,7 @@
 import { Box, Typography, TextField, Button, IconButton, Paper, Grid2, FormLabel, RadioGroup, FormControlLabel, Radio } from "@mui/material";
 import { SMemberInfoProp } from "../props/SMemberInfoProp";
 import { useEffect, useState } from "react";
-import { MinMemberInfo } from "../lib/MinMemberInfo";
+import { FullMemberInfo } from "../lib/FullMemberInfo";
 import SMemberPhoneList from "./SMemberPhoneList";
 import SMemberAddressList from "./SMemberAddressList";
 import SMemberEmailList from "./SMemberEmailList";
@@ -14,7 +14,7 @@ import { MemberEmailInfo } from "../lib/MemberEmailInfo";
 import { MemberAddressInfo } from "../lib/MemberAddressInfo";
 
 export default function SMemberInfo(props:SMemberInfoProp) {
-    let [memberInfo, setMemberInfo] = useState<MinMemberInfo>(props.memberInfo || new MinMemberInfo({}));
+    let [memberInfo, setMemberInfo] = useState<FullMemberInfo>(props.memberInfo || new FullMemberInfo({}));
     let [isAdmin, setIsAdmin] = useState<boolean>(props.isAdmin || false);
     let [isEditing, setIsEditing] = useState<boolean>(props.isEditing || false);
 
@@ -106,7 +106,7 @@ export default function SMemberInfo(props:SMemberInfoProp) {
         setMemberInfo(mInfo);
     };
 
-    const resetState = (mInfo:MinMemberInfo) => {
+    const resetState = (mInfo:FullMemberInfo) => {
         setMemberInfo(mInfo);
         setIsAdmin(props.isAdmin || false);
         setIsEditing(props.isEditing || false);

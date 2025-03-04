@@ -1,11 +1,10 @@
 import { Box, IconButton } from "@mui/material";
 import { SMemberLabelProps } from "../props/SMemberLabelProps";
 import { useEffect, useState } from 'react';
-import { MinMemberInfo } from "../lib/MinMemberInfo";
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import { Typography } from "@mui/material";
-import { ScheduleStatus } from "../lib/ScheduleStatus";
+import { FullMemberInfo } from "../lib/FullMemberInfo";
 
 export default function SLabelMember(props:SMemberLabelProps) {
     const defaultBackColor = 'info.main';
@@ -19,7 +18,8 @@ export default function SLabelMember(props:SMemberLabelProps) {
 
     let [memberId, setMemberId] = useState<string>('');
     let [labelId, setLabelId] = useState<string>('');
-    let [memberInfo, setMemberInfo] = useState<MinMemberInfo>(props.memberInfo || new MinMemberInfo({}));
+    let [maxScheduledForRecommendation, setMaxScheduledForRecommendation] = useState<number>(props.maxScheduledForRecommendation || 1);
+    let [memberInfo, setMemberInfo] = useState<FullMemberInfo>(props.memberInfo || new FullMemberInfo({}));
     let [fullName, setFullName] = useState<string>('');
     let [backColor, setBackColor] = useState<string>(defaultBackColor);
     let [textColor, setTextColor] = useState<string>(defaultTextColor);
@@ -41,9 +41,8 @@ export default function SLabelMember(props:SMemberLabelProps) {
 
     const setupUserInfo = () => {
         if (props.memberInfo !== undefined) {
-
-            setShowAdd(props.showAdd || false);
-            setShowRemove(props.showRemove || false);
+            var sAdd = props.showAdd || false;
+            var sRemove = props.showRemove || false;
             const lblId = props.label_id || '';
             setLabelId(lblId);
             
@@ -58,30 +57,43 @@ export default function SLabelMember(props:SMemberLabelProps) {
             }
             setFullName(nm);
 
-            if (mInfo.scheduledStatus === ScheduleStatus.blockedOut) {
+            const serviceDate = props.serviceDate || '';
+            const serviceId = props.service_id || '';
+
+            // Set the status
+            if (mInfo.isBlockedOutForService(serviceDate)) {
+                sAdd = false;
                 setBackColor(blockedBackColor);
                 setTextColor(blockedTextColor);
-            } else if (mInfo.scheduledStatus === ScheduleStatus.recommended) {
+            }
+            else if (mInfo.isScheduledForLabel(serviceId, lblId)) {
+                setBackColor(scheduledBackColor);
+                setTextColor(scheduledTextColor);
+            }
+            else if (mInfo.isRecommendedForLabel(serviceId, maxScheduledForRecommendation)) {
                 setBackColor(recommendedBackColor);
                 setTextColor(recommendedTextColor);
-            } else if (mInfo.scheduledStatus === ScheduleStatus.scheduled) {
-                if (mInfo.scheduledLabels.has(lblId)) {
-                    setBackColor(scheduledBackColor);
-                    setTextColor(scheduledTextColor);
-                } else {
-                    setBackColor(defaultBackColor);
-                    setTextColor(defaultTextColor);
-                }
-            } else {
+            }
+            else if (mInfo.isScheduledForService(serviceId)) {
+                // TODO JLS, need a new color for this.
+                // Member is scheduled for a different label in this service
+                setBackColor(scheduledBackColor);
+                setTextColor(scheduledTextColor);
+            }
+            else {
                 setBackColor(defaultBackColor);
                 setTextColor(defaultTextColor);
             }
+
+            // If blocked out, it could change the showAdd and showRemove
+            setShowAdd(sAdd);
+            setShowRemove(sRemove);
         }
     }
 
     useEffect(() => {
         setupUserInfo();
-    }, [props.memberInfo, props.updateNumber]);
+    }, [props.memberInfo]);
 
     return (
         <Box sx={{backgroundColor: backColor, display: 'inline-flex', paddingLeft: '10px', paddingRight: '10px', paddingTop: '3px', paddingBottom: '2px', margin: '5px', borderRadius: '10px'}}>

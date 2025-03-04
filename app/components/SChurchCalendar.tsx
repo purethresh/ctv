@@ -24,9 +24,19 @@ export default function SChurchCalendar(props: SCalendarProps) {
 
   const onMonthYearChanged = (dChange:Moment) => {
     const dt = new Date(dChange.toDate());
-    if (lastCheckedDate.getDate() == dt.getDate()) return;
-    setLastCheckedDate(dt);
 
+    // Get time as string
+    const dtStr = dt.toDateString();
+    const lastStr = lastCheckedDate.toDateString();
+
+    // Prevent multiple calls
+    if (dtStr === lastStr) {
+      return;
+    }
+
+    // Set the date
+    setLastCheckedDate(dt);
+    
     // Notify that month year changed
     if (props.onMonthChanged) {
       props.onMonthChanged(dt);
@@ -38,7 +48,11 @@ export default function SChurchCalendar(props: SCalendarProps) {
     setSelectedDate(strDt);
     setScheduledDays(props.scheduledDays || []);
     onMonthYearChanged(moment(strDt));
-  }, [props.defaultDate, props.selectedDate, props.scheduledDays]);  
+  }, [props.defaultDate, props.selectedDate]);
+
+  useEffect(() => {
+    setScheduledDays(props.scheduledDays || []);
+  }, [props.scheduledDays]);   
 
   return (
     <Grid2 size={{ xs: 12, sm: 6 }}>

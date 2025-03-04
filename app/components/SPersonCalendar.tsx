@@ -27,14 +27,6 @@ export default function SPersonCalendar(props: SCalendarProps) {
         }
     }
 
-    // TODO JLS
-    // const onClickedDate = (dt:Moment) => {
-    //     if (props.onDateClicked) {
-    //         props.onDateClicked(dt.toDate());
-    //     }
-    // }
-
-
     useEffect(() => {    
         setRestrictedDays(props.restrictedDays || []);
     }, [props.restrictedDays]);

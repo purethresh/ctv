@@ -5,16 +5,17 @@ import { LinkPageData } from "./LinkPageData";
 import { MemberEmailInfo } from "../lib/MemberEmailInfo";
 import { MemberAddressInfo } from "../lib/MemberAddressInfo";
 import { UpdateType } from "../lib/UpdateType";
+import { FullMemberInfo } from "../lib/FullMemberInfo";
 
 export class MemberPageData extends LinkPageData {
-    currentMemberInfo:MinMemberInfo;
+    currentMemberInfo:FullMemberInfo;
     currentPhoneList:MemberPhoneInfo[];
     currentEmailList:MemberEmailInfo[];
     currentAddressList:MemberAddressInfo[];
     
     constructor() {
         super();
-        this.currentMemberInfo = new MinMemberInfo({});
+        this.currentMemberInfo = new FullMemberInfo({});
         this.currentPhoneList = [];
         this.currentEmailList = [];
         this.currentAddressList = [];
@@ -24,7 +25,7 @@ export class MemberPageData extends LinkPageData {
         const res = await this.api.getData(API_CALLS.member, { member_id: member_id });
         const data = await res.json();
         if (data) {
-            this.currentMemberInfo = new MinMemberInfo(data[0]);
+            this.currentMemberInfo = new FullMemberInfo(data[0]);
         }        
     }
 
@@ -107,5 +108,5 @@ export class MemberPageData extends LinkPageData {
                 await this.api.createData(API_CALLS.address, aInfo);
             }
         }
-    }      
+    }
 }

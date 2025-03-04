@@ -1,3 +1,4 @@
+import { FullMemberInfo } from "./FullMemberInfo";
 import { LabelInfo } from "./LabelInfo";
 import { MinMemberInfo } from "./MinMemberInfo";
 
@@ -10,7 +11,6 @@ export default class ChurchLabels {
     churchId:string = '';
     labelMap:Map<string, LabelInfo> = new Map<string, LabelInfo>();
     labelRoot:LabelInfo | null = null;
-    memberMap:Map<string, MinMemberInfo> = new Map<string, MinMemberInfo>();
 
     setAllLabels(data:any) {
         this.labelMap.clear();
@@ -39,6 +39,29 @@ export default class ChurchLabels {
         });        
     }
 
+    clone() : ChurchLabels {
+        var result = new ChurchLabels();
+
+        // Loop through the labels, clone them and add them to the new list
+        this.labelMap.forEach((value:LabelInfo, key:string) => {
+            result.labelMap.set(key, value.clone());
+            if (value.owner_id.length <= 0) {
+                result.labelRoot = value;
+            }
+        });
+
+        // Now make this a graph
+        result.labelMap.forEach((value:any, key:string) => {
+            if (value.owner_id.length > 0) {
+                const owner = result.labelMap.get(value.owner_id);
+                if (owner) {
+                    owner.addChildLabel(value);
+                }
+            }
+        });
+        return result;
+    }
+
     async setScheduledLabels(data:any) {     
         // Clear the list before loading
         if (this.labelRoot) {
@@ -50,58 +73,29 @@ export default class ChurchLabels {
                 const sInfo = data[i];
                 // Get the label by id
                 const lbl = this.labelMap.get(sInfo.label_id);
-
                 // Now add a scheduled person to the label
                 if (lbl) {
-                    lbl.addScheduled(new MinMemberInfo(sInfo));
+                    lbl.addScheduled(sInfo.member_id);
                 }
             }
         }
     }
 
-    async setMemberLabels(data:any) {
-        // TODO JLS, need to clear member list and owner list
-        this.memberMap.clear();
-        
+    async setMemberLabels(data:any) {        
         // Loop through the data and add member to each label
         for (var i=0; i<data.length; i++) {
             const d = data[i];
             const lblId = d.label_id;
-            const member = new MinMemberInfo(d);
             const isOwner = d.isOwnerOfLabel !== 'false';
 
             // Get the label by id
             const lbl = this.labelMap.get(lblId);
             if (lbl) {
-                lbl.addMember(member);
+                lbl.addMember(d.member_id);
 
                 // If owner, add it as an owner
                 if (isOwner) {
-                    lbl.addOwner(member);
-                }
-            }
-        }
-    }
-
-    async setMembersForLabel(data:any) {
-        if (data) {
-            for(var i=0; i<data.length; i++) {
-                const d = data[i];
-                const lblId = d.label_id;
-                const mId = d.member_id;
-
-                // Get the proper member obj
-                var member = new MinMemberInfo(d);
-                if (this.memberMap.has(mId)) {
-                    member = this.memberMap.get(mId) as MinMemberInfo;
-                }
-                else {
-                    this.memberMap.set(mId, member);
-                }
-
-                const lbl = this.labelMap.get(lblId);
-                if (lbl) {
-                    lbl.addMember(member);
+                    lbl.addOwner(d.member_id);
                 }
             }
         }
@@ -116,15 +110,11 @@ export default class ChurchLabels {
 
                 const lbl = this.labelMap.get(lblId);
                 if (lbl) {
-                    lbl.addOwner(member);
+                    lbl.addOwner(member.member_id);
                 }
             }
         }
     }    
-
-    getMemberMap() : Map<string, MinMemberInfo> {
-        return this.memberMap;
-    }
 
     getLabelGroups() : LabelInfo[] {
         var resultMap:Map<string, LabelInfo> = new Map<string, LabelInfo>();
