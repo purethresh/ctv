@@ -13,15 +13,12 @@ export class PageData {
     uInfo:UserInfo;
     churchLabels:ChurchLabels;
     memberMap:Map<string,FullMemberInfo>;
-    // memberList:MinMemberInfo[];
 
     constructor() {
         this.uInfo = new UserInfo();
         this.api = new APIHandler();
         this.churchLabels = new ChurchLabels();
         this.memberMap = new Map<string,FullMemberInfo>();
-
-        // this.memberList = [];
     }
 
     signOut() {
@@ -219,7 +216,7 @@ export class PageData {
       return result;
     }
 
-    private updateMemberList(data:any) {
+    protected updateMemberList(data:any) {
       this.memberMap.clear();
 
       for(var i=0; i<data.length; i++) {

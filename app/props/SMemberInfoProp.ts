@@ -1,12 +1,12 @@
-import { MinMemberInfo } from "../lib/MinMemberInfo";
 import { MemberPhoneInfo } from "../lib/MemberPhoneInfo";
 import { MemberEmailInfo } from "../lib/MemberEmailInfo";
 import { MemberAddressInfo } from "../lib/MemberAddressInfo";
+import { FullMemberInfo } from "../lib/FullMemberInfo";
 
 export interface SMemberInfoProp {
     isAdmin?: boolean;
     isEditing?: boolean;
-    memberInfo: MinMemberInfo;
+    memberInfo: FullMemberInfo;
     phoneList?: MemberPhoneInfo[];
     addressList?: MemberAddressInfo[];
     emailList?: MemberEmailInfo[];
@@ -18,5 +18,5 @@ export interface SMemberInfoProp {
     onUpdateEmailList?: (emailList:MemberEmailInfo[]) => void;
     onUpdateAddressList?: (addressList:MemberAddressInfo[]) => void;
 
-    saveMemberInfo?: (memberInfo:MinMemberInfo, phoneList:MemberPhoneInfo[], addressList:MemberAddressInfo[], emailList:MemberEmailInfo[]) => void;
+    saveMemberInfo?: (memberInfo:FullMemberInfo, phoneList:MemberPhoneInfo[], addressList:MemberAddressInfo[], emailList:MemberEmailInfo[]) => void;
 }

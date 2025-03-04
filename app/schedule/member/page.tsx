@@ -6,18 +6,18 @@ import { Button, Box, Paper } from "@mui/material";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import SMemberInfo from "@/app/components/SMemberInfo";
 import { MemberPageData } from "@/app/db/MemberPageData";
-import { MinMemberInfo } from "@/app/lib/MinMemberInfo";
 import { MemberPhoneInfo } from "@/app/lib/MemberPhoneInfo";
 import { MemberEmailInfo } from "@/app/lib/MemberEmailInfo";
 import { MemberAddressInfo } from "@/app/lib/MemberAddressInfo";
 import { v4 } from 'uuid';
+import { FullMemberInfo } from "@/app/lib/FullMemberInfo";
 
 export default function MemberPage() {
   let [pageData, setPageData] = useState<MemberPageData>(new MemberPageData());
-  let [memberList, setMemberList] = useState<MinMemberInfo[]>([]);
+  let [memberList, setMemberList] = useState<FullMemberInfo[]>([]);
   let [defaultMemberId, setDefaultMemberId] = useState<string>('');
   let [isMemberAdmin, setIsMemberAdmin] = useState<boolean>(false);
-  let [memberInfo, setMemberInfo] = useState<MinMemberInfo>(new MinMemberInfo({}));
+  let [memberInfo, setMemberInfo] = useState<FullMemberInfo>(new FullMemberInfo({}));
   let [phoneList, setPhoneList] = useState<MemberPhoneInfo[]>([]);
   let [emailList, setEmailList] = useState<MemberEmailInfo[]>([]);
   let [addressList, setAddressList] = useState<MemberAddressInfo[]>([]);
@@ -26,7 +26,7 @@ export default function MemberPage() {
   // Sets everything to edit, and creates a new member info object
   const onViewCreateMember = () => {
     const pData = pageData;
-    pData.currentMemberInfo = new MinMemberInfo({});
+    pData.currentMemberInfo = new FullMemberInfo({});
     pData.currentPhoneList = [];
     pData.currentAddressList = [];
     pData.currentEmailList = [];
@@ -46,10 +46,9 @@ export default function MemberPage() {
     setMemberInfo(pData.currentMemberInfo); 
   }
 
-  const onSave = async (mInfo:MinMemberInfo, phoneList:MemberPhoneInfo[], addressList:MemberAddressInfo[], emailList:MemberEmailInfo[]) => {
+  const onSave = async (mInfo:FullMemberInfo, phoneList:MemberPhoneInfo[], addressList:MemberAddressInfo[], emailList:MemberEmailInfo[]) => {
     const pData = pageData;
 
-    // const mData = { ...mInfo, church_id: pData.uInfo.church_id };
     const mData = { first: mInfo.first, last: mInfo.last, gender:mInfo.gender, member_id: mInfo.member_id, church_id: pData.uInfo.church_id, notes: mInfo.notes, sub: mInfo.sub };
     
     // Create or save the member
@@ -129,7 +128,10 @@ export default function MemberPage() {
     // If admin, load the list of members
     if (isAdmin) {
       await pData.loadAllMembers();
-      setMemberList(pData.memberList);
+      setMemberList(pData.getMembersAsList());
+    }
+    else {
+      setMemberList([pData.currentMemberInfo]);
     }
 
     setPageData(pData);

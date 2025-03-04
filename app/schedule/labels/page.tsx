@@ -4,19 +4,19 @@ import React, { useState, useEffect } from 'react';
 import { LabelInfo } from '@/app/lib/LabelInfo';
 import SLabelList from '@/app/components/SLabelList';
 import SLabelInfo from '@/app/components/SLabelInfo';
-import { MinMemberInfo } from '@/app/lib/MinMemberInfo';
 import { Grid2, Paper, Box, Typography } from '@mui/material';
 import { LabelPageData } from '@/app/db/LabelPageData';
 import { PageData } from '@/app/db/PageData';
+import { FullMemberInfo } from '@/app/lib/FullMemberInfo';
 
 export default function LabelPage() {
   let [pageData, setPageData] = useState<LabelPageData>(new LabelPageData());
   let [memberLabels, setMemberLabels] = useState<LabelInfo[]>([]);
   let [userId, setUserId] = useState<string>('');
   let [selectedLabel, setSelectedLabel] = useState<string>('');
-  let [memberList, setMemberList] = useState<MinMemberInfo[]>([]);
-  let [churchMembers, setChurchMembers] = useState<MinMemberInfo[]>([]);
-  let [ownerList, setOwnerList] = useState<MinMemberInfo[]>([]);
+  let [memberList, setMemberList] = useState<FullMemberInfo[]>([]);
+  let [churchMembers, setChurchMembers] = useState<FullMemberInfo[]>([]);
+  let [ownerList, setOwnerList] = useState<FullMemberInfo[]>([]);
   let [selectedInfo, setSelectedInfo] = useState<LabelInfo | undefined>(undefined);
 
   const onLabelClick = async (labelId:string) => {
@@ -33,16 +33,28 @@ export default function LabelPage() {
 
   const updateMemberAndOwner = async (pageData:PageData, lbl:LabelInfo | undefined) => {
     var lblId = lbl?.label_id || '';
-    var mList:MinMemberInfo[] = [];
-    var oList:MinMemberInfo[] = [];
+    var mList:FullMemberInfo[] = [];
+    var oList:FullMemberInfo[] = [];
 
     if (lbl) {
       await pageData.loadMembersForLabel(lblId);
-
       await pageData.loadAllOwners();
 
-      mList = lbl.getMemberList();
-      oList = lbl.getOwnerList();
+      // Loop through set of members, and create a list of FullMemberInfo
+      lbl.memberSet.forEach((value:string) => {
+        var m = pageData.memberMap.get(value);
+        if (m) {
+          mList.push(m);
+        }
+      });
+
+      // Loop through set of owners, and create a list of FullMemberInfo
+      lbl.owners.forEach((value:string) => {
+        var m = pageData.memberMap.get(value);
+        if (m) {
+          oList.push(m);
+        }
+      });
     }
 
     setMemberList(mList);
@@ -129,7 +141,7 @@ export default function LabelPage() {
       return 0;
     });
 
-    setChurchMembers(pData.memberList);
+    setChurchMembers(pData.getMembersAsList());
     setUserId(pData.uInfo.member_id);
     setMemberLabels(lst);
     setPageData(pData);

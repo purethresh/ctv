@@ -9,7 +9,7 @@ import LinkIcon from '@mui/icons-material/Link';
 import SAllMemberSelect from "@/app/components/SAllMemberSelect";
 import { useRouter } from 'next/navigation';
 import { LinkPageData } from "@/app/db/LinkPageData";
-import { MinMemberInfo } from "@/app/lib/MinMemberInfo";
+import { FullMemberInfo } from "@/app/lib/FullMemberInfo";
 
 
 export default function LinkMember() {  
@@ -19,7 +19,7 @@ export default function LinkMember() {
   let [searchNumber, setSearchNumber] = useState<string>('');
   let [selectedMember, setSelectedMember] = useState<string>('');
   let [hasMember, setHasMember] = useState<boolean>(false);
-  let [memberList, setMemberList] = useState<MinMemberInfo[]>([]);
+  let [memberList, setMemberList] = useState<FullMemberInfo[]>([]);
 
   const router = useRouter();
 
@@ -46,7 +46,7 @@ export default function LinkMember() {
     setSearchNumber(event.target.value);
     setHasMember(false);
     setSelectedMember('');
-    setMemberList(pData.memberList);
+    setMemberList(pData.getMembersAsList());
     setPageData(pData);
   }
 

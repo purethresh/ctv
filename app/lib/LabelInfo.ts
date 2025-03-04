@@ -33,10 +33,8 @@ export class LabelInfo {
 
     // Labels can have members
     memberSet:Set<string>;
-    // memberMap:Map<string, MinMemberInfo>;
 
     // Labels can have owners
-    // owners:Map<string, MinMemberInfo>;
     owners:Set<string>;
 
     // List of people scheduled for this label

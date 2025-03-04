@@ -1,13 +1,13 @@
 import { LabelInfo } from '../lib/LabelInfo';
-import { MinMemberInfo } from '../lib/MinMemberInfo';
+import { FullMemberInfo } from '../lib/FullMemberInfo';
 
 export interface SLabelInfoProps {
     labelInfo?:LabelInfo;
-    memberList?:MinMemberInfo[];
-    ownerList?:MinMemberInfo[];
+    memberList?:FullMemberInfo[];
+    ownerList?:FullMemberInfo[];
     userId?:string;
     churchId?:string;
-    allMembers:MinMemberInfo[];
+    allMembers:FullMemberInfo[];
 
     onAddMember?: (memberId:string, labelId:string, owner:boolean) => void;
     onRemoveMember?: (memberId:string, labelId:string) => void;
