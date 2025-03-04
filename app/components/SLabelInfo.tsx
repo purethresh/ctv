@@ -29,9 +29,6 @@ export default function SLabelInfo(props:SLabelInfoProps) {
 
     const addAsOwner = async () => {
         if (canAddOwner && props.onAddMember) {
-            console.log('TODO JLS - - - - - adding member as owner');
-            console.log(selectedMember);
-            console.log(labelInfo.label_id);
             props.onAddMember(selectedMember, labelInfo.label_id, true);
         }
     }

@@ -11,7 +11,6 @@ export default class ChurchLabels {
     churchId:string = '';
     labelMap:Map<string, LabelInfo> = new Map<string, LabelInfo>();
     labelRoot:LabelInfo | null = null;
-    // memberMap:Map<string, MinMemberInfo> = new Map<string, MinMemberInfo>();
 
     setAllLabels(data:any) {
         this.labelMap.clear();
@@ -77,11 +76,6 @@ export default class ChurchLabels {
                 // Now add a scheduled person to the label
                 if (lbl) {
                     lbl.addScheduled(sInfo.member_id);
-                    // const member = lbl.memberMap.get(sInfo.member_id);
-                    // if (member) {
-                    //     member.addScheduledLabel(lbl.label_id);
-                    //     lbl.addScheduled(member);
-                    // }
                 }
             }
         }
@@ -107,31 +101,6 @@ export default class ChurchLabels {
         }
     }
 
-    // async setMembersForLabel(data:any) {
-
-    //     if (data) {
-    //         for(var i=0; i<data.length; i++) {
-    //             const d = data[i];
-    //             const lblId = d.label_id;
-    //             const mId = d.member_id;
-
-    //             // Get the proper member obj
-    //             var member = new MinMemberInfo(d);
-    //             if (this.memberMap.has(mId)) {
-    //                 member = this.memberMap.get(mId) as MinMemberInfo;
-    //             }
-    //             else {
-    //                 this.memberMap.set(mId, member);
-    //             }
-
-    //             const lbl = this.labelMap.get(lblId);
-    //             if (lbl) {
-    //                 lbl.addMember(member.member_id);
-    //             }
-    //         }
-    //     }
-    // }
-
     async setOwnersForLabel(data:any) {
         if (data) {
             for(var i=0; i<data.length; i++) {
@@ -146,11 +115,6 @@ export default class ChurchLabels {
             }
         }
     }    
-
-    getMemberMap() : Map<string, MinMemberInfo> {
-        return new Map<string, MinMemberInfo>();    // TODO JLS
-        // return this.memberMap;
-    }
 
     getLabelGroups() : LabelInfo[] {
         var resultMap:Map<string, LabelInfo> = new Map<string, LabelInfo>();
