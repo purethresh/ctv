@@ -19,6 +19,15 @@ export default function SLabelInfo(props:SLabelInfoProps) {
 
     const userSelected = async (memberId:string) => {
         setSelectedMember(memberId);
+
+        const lbl = labelInfo;
+
+        // Update the add buttons
+        const iMember = lbl.isMember(memberId);
+        const iOwner = lbl.isOwner(memberId);
+
+        setCanAddMember(!iMember);
+        setCanOwner(!iOwner);
     }
 
     const addAsMember = async () => {
