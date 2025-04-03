@@ -5,4 +5,5 @@ import { FullMemberInfo } from "../lib/FullMemberInfo";
 export interface SServiceScheduleProps {
     schedule:ChurchSchedule;
     members: Map<string, FullMemberInfo>;
+    isAdmin: boolean;
 }

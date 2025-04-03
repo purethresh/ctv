@@ -34,6 +34,7 @@ export default function App() {
   let [currentSchedule, setCurrentSchedule] = useState<ChurchSchedule[]>([]);
   let [hasBeenInitialized, setHasBeenInitialized] = useState<boolean>(false);
   let [memberMap, setMemberMap] = useState<Map<string, FullMemberInfo>>(new Map<string, FullMemberInfo>());
+  let [isMemberAdmin, setIsMemberAdmin] = useState<boolean>(false);
 
   const onDateChange = (date:Date) => {
     const pData = pageData;
@@ -87,6 +88,7 @@ export default function App() {
 
       // Load all the labels
       await pData.loadChurchLabels();
+      await pData.loadAdminInfo();
       
       // Load the members for the scheduled labels
       await pData.loadMembersForScheduledLabels();
@@ -94,6 +96,9 @@ export default function App() {
       // Load the services for the month
       const dt = new Date(selectedDay);
       await loadServicesForMonth(pData, dt);
+    
+      const isAdmin = pData.churchLabels.labelRoot?.isOwner(pData.uInfo.member_id) || false;
+      setIsMemberAdmin(isAdmin);
 
       setUserInfo(pData.uInfo);
       setMemberMap(pData.memberMap);
@@ -112,7 +117,7 @@ export default function App() {
       <br />
       <Grid2 container spacing={2}>
         <SChurchCalendar selectedDate={selectedDay} defaultDate={defaultDate} onDateChanged={onDateChange} scheduledDays={scheduledDays} onMonthChanged={onGetSchedule}  />
-        <SAllServices scheduleList={currentSchedule} members={memberMap} />      
+        <SAllServices scheduleList={currentSchedule} members={memberMap} isAdmin={isMemberAdmin} />      
       </Grid2>
     </main>
   )
