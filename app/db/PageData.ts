@@ -152,7 +152,6 @@ export class PageData {
         const lbl = this.churchLabels.labelMap.get(labelId);
         if (lbl) {
           lbl.memberSet.clear();
-          // lbl.memberMap.clear();
           lbl.owners.clear();
         }
 

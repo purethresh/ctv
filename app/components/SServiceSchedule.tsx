@@ -39,6 +39,10 @@ export default function SServiceSchedule(props:SServiceScheduleProps) {
         setShouldShowName(sInfo.name.length > 0);
         setShouldShowInfo(sInfo.info.length > 0);
 
+        // TODO JLS
+        // Go through th member map and get all the members scheduled for this service
+        // Then show there phone numbers in a table
+
         const lGroup = schedule.churchLabels.getLabelGroups();
         setGroupList(lGroup);
     }

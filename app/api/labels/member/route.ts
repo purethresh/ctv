@@ -23,7 +23,8 @@ export async function GET(req: NextRequest) {
         queryParams = [params.get(MEMBER_ID)];
     }
     else if (params.has(LABEL_ID)) {
-        query = 'SELECT * FROM label_member JOIN labels ON label_member.label_id = labels.label_id JOIN members ON label_member.member_id = members.member_id WHERE label_member.label_id=?';
+        query = 'SELECT * FROM label_member JOIN labels ON label_member.label_id = labels.label_id JOIN members ON label_member.member_id = members.member_id JOIN phones ON members.member_id = phones.member_id WHERE phones.isPrimary = "true" AND label_member.label_id=?'
+        // query = 'SELECT * FROM label_member JOIN labels ON label_member.label_id = labels.label_id JOIN members ON label_member.member_id = members.member_id WHERE label_member.label_id=?';
         queryParams = [params.get(LABEL_ID)];
     }
     else if (params.has(OWNER_ID)) {

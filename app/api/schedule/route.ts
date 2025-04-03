@@ -63,7 +63,8 @@ export async function PUT(req: NextRequest) {
 
         if (params.has(CHURCH_ID) && params.has(SERVICE_ID) && params.has(LABEL_ID) && params.has(MEMBER_ID)) {
             const query = 'INSERT INTO schedule (schedule_id, church_id, service_id, label_id, member_id) VALUES (?, ?, ?, ?, ?)';
-            const queryParams = [v4(), params.get(CHURCH_ID), params.get(SERVICE_ID), params.get(LABEL_ID), params.get(MEMBER_ID)];
+            const sid = v4();
+            const queryParams = [sid, params.get(CHURCH_ID), params.get(SERVICE_ID), params.get(LABEL_ID), params.get(MEMBER_ID)];
             const [dbResults] = await runQuery(query, queryParams);
             result = dbResults;
             resultStatus = {status: 200};

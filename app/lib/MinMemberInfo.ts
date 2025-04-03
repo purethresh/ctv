@@ -7,6 +7,7 @@ export interface IMinMemberInfo {
     notes?:string;
     gender?:string;
     sub?:string;
+    pNumber?:string;
 };
 
 export class MinMemberInfo implements IMinMemberInfo {
@@ -16,6 +17,7 @@ export class MinMemberInfo implements IMinMemberInfo {
     notes: string = '';
     gender: string = '';
     sub: string = '';
+    pNumber: string = '';
 
     // Move this to Full Member Info
 
@@ -30,6 +32,7 @@ export class MinMemberInfo implements IMinMemberInfo {
         this.notes = obj.notes || '';
         this.gender = obj.gender || 'male';
         this.sub = obj.sub || '';
+        this.pNumber = obj.pNumber || '';
 
         // By default we just mark this user as a member
         // this.scheduledStatus = ScheduleStatus.member;
