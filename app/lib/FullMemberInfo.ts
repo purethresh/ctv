@@ -5,7 +5,7 @@ import { ScheduleInfo } from "./ScheduleInfo";
 export class FullMemberInfo extends MinMemberInfo {
 
     // Map of ScheduleInfo mapped by service_id
-    scheduleMap:Map<string, ScheduleInfo>;
+    scheduleMap:Map<string, Set<string>>;
 
     // Map of AvailabilityInfo mapped by blockedAsDateStr
     availabilityMap:Map<string, AvailabilityInfo>;
@@ -13,7 +13,8 @@ export class FullMemberInfo extends MinMemberInfo {
     constructor(obj:IMinMemberInfo = {}) {
         super(obj);
 
-        this.scheduleMap = new Map<string, ScheduleInfo>();
+        // Key is the service_id - Then a set of label_id
+        this.scheduleMap = new Map<string, Set<string>>();
         this.availabilityMap = new Map<string, AvailabilityInfo>();
     }
 
@@ -23,7 +24,13 @@ export class FullMemberInfo extends MinMemberInfo {
     }
 
     addSchedule(sInfo:ScheduleInfo) {
-        this.scheduleMap.set(sInfo.service_id, sInfo);
+        var s = new Set<string>();
+
+        if (this.scheduleMap.has(sInfo.service_id)) {
+            s = this.scheduleMap.get(sInfo.service_id) || new Set<string>();
+        }
+        s.add(sInfo.label_id);
+        this.scheduleMap.set(sInfo.service_id, s);
     }
 
     addBlockedOutDay(aInfo:AvailabilityInfo) {
@@ -41,8 +48,9 @@ export class FullMemberInfo extends MinMemberInfo {
 
     isScheduledForLabel(serviceId:string, labelId:string) : boolean {
         const sInfo = this.scheduleMap.get(serviceId);
+
         if (sInfo) {
-            return sInfo.label_id === labelId;
+            return sInfo.has(labelId);
         }
         return false;
     }

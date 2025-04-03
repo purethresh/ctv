@@ -10,11 +10,13 @@ import { FullMemberInfo } from "../lib/FullMemberInfo";
 export default function SAllServices(props:SAllServicesProp) {
   let [scheduleList, setScheduleList] = useState<ChurchSchedule[]>(props.scheduleList);
   let [memberMap, setMemberMap] = useState<Map<string, FullMemberInfo>>(props.members);
+  let [isAdmin, setIsAdmin] = useState<boolean>(props.isAdmin);
 
   // Get the services for the selected day
   const getServicesForDay = async() => {
     setScheduleList(props.scheduleList);
     setMemberMap(props.members);
+    setIsAdmin(props.isAdmin);
   }
 
   useEffect(() => {
@@ -25,7 +27,7 @@ export default function SAllServices(props:SAllServicesProp) {
     <>
       {scheduleList.map((item, index) => (
         <Grid2 key={item.serviceInfo.service_id+'_schedule_grid'} size={{ xs: 12, sm: 6}}>
-          <SServiceSchedule key={index+'_schedule'} schedule={item} members={memberMap} />
+          <SServiceSchedule key={index+'_schedule'} schedule={item} members={memberMap} isAdmin={isAdmin} />
         </Grid2>        
       ))}
     </>

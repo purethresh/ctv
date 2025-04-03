@@ -7,12 +7,12 @@ import { Typography } from "@mui/material";
 import { FullMemberInfo } from "../lib/FullMemberInfo";
 
 export default function SLabelMember(props:SMemberLabelProps) {
-    const defaultBackColor = 'info.main';
-    const defaultTextColor = 'info.contrastText';
+    const defaultBackColor = 'warning.main';
+    const defaultTextColor = 'warning.contrastText';
     const blockedBackColor = 'error.main';
     const blockedTextColor = 'error.contrastText';
-    const recommendedBackColor = 'warning.main';
-    const recommendedTextColor = 'warning.contrastText';
+    const recommendedBackColor = 'info.main';
+    const recommendedTextColor = 'info.contrastText';
     const scheduledBackColor = 'success.main';
     const scheduledTextColor = 'success.contrastText';
 
